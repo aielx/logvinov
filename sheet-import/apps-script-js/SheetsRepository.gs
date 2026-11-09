@@ -353,6 +353,11 @@ function autoFillOnEdit(e) {
   const name = sheet.getName();
   const headers = HEADERS[name];
   if (!headers) return;
+  try {
+    bumpDataRevision();
+  } catch (error) {
+    console.warn(`onEdit: \u043D\u0435 \u043F\u043E\u0434\u043D\u044F\u0442\u044C \u0440\u0435\u0432\u0438\u0437\u0438\u044E: ${String(error).slice(0, 120)}`);
+  }
   const firstRow = e.range.getRow();
   if (firstRow < 2) return;
   if (name === SHEETS.PEOPLE) {

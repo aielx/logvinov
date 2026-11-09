@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { validateArchive } from "../src/Validation";
-import { autoFillOnEdit, missingRequiredHeaders, recordsFromValues } from "../src/SheetsRepository";
+import { autoFillOnEdit, missingRequiredHeaders, readDataRevision, recordsFromValues } from "../src/SheetsRepository";
 import { SHEETS } from "../src/Config";
 import { parseFlexibleDate, extractDriveFileId, isSafeExternalUrl, isSafeAssetPath, formatYears } from "../src/Util";
 import { SpreadsheetAppMock, resetMockState, setMockSheets } from "./globals-mock";
@@ -311,6 +311,8 @@ describe("onEdit: новый человек получает № и попада
     autoFillOnEdit(editEvent(sheet, 12, 1));
     expect(sheet.getRange(12, 1).getValue()).toBe(11);
     expect(sheet.getRange(12, 19).getValue()).toBe("11 · ЛОГВИНОВ Александр Сергеевич");
+    // Правка в листе данных поднимает ревизию — кэш ответов сбрасывается сразу.
+    expect(readDataRevision()).toBe("2");
     // Дата с точками валидна: человек №11 попадает в архив.
     const archive = validateArchive({
       people: recordsFromValues(SHEETS.PEOPLE, values[SHEETS.PEOPLE]) as never,

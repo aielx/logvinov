@@ -476,12 +476,21 @@ export function fillMissingPersonNumbers(): number {
  * Простой триггер onEdit (см. onEdit в Code.ts): № новому человеку — всем строкам
  * изменённого диапазона (вставка нескольких строк сразу) — и обновление
  * списка подстановки в статическом режиме «Выбора».
+ *
+ * Любая правка в листах данных поднимает ревизию: кэш ответов API
+ * сбрасывается немедленно, и сайт показывает свежие данные при следующей
+ * загрузке страницы — без ожидания TTL.
  */
 export function autoFillOnEdit(e: GoogleAppsScript.Events.SheetsOnEdit): void {
   const sheet = e.range.getSheet();
   const name = sheet.getName();
   const headers = HEADERS[name];
   if (!headers) return;
+  try {
+    bumpDataRevision();
+  } catch (error) {
+    console.warn(`onEdit: не поднять ревизию: ${String(error).slice(0, 120)}`);
+  }
   const firstRow = e.range.getRow();
   if (firstRow < 2) return;
 
