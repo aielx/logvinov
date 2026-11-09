@@ -112,7 +112,7 @@ function validatePeople(raw, archive) {
     }
     const birth = parseFlexibleDate(row.birthDate);
     if (birth === null) {
-      issue(archive, sheet, row.rowNumber, String(number), "PERSON_BAD_BIRTH", `\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u0430\u044F \u0434\u0430\u0442\u0430 \u0440\u043E\u0436\u0434\u0435\u043D\u0438\u044F \xAB${toText(row.birthDate)}\xBB (\u043D\u0443\u0436\u043D\u043E 1890, 1937-03 \u0438\u043B\u0438 1937-03-14).`);
+      issue(archive, sheet, row.rowNumber, String(number), "PERSON_BAD_BIRTH", `\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u0430\u044F \u0434\u0430\u0442\u0430 \u0440\u043E\u0436\u0434\u0435\u043D\u0438\u044F \xAB${toText(row.birthDate)}\xBB (\u043D\u0443\u0436\u043D\u043E 1890, 1937-03, 14.03.1937 \u0438\u043B\u0438 1937-03-14).`);
       return;
     }
     const death = parseFlexibleDate(row.deathDate);

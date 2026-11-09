@@ -10,6 +10,15 @@ export function isBlank(value: unknown): boolean {
 
 export function toText(value: unknown): string {
   if (value === null || value === undefined) return "";
+  // Sheets часто сам превращает ввод «09.11.1984» в настоящий Date.
+  // Приводим его к канонической строке YYYY-MM-DD (локальные компоненты даты,
+  // без сдвига часовых поясов — скрипт таблицы живёт в её же часовом поясе).
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, "0");
+    const day = String(value.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
   return String(value).trim();
 }
 
@@ -29,10 +38,17 @@ export function toBool(value: unknown): boolean | null {
 }
 
 /**
- * Разбор дат формата YYYY, YYYY-MM, YYYY-MM-DD без сдвига часовых поясов.
+ * Разбор дат: YYYY, YYYY-MM, YYYY-MM-DD, русский ДД.ММ.ГГГГ — и «настоящие»
+ * даты Sheets (объекты Date, в которые редактор превращает ввод «09.11.1984»).
  * Возвращает null, если непустое значение не удалось разобрать.
  */
 export function parseFlexibleDate(raw: unknown): ParsedDate | null {
+  if (raw instanceof Date && !Number.isNaN(raw.getTime())) {
+    const year = raw.getFullYear();
+    const month = raw.getMonth() + 1;
+    const day = raw.getDate();
+    return { year, month, day, precision: "DAY", sortKey: year * 10000 + month * 100 + day };
+  }
   const text = toText(raw);
   if (text === "") {
     return { year: null, month: null, day: null, precision: "YEAR", sortKey: 0 };

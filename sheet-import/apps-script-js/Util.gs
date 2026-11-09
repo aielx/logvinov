@@ -8,6 +8,12 @@ function isBlank(value) {
 }
 function toText(value) {
   if (value === null || value === void 0) return "";
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, "0");
+    const day = String(value.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
   return String(value).trim();
 }
 function toInt(value, fallback) {
@@ -24,6 +30,12 @@ function toBool(value) {
   return null;
 }
 function parseFlexibleDate(raw) {
+  if (raw instanceof Date && !Number.isNaN(raw.getTime())) {
+    const year2 = raw.getFullYear();
+    const month2 = raw.getMonth() + 1;
+    const day2 = raw.getDate();
+    return { year: year2, month: month2, day: day2, precision: "DAY", sortKey: year2 * 1e4 + month2 * 100 + day2 };
+  }
   const text = toText(raw);
   if (text === "") {
     return { year: null, month: null, day: null, precision: "YEAR", sortKey: 0 };

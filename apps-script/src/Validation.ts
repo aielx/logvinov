@@ -182,7 +182,7 @@ function validatePeople(raw: RawRecords, archive: ValidatedArchive): Map<number,
     }
     const birth = parseFlexibleDate(row.birthDate);
     if (birth === null) {
-      issue(archive, sheet, row.rowNumber, String(number), "PERSON_BAD_BIRTH", `Некорректная дата рождения «${toText(row.birthDate)}» (нужно 1890, 1937-03 или 1937-03-14).`);
+      issue(archive, sheet, row.rowNumber, String(number), "PERSON_BAD_BIRTH", `Некорректная дата рождения «${toText(row.birthDate)}» (нужно 1890, 1937-03, 14.03.1937 или 1937-03-14).`);
       return;
     }
     const death = parseFlexibleDate(row.deathDate);

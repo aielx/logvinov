@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { validateArchive } from "../src/Validation";
 import { autoFillOnEdit, missingRequiredHeaders, readDataRevision, recordsFromValues } from "../src/SheetsRepository";
 import { SHEETS } from "../src/Config";
-import { parseFlexibleDate, extractDriveFileId, isSafeExternalUrl, isSafeAssetPath, formatYears } from "../src/Util";
+import { parseFlexibleDate, extractDriveFileId, isSafeExternalUrl, isSafeAssetPath, formatYears, toText } from "../src/Util";
 import { SpreadsheetAppMock, resetMockState, setMockSheets } from "./globals-mock";
 import { demoSheetValues } from "./fixture";
 import type { RawRecords } from "../src/Types";
@@ -29,6 +29,15 @@ describe("Разбор дат", () => {
     expect(parseFlexibleDate("09.11.1984")).toMatchObject({ year: 1984, month: 11, day: 9, precision: "DAY", sortKey: 19841109 });
     expect(parseFlexibleDate("14.03.1937")).toMatchObject({ year: 1937, month: 3, day: 14, precision: "DAY", sortKey: 19370314 });
     expect(parseFlexibleDate("1.5.1920")).toMatchObject({ year: 1920, month: 5, day: 1, precision: "DAY", sortKey: 19200501 });
+  });
+
+  it("настоящие даты Sheets (объекты Date) приводятся к YYYY-MM-DD", () => {
+    expect(parseFlexibleDate(new Date(1984, 10, 9))).toMatchObject({ year: 1984, month: 11, day: 9, precision: "DAY", sortKey: 19841109 });
+    expect(toText(new Date(1937, 2, 14))).toBe("1937-03-14");
+    // Чтение листа: Sheets отдал Date вместо текста — запись всё равно валидна.
+    const rows = recordsFromValues("Люди", [["№", "ФИО", "Дата рождения", "Живой"], [11, "Тестов Тест Тестович", new Date(1984, 10, 9), true]]);
+    expect(rows[0]).toMatchObject({ birthDate: "1984-11-09" });
+    expect(parseFlexibleDate((rows[0] as { birthDate: string }).birthDate)).toMatchObject({ year: 1984, month: 11, day: 9, precision: "DAY" });
   });
 
   it("мусор отклоняется", () => {
