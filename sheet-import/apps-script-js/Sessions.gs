@@ -1,3 +1,8 @@
+/**
+ * Этот файл — для копирования в веб-редактор Google Apps Script.
+ * НЕ копируйте apps-script/src/*.ts: это TypeScript с import-инструкциями.
+ * Сгенерировано автоматически: npm run gen:gs.
+ */
 function sessionKey(token) {
   return `${PROP.SESSION_PREFIX}${sha256Hex(token)}`;
 }

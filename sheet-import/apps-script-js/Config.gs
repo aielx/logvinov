@@ -1,3 +1,8 @@
+/**
+ * Этот файл — для копирования в веб-редактор Google Apps Script.
+ * НЕ копируйте apps-script/src/*.ts: это TypeScript с import-инструкциями.
+ * Сгенерировано автоматически: npm run gen:gs.
+ */
 const API_VERSION = "1";
 const SCHEMA_VERSION = "2";
 const DEFAULT_DATA_REVISION = "1";

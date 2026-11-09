@@ -1,3 +1,8 @@
+/**
+ * Этот файл — для копирования в веб-редактор Google Apps Script.
+ * НЕ копируйте apps-script/src/*.ts: это TypeScript с import-инструкциями.
+ * Сгенерировано автоматически: npm run gen:gs.
+ */
 function pbkdf2Sha256(password, saltHex, iterations) {
   if (iterations < 1) throw new ApiFailure(500, "INTERNAL_ERROR", "\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u043E\u0435 \u0447\u0438\u0441\u043B\u043E \u0438\u0442\u0435\u0440\u0430\u0446\u0438\u0439");
   const passwordBytes = Array.from(Utilities.newBlob(password).getBytes()).map((b) => b < 0 ? b + 256 : b);

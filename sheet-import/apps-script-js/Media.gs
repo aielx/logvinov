@@ -1,3 +1,8 @@
+/**
+ * Этот файл — для копирования в веб-редактор Google Apps Script.
+ * НЕ копируйте apps-script/src/*.ts: это TypeScript с import-инструкциями.
+ * Сгенерировано автоматически: npm run gen:gs.
+ */
 function loadFamilyMedia(archive, mediaId) {
   if (!mediaId || !/^m_\d+$/.test(mediaId)) {
     throw new ApiFailure(400, "BAD_MEDIA_ID", "\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u044B\u0439 mediaId.");

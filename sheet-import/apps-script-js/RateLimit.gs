@@ -1,3 +1,8 @@
+/**
+ * Этот файл — для копирования в веб-редактор Google Apps Script.
+ * НЕ копируйте apps-script/src/*.ts: это TypeScript с import-инструкциями.
+ * Сгенерировано автоматически: npm run gen:gs.
+ */
 function windowStart(now, windowSeconds) {
   return Math.floor(now / 1e3 / windowSeconds) * windowSeconds;
 }

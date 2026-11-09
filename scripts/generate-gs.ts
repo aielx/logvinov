@@ -38,7 +38,9 @@ files.forEach((file) => {
     .replace(/\bexport\s+(?=(?:function|const|class|let|var)\b)/g, "")
     .replace(/\bexport\s+default\s+/g, "");
   const target = join(OUT, basename(file).replace(/\.ts$/, ".gs"));
-  writeFileSync(target, globalScript, "utf8");
+  // Шапка-предохранитель: .ts исходники нельзя вставлять в Apps Script (там import/типы).
+  const banner = "/**\n * Этот файл — для копирования в веб-редактор Google Apps Script.\n * НЕ копируйте apps-script/src/*.ts: это TypeScript с import-инструкциями.\n * Сгенерировано автоматически: npm run gen:gs.\n */\n";
+  writeFileSync(target, banner + globalScript, "utf8");
   console.log(`OK: sheet-import/apps-script-js/${basename(target)}`);
 });
 

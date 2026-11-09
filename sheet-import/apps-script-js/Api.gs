@@ -1,3 +1,8 @@
+/**
+ * Этот файл — для копирования в веб-редактор Google Apps Script.
+ * НЕ копируйте apps-script/src/*.ts: это TypeScript с import-инструкциями.
+ * Сгенерировано автоматически: npm run gen:gs.
+ */
 const GET_ACTIONS = ["health", "public.tree", "public.person", "public.timeline", "public.gallery"];
 const POST_ACTIONS = ["auth.login", "auth.status", "auth.logout", "private.person", "private.timeline", "private.gallery", "private.media"];
 const PRIVATE_CACHED_ACTIONS = ["private.person", "private.timeline", "private.gallery", "private.media"];

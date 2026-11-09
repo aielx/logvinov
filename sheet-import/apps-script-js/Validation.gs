@@ -1,3 +1,8 @@
+/**
+ * Этот файл — для копирования в веб-редактор Google Apps Script.
+ * НЕ копируйте apps-script/src/*.ts: это TypeScript с import-инструкциями.
+ * Сгенерировано автоматически: npm run gen:gs.
+ */
 function issue(target, sheet, rowNumber, recordId, code, message) {
   target.issues.push({ sheet, rowNumber, recordId, code, message });
 }
