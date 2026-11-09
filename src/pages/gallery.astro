@@ -1,0 +1,25 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AsyncState from "../components/AsyncState.astro";
+import ArchiveGallery from "../components/gallery/ArchiveGallery.astro";
+import "../styles/features/gallery.css";
+---
+
+<BaseLayout
+  title="Галерея — Род Логвиновых"
+  description="Галерея фотографий и документов семейного архива Логвиновых."
+  current="gallery"
+>
+  <section class="page-intro section-shell">
+    <p class="eyebrow">Фотографии и документы</p>
+    <h1>Семейная галерея</h1>
+    <p>Каждый снимок и каждая запись помогают увидеть не только ход времени, но и живых людей за именами в древе.</p>
+  </section>
+  <section class="gallery-section section-shell" aria-labelledby="gallery-grid-title">
+    <AsyncState idPrefix="gallery" errorTitle="Не удалось загрузить галерею">
+      <ArchiveGallery />
+    </AsyncState>
+    <noscript><p class="noscript-note">Для отображения галереи необходимо включить JavaScript.</p></noscript>
+  </section>
+  <script src="../components/gallery/gallery-controller.ts"></script>
+</BaseLayout>

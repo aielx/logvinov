@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400">
+  <defs><linearGradient id="paper" x2="0" y2="1"><stop stop-color="#E5DDCE"/><stop offset="1" stop-color="#BFB3A0"/></linearGradient></defs>
+  <rect width="300" height="400" fill="url(#paper)"/>
+  <rect x="14" y="14" width="272" height="372" fill="none" stroke="#8C7E6B" stroke-width="2"/>
+  <circle cx="150" cy="160" r="112" fill="#D5CABA"/>
+  <path d="M61 368c7-96 39-137 89-137s83 41 90 137" fill="#535754"/>
+  <path d="M113 226l37 58 38-58 18 142H94z" fill="#626864"/>
+  <path d="M132 226h36l-18 58z" fill="#D6CAB8"/>
+  <ellipse cx="150" cy="154" rx="60" ry="76" fill="#B7A38C"/>
+  <path d="M91 147c-4-67 27-100 65-98 43 2 64 38 54 96-13-15-20-41-21-55-23 26-58 35-98 34z" fill="#5A5147"/>
+  <path d="M112 165c14 7 25 7 37 0m7 0c13 6 24 5 35-2" fill="none" stroke="#665B50" stroke-width="3"/>
+  <path d="M139 201c9 4 18 4 27-1" fill="none" stroke="#7A6556" stroke-width="3"/>
+  <text x="150" y="382" text-anchor="middle" fill="#4C463F" font-family="Georgia,serif" font-size="11" letter-spacing="2">АРХИВНЫЙ ПОРТРЕТ</text>
+</svg>

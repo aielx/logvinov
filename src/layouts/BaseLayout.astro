@@ -1,0 +1,49 @@
+---
+import "../styles/global.css";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import LoginDialog from "../components/LoginDialog.astro";
+import ToastRegion from "../components/ToastRegion.astro";
+import MediaViewer from "../components/MediaViewer.astro";
+import { pageUrl, assetUrl } from "../lib/urls";
+
+interface Props {
+  title: string;
+  description: string;
+  themeColor?: string;
+  current?: "" | "tree" | "timeline" | "gallery";
+  bodyClass?: string;
+  compactFooter?: boolean;
+  footerNote?: string;
+}
+
+const { title, description, themeColor = "#F5F1EB", current, bodyClass = "", compactFooter = false, footerNote } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content={description}>
+    <meta name="theme-color" content={themeColor}>
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href={assetUrl("assets/favicon.svg")} type="image/svg+xml">
+  </head>
+  <body class={bodyClass}>
+    <a class="skip-link" href="#main-content">Перейти к содержанию</a>
+    <SiteHeader current={current} />
+    <main id="main-content">
+      <slot />
+    </main>
+    <SiteFooter compact={compactFooter} note={footerNote} />
+    <LoginDialog />
+    <MediaViewer />
+    <ToastRegion />
+    <script src="../scripts/app-shell.ts"></script>
+    <script src="../scripts/media-viewer.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+  <rect width="600" height="420" fill="#C8C0B1"/>
+  <rect x="20" y="20" width="560" height="380" fill="#E2DACA" stroke="#F5EFE3" stroke-width="7"/>
+  <rect x="40" y="40" width="520" height="296" fill="#AAA99E"/>
+  <path d="M40 261c143-30 322-25 520 5v70H40z" fill="#8D9186"/>
+  <path d="M79 71h442M99 90h402" stroke="#C7C4B6" stroke-width="3"/>
+  <g>
+    <ellipse cx="256" cy="153" rx="39" ry="49" fill="#B5A38E"/>
+    <path d="M219 145c-2-48 15-69 41-67 30 2 42 27 34 68-18-10-30-27-35-42-9 18-22 30-40 36z" fill="#504C45"/>
+    <path d="M178 336c4-109 27-164 78-164s75 55 79 164" fill="#454D49"/>
+    <path d="M236 175h40l-20 50z" fill="#E2D7C5"/>
+    <ellipse cx="353" cy="154" rx="37" ry="48" fill="#BAA78F"/>
+    <path d="M318 150c-5-49 12-71 38-70 31 1 45 27 35 73-16-8-30-25-36-42-8 18-20 29-37 36z" fill="#665B4F"/>
+    <path d="M290 336c8-109 26-164 63-164s60 55 70 164" fill="#D5CEC0"/>
+    <path d="M314 185l39 55 38-55 20 151H299z" fill="#E5DED1"/>
+    <path d="M335 83c8-27 45-27 52 0" fill="none" stroke="#D8D2C2" stroke-width="9"/>
+  </g>
+  <path d="M272 246l55 23" stroke="#B5A38E" stroke-width="12"/>
+  <text x="300" y="374" text-anchor="middle" fill="#5F594F" font-family="Georgia,serif" font-size="14" letter-spacing="3">ИВАН И АННА · 1946</text>
+</svg>

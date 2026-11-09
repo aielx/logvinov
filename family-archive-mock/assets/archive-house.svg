@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+  <rect width="600" height="420" fill="#B9B8AA"/>
+  <rect x="16" y="16" width="568" height="388" fill="#D5CFBF" stroke="#EEE9DC" stroke-width="7"/>
+  <rect x="35" y="35" width="530" height="315" fill="#ADB2AA"/>
+  <circle cx="464" cy="96" r="39" fill="#D7D3C2" opacity=".7"/>
+  <path d="M35 273c99-32 169-25 251-3 105 28 186 16 279-18v98H35z" fill="#7C8475"/>
+  <path d="M128 177l158-102 159 102v155H128z" fill="#8B806B"/>
+  <path d="M103 179L286 62l184 117z" fill="#5E5E53"/>
+  <path d="M142 205h289M142 226h289M142 247h289M142 268h289M142 289h289M142 310h289" stroke="#6E6657" stroke-width="4"/>
+  <rect x="171" y="204" width="70" height="69" fill="#B9B8A6" stroke="#585A50" stroke-width="7"/>
+  <path d="M206 204v69M171 238h70" stroke="#585A50" stroke-width="4"/>
+  <rect x="332" y="202" width="64" height="130" fill="#5C5B50"/>
+  <circle cx="380" cy="269" r="4" fill="#C5B794"/>
+  <path d="M78 104v221M57 156l21 27 30-41M54 222l24 24 35-49M495 151v176M469 193l26 29 31-38" stroke="#626A5E" stroke-width="10" fill="none"/>
+  <text x="300" y="384" text-anchor="middle" fill="#59594F" font-family="Georgia,serif" font-size="13" letter-spacing="3">РОДНАЯ ДЕРЕВНЯ · 1950-е</text>
+</svg>

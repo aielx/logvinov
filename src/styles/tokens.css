@@ -1,0 +1,25 @@
+/* Дизайн-токены: палитра и типографика исходного макета family-archive-mock. */
+:root {
+  --paper: #F5F1EB;
+  --paper-light: #F8F6F2;
+  --paper-deep: #EAE2D7;
+  --ink: #2C2C2C;
+  --muted: #66615B;
+  --forest: #4A6741;
+  --forest-dark: #354D30;
+  --forest-soft: #E2E9DE;
+  --archive-brown: #8B4513;
+  --archive-soft: #EEE2D4;
+  --deceased-gray: #A0A0A0;
+  --deceased-beige: #D4C5B0;
+  --navy: #182B3A;
+  --navy-light: #294456;
+  --white: #FFFFFF;
+  --border: #DCD4C9;
+  --danger: #8D2923;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-large: 0 18px 60px rgba(24, 43, 58, 0.18);
+  --serif: "Playfair Display", Georgia, serif;
+  --sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --header-height: 76px;
+}

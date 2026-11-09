@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AsyncState from "../components/AsyncState.astro";
+import Timeline from "../components/timeline/Timeline.astro";
+import "../styles/features/timeline.css";
+---
+
+<BaseLayout
+  title="Хронология — Род Логвиновых"
+  description="Хронология семьи Логвиновых и исторический контекст."
+  current="timeline"
+>
+  <section class="page-intro section-shell">
+    <p class="eyebrow">Семья и время</p>
+    <h1>Хронология рода</h1>
+    <p>Личные события не существуют отдельно от эпохи. На одной линии времени мы соединяем семейные даты и исторические вехи.</p>
+    <div class="timeline-key">
+      <span><i class="key-dot family"></i>Семейные события</span>
+      <span><i class="key-dot history"></i>Исторический контекст</span>
+    </div>
+  </section>
+  <section class="timeline-section section-shell" aria-label="События семейной истории">
+    <AsyncState idPrefix="timeline" errorTitle="Не удалось загрузить хронологию">
+      <Timeline />
+    </AsyncState>
+    <noscript><p class="noscript-note">Для отображения хронологии необходимо включить JavaScript.</p></noscript>
+  </section>
+  <section class="archive-note section-shell">
+    <p>Каждую дату можно подтвердить документом, фотографией или семейным воспоминанием: материалы добавляются в галерею и связываются с событиями в семейной таблице.</p>
+  </section>
+  <script src="../components/timeline/timeline-controller.ts"></script>
+</BaseLayout>

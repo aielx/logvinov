@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+  <rect width="600" height="420" fill="#A79C89"/>
+  <path d="M144 24h325l-18 370H126z" fill="#E6DCC4" stroke="#F3EAD8" stroke-width="5"/>
+  <path d="M160 46h283M153 371h283" stroke="#B5A98F"/>
+  <text x="300" y="82" text-anchor="middle" fill="#665C4A" font-family="Georgia,serif" font-size="19">МЕТРИЧЕСКАЯ ЗАПИСЬ</text>
+  <text x="300" y="108" text-anchor="middle" fill="#7B6D57" font-family="Georgia,serif" font-size="12" letter-spacing="3">1890 ГОД</text>
+  <path d="M179 137h240M176 158h247M174 179h235M172 200h248M169 221h211M167 242h242M165 263h222M162 284h238" stroke="#8E806A" stroke-width="3" opacity=".65"/>
+  <path d="M184 150c30-18 50 20 76-3s55 19 82-3 45 13 73-2M181 194c35-20 48 19 81-2s51 15 77-2 45 17 77-4M173 238c32-18 57 15 83-3s51 18 83-1 52 9 77-2" fill="none" stroke="#625A4E" stroke-width="2"/>
+  <circle cx="376" cy="318" r="35" fill="#8B4513" opacity=".78"/>
+  <circle cx="376" cy="318" r="25" fill="none" stroke="#D0B99A" stroke-width="2"/>
+  <text x="376" y="324" text-anchor="middle" fill="#D9C3A4" font-family="Georgia,serif" font-size="17">РЛ</text>
+  <text x="176" y="340" fill="#746651" font-family="Georgia,serif" font-size="12" font-style="italic">Архивная копия · макет</text>
+</svg>

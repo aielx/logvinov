@@ -1,0 +1,681 @@
+{
+  "people": [
+    {
+      "personId": "p_0001",
+      "displayName": "Иван Петрович Логвинов",
+      "birthYear": 1890,
+      "deathYear": 1955,
+      "isLiving": false,
+      "branchId": "Общие предки",
+      "generation": 1,
+      "sortOrder": 1,
+      "years": "1890–1955",
+      "parentIds": [],
+      "spouseIds": [
+        "p_0002"
+      ],
+      "childIds": [
+        "p_0003",
+        "p_0005"
+      ],
+      "detailsVisibility": "PUBLIC",
+      "birthDate": "1890",
+      "deathDate": "1955",
+      "avatar": {
+        "storage": "PUBLIC_ASSET",
+        "path": "assets/archive-portrait.svg"
+      },
+      "publicBio": "Крестьянин и основатель известной нам ветви рода. В семейных воспоминаниях сохранился образ человека трудолюбивого, немногословного и очень справедливого.",
+      "familyBio": "",
+      "publicBirthPlace": "деревня Логвиново",
+      "familyBirthPlace": "",
+      "familyContacts": "",
+      "familyNotes": ""
+    },
+    {
+      "personId": "p_0002",
+      "displayName": "Мария Ивановна Логвинова",
+      "birthYear": 1895,
+      "deathYear": 1960,
+      "isLiving": false,
+      "branchId": "Общие предки",
+      "generation": 1,
+      "sortOrder": 2,
+      "years": "1895–1960",
+      "parentIds": [],
+      "spouseIds": [
+        "p_0001"
+      ],
+      "childIds": [
+        "p_0003",
+        "p_0005"
+      ],
+      "detailsVisibility": "PUBLIC",
+      "birthDate": "1895",
+      "deathDate": "1960",
+      "avatar": null,
+      "publicBio": "Хранительница домашнего очага и семейной корреспонденции. Именно её письма легли в основу первых страниц этого архива.",
+      "familyBio": "",
+      "publicBirthPlace": "деревня Логвиново",
+      "familyBirthPlace": "",
+      "familyContacts": "",
+      "familyNotes": ""
+    },
+    {
+      "personId": "p_0003",
+      "displayName": "Иван Иванович Логвинов",
+      "birthYear": 1918,
+      "deathYear": 1978,
+      "isLiving": false,
+      "branchId": "Ветвь Ивана",
+      "generation": 2,
+      "sortOrder": 3,
+      "years": "1918–1978",
+      "parentIds": [
+        "p_0001",
+        "p_0002"
+      ],
+      "spouseIds": [
+        "p_0004"
+      ],
+      "childIds": [
+        "p_0007"
+      ],
+      "detailsVisibility": "PUBLIC",
+      "birthDate": "1918",
+      "deathDate": "1978",
+      "avatar": null,
+      "publicBio": "Старший сын Ивана и Марии. Его биография связана с военными годами, восстановлением родного хозяйства и последующим переездом семьи.",
+      "familyBio": "",
+      "publicBirthPlace": "деревня Логвиново",
+      "familyBirthPlace": "",
+      "familyContacts": "",
+      "familyNotes": ""
+    },
+    {
+      "personId": "p_0004",
+      "displayName": "Анна Сергеевна Логвинова",
+      "birthYear": 1921,
+      "deathYear": 1990,
+      "isLiving": false,
+      "branchId": "Ветвь Ивана",
+      "generation": 1,
+      "sortOrder": 4,
+      "years": "1921–1990",
+      "parentIds": [],
+      "spouseIds": [
+        "p_0003"
+      ],
+      "childIds": [
+        "p_0007"
+      ],
+      "detailsVisibility": "PUBLIC",
+      "birthDate": "1921",
+      "deathDate": "1990",
+      "avatar": {
+        "storage": "PUBLIC_ASSET",
+        "path": "assets/portrait-woman-2.svg"
+      },
+      "publicBio": "Жена Ивана Ивановича, школьная учительница. Сохранила семейные фотографии и записала воспоминания старших родственников.",
+      "familyBio": "",
+      "publicBirthPlace": "",
+      "familyBirthPlace": "",
+      "familyContacts": "",
+      "familyNotes": ""
+    },
+    {
+      "personId": "p_0005",
+      "displayName": "Пётр Иванович Логвинов",
+      "birthYear": 1922,
+      "deathYear": 1985,
+      "isLiving": false,
+      "branchId": "Ветвь Петра",
+      "generation": 2,
+      "sortOrder": 5,
+      "years": "1922–1985",
+      "parentIds": [
+        "p_0001",
+        "p_0002"
+      ],
+      "spouseIds": [
+        "p_0006"
+      ],
+      "childIds": [
+        "p_0009"
+      ],
+      "detailsVisibility": "PUBLIC",
+      "birthDate": "1922",
+      "deathDate": "1985",
+      "avatar": null,
+      "publicBio": "Младший сын Ивана и Марии, мастер столярного дела. От него начинается отдельная ветвь рода, представленная в интерактивном фильтре.",
+      "familyBio": "",
+      "publicBirthPlace": "",
+      "familyBirthPlace": "",
+      "familyContacts": "",
+      "familyNotes": ""
+    },
+    {
+      "personId": "p_0006",
+      "displayName": "Екатерина Андреевна Логвинова",
+      "birthYear": 1926,
+      "deathYear": 2001,
+      "isLiving": false,
+      "branchId": "Ветвь Петра",
+      "generation": 1,
+      "sortOrder": 6,
+      "years": "1926–2001",
+      "parentIds": [],
+      "spouseIds": [
+        "p_0005"
+      ],
+      "childIds": [
+        "p_0009"
+      ],
+      "detailsVisibility": "FAMILY",
+      "birthDate": "1926",
+      "deathDate": "2001",
+      "avatar": null,
+      "publicBio": "",
+      "familyBio": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0006): Екатерина Андреевна — демонстрация явного «Семейная» для умершего родственника.",
+      "publicBirthPlace": "",
+      "familyBirthPlace": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0006): место рождения",
+      "familyContacts": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0006): контакт",
+      "familyNotes": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0006): заметки"
+    },
+    {
+      "personId": "p_0007",
+      "displayName": "Сергей Иванович Логвинов",
+      "birthYear": 1947,
+      "deathYear": 2000,
+      "isLiving": false,
+      "branchId": "Ветвь Ивана",
+      "generation": 3,
+      "sortOrder": 7,
+      "years": "1947–2000",
+      "parentIds": [
+        "p_0003",
+        "p_0004"
+      ],
+      "spouseIds": [],
+      "childIds": [
+        "p_0008"
+      ],
+      "detailsVisibility": "PUBLIC",
+      "birthDate": "1947",
+      "deathDate": "2000",
+      "avatar": null,
+      "publicBio": "Сын Ивана Ивановича и Анны Сергеевны, инженер. Собрал и систематизировал документы старших поколений, продолжив работу семейного архива.",
+      "familyBio": "",
+      "publicBirthPlace": "",
+      "familyBirthPlace": "",
+      "familyContacts": "",
+      "familyNotes": ""
+    },
+    {
+      "personId": "p_0008",
+      "displayName": "Алексей Сергеевич Логвинов",
+      "birthYear": 1975,
+      "deathYear": null,
+      "isLiving": true,
+      "branchId": "Ветвь Ивана",
+      "generation": 4,
+      "sortOrder": 8,
+      "years": "1975–н. в.",
+      "parentIds": [
+        "p_0007"
+      ],
+      "spouseIds": [],
+      "childIds": [],
+      "detailsVisibility": "FAMILY",
+      "birthDate": "1975",
+      "deathDate": "",
+      "avatar": null,
+      "publicBio": "",
+      "familyBio": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0008): биография Алексея Сергеевича — демонстрационная семейная строка.",
+      "publicBirthPlace": "",
+      "familyBirthPlace": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0008): место рождения",
+      "familyContacts": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0008): контакт",
+      "familyNotes": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0008): заметки"
+    },
+    {
+      "personId": "p_0009",
+      "displayName": "Борис Петрович Логвинов",
+      "birthYear": 1950,
+      "deathYear": 2010,
+      "isLiving": false,
+      "branchId": "Ветвь Петра",
+      "generation": 3,
+      "sortOrder": 9,
+      "years": "1950–2010",
+      "parentIds": [
+        "p_0005",
+        "p_0006"
+      ],
+      "spouseIds": [],
+      "childIds": [
+        "p_0010"
+      ],
+      "detailsVisibility": "PUBLIC",
+      "birthDate": "1950",
+      "deathDate": "2010",
+      "avatar": null,
+      "publicBio": "Сын Петра Ивановича и Екатерины Андреевны. Краевед и фотолюбитель, благодаря которому в архиве появились снимки родных мест.",
+      "familyBio": "",
+      "publicBirthPlace": "",
+      "familyBirthPlace": "",
+      "familyContacts": "",
+      "familyNotes": ""
+    },
+    {
+      "personId": "p_0010",
+      "displayName": "Дмитрий Борисович Логвинов",
+      "birthYear": 1978,
+      "deathYear": null,
+      "isLiving": true,
+      "branchId": "Ветвь Петра",
+      "generation": 4,
+      "sortOrder": 10,
+      "years": "1978–н. в.",
+      "parentIds": [
+        "p_0009"
+      ],
+      "spouseIds": [],
+      "childIds": [],
+      "detailsVisibility": "FAMILY",
+      "birthDate": "1978",
+      "deathDate": "",
+      "avatar": null,
+      "publicBio": "",
+      "familyBio": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0010): биография Дмитрия Борисовича — демонстрационная семейная строка.",
+      "publicBirthPlace": "",
+      "familyBirthPlace": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0010): место рождения",
+      "familyContacts": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0010): контакт",
+      "familyNotes": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0010): заметки"
+    }
+  ],
+  "events": [
+    {
+      "eventId": "e_0002",
+      "eventType": "FAMILY",
+      "title": "Рождение Ивана Петровича",
+      "displayDate": "1890",
+      "startSortKey": 18900000,
+      "publicDescription": "Начало документированной истории рода. Будущий глава семьи и основатель двух известных ветвей.",
+      "familyDescription": "",
+      "visibility": "PUBLIC",
+      "primaryPersonId": "p_0001"
+    },
+    {
+      "eventId": "e_0003",
+      "eventType": "FAMILY",
+      "title": "Рождение Марии Ивановны",
+      "displayDate": "1895",
+      "startSortKey": 18950000,
+      "publicDescription": "Будущая хранительница семейных писем и фотографий. Её записи помогут восстановить семейную хронологию.",
+      "familyDescription": "",
+      "visibility": "PUBLIC",
+      "primaryPersonId": "p_0002"
+    },
+    {
+      "eventId": "e_0004",
+      "eventType": "HISTORY",
+      "title": "Революция и начало новой эпохи",
+      "displayDate": "1917",
+      "startSortKey": 19170000,
+      "publicDescription": "Политические и социальные перемены затронули повседневную жизнь семьи, её хозяйство и планы.",
+      "familyDescription": "",
+      "visibility": "PUBLIC",
+      "primaryPersonId": ""
+    },
+    {
+      "eventId": "e_0005",
+      "eventType": "FAMILY",
+      "title": "Рождение Ивана Ивановича",
+      "displayDate": "1918",
+      "startSortKey": 19180000,
+      "publicDescription": "В семье Ивана и Марии родился старший сын — начало ветви Ивана.",
+      "familyDescription": "",
+      "visibility": "PUBLIC",
+      "primaryPersonId": "p_0003"
+    },
+    {
+      "eventId": "e_0006",
+      "eventType": "FAMILY",
+      "title": "Рождение Петра Ивановича",
+      "displayDate": "1922",
+      "startSortKey": 19220000,
+      "publicDescription": "Родился второй сын. Его потомки составят отдельную ветвь семейного древа.",
+      "familyDescription": "",
+      "visibility": "PUBLIC",
+      "primaryPersonId": "p_0005"
+    },
+    {
+      "eventId": "e_0007",
+      "eventType": "HISTORY",
+      "title": "Великая Отечественная война",
+      "displayDate": "1941–1945",
+      "startSortKey": 19410000,
+      "publicDescription": "Исторический контекст жизни второго поколения. Здесь появятся военные документы и семейные воспоминания.",
+      "familyDescription": "",
+      "visibility": "PUBLIC",
+      "primaryPersonId": ""
+    },
+    {
+      "eventId": "e_0008",
+      "eventType": "FAMILY",
+      "title": "Брак Ивана и Анны",
+      "displayDate": "1946",
+      "startSortKey": 19460000,
+      "publicDescription": "Послевоенная семейная фотография и воспоминания об этом дне представлены в галерее.",
+      "familyDescription": "",
+      "visibility": "PUBLIC",
+      "primaryPersonId": "p_0003"
+    },
+    {
+      "eventId": "e_0009",
+      "eventType": "FAMILY",
+      "title": "Рождение Сергея Ивановича",
+      "displayDate": "1947",
+      "startSortKey": 19470000,
+      "publicDescription": "Новый представитель третьего поколения, который позднее систематизирует семейные документы.",
+      "familyDescription": "",
+      "visibility": "PUBLIC",
+      "primaryPersonId": "p_0007"
+    },
+    {
+      "eventId": "e_0010",
+      "eventType": "FAMILY",
+      "title": "Переезд в районный центр",
+      "displayDate": "1952",
+      "startSortKey": 19520000,
+      "publicDescription": "Смена места жительства, новая работа и начало следующего этапа истории семьи.",
+      "familyDescription": "",
+      "visibility": "PUBLIC",
+      "primaryPersonId": "p_0003"
+    },
+    {
+      "eventId": "e_0011",
+      "eventType": "FAMILY",
+      "title": "Четвёртое поколение",
+      "displayDate": "1970-е",
+      "startSortKey": 19700000,
+      "publicDescription": "Родились Алексей Сергеевич и Дмитрий Борисович. Их карточки доступны после семейного входа.",
+      "familyDescription": "",
+      "visibility": "PUBLIC",
+      "primaryPersonId": ""
+    },
+    {
+      "eventId": "e_0013",
+      "eventType": "FAMILY",
+      "title": "Рождение Дмитрия Борисовича",
+      "displayDate": "1978",
+      "startSortKey": 19780000,
+      "publicDescription": "",
+      "familyDescription": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY e1978): описание рождения Дмитрия Борисовича — семейная строка.",
+      "visibility": "FAMILY",
+      "primaryPersonId": "p_0010"
+    },
+    {
+      "eventId": "e_0012",
+      "eventType": "FAMILY",
+      "title": "Начало цифрового архива",
+      "displayDate": "2025",
+      "startSortKey": 20250000,
+      "publicDescription": "Родственники объединяют материалы и воспоминания, чтобы создать общую историю рода.",
+      "familyDescription": "",
+      "visibility": "PUBLIC",
+      "primaryPersonId": ""
+    }
+  ],
+  "media": [
+    {
+      "mediaId": "m_0002",
+      "title": "Семья Логвиновых у дома",
+      "category": "archive",
+      "mediaType": "image",
+      "visibility": "PUBLIC",
+      "dateDisplay": "1930-е",
+      "altText": "Семья Логвиновых у дома",
+      "publicCaption": "",
+      "familyCaption": "",
+      "sourceUrl": "",
+      "storage": "PUBLIC_ASSET",
+      "assetPath": "assets/archive-family.svg",
+      "mimeType": "image/svg+xml",
+      "width": null,
+      "height": null,
+      "sortOrder": 2
+    },
+    {
+      "mediaId": "m_0003",
+      "title": "Метрическая запись Ивана Петровича",
+      "category": "documents",
+      "mediaType": "image",
+      "visibility": "PUBLIC",
+      "dateDisplay": "1890",
+      "altText": "Метрическая запись Ивана Петровича",
+      "publicCaption": "",
+      "familyCaption": "",
+      "sourceUrl": "",
+      "storage": "PUBLIC_ASSET",
+      "assetPath": "assets/archive-document.svg",
+      "mimeType": "image/svg+xml",
+      "width": null,
+      "height": null,
+      "sortOrder": 3
+    },
+    {
+      "mediaId": "m_0004",
+      "title": "Портрет Ивана Петровича",
+      "category": "portraits",
+      "mediaType": "image",
+      "visibility": "PUBLIC",
+      "dateDisplay": "1935",
+      "altText": "Портрет Ивана Петровича",
+      "publicCaption": "",
+      "familyCaption": "",
+      "sourceUrl": "",
+      "storage": "PUBLIC_ASSET",
+      "assetPath": "assets/archive-portrait.svg",
+      "mimeType": "image/svg+xml",
+      "width": null,
+      "height": null,
+      "sortOrder": 4
+    },
+    {
+      "mediaId": "m_0005",
+      "title": "Свадьба Ивана и Анны",
+      "category": "archive",
+      "mediaType": "image",
+      "visibility": "PUBLIC",
+      "dateDisplay": "1946",
+      "altText": "Свадьба Ивана и Анны",
+      "publicCaption": "",
+      "familyCaption": "",
+      "sourceUrl": "",
+      "storage": "PUBLIC_ASSET",
+      "assetPath": "assets/archive-wedding.svg",
+      "mimeType": "image/svg+xml",
+      "width": null,
+      "height": null,
+      "sortOrder": 5
+    },
+    {
+      "mediaId": "m_0006",
+      "title": "Письмо с фронта",
+      "category": "documents",
+      "mediaType": "image",
+      "visibility": "PUBLIC",
+      "dateDisplay": "1944",
+      "altText": "Письмо с фронта",
+      "publicCaption": "",
+      "familyCaption": "",
+      "sourceUrl": "",
+      "storage": "PUBLIC_ASSET",
+      "assetPath": "assets/archive-letter.svg",
+      "mimeType": "image/svg+xml",
+      "width": null,
+      "height": null,
+      "sortOrder": 6
+    },
+    {
+      "mediaId": "m_0007",
+      "title": "Портрет Анны Сергеевны",
+      "category": "portraits",
+      "mediaType": "image",
+      "visibility": "PUBLIC",
+      "dateDisplay": "1950-е",
+      "altText": "Портрет Анны Сергеевны",
+      "publicCaption": "",
+      "familyCaption": "",
+      "sourceUrl": "",
+      "storage": "PUBLIC_ASSET",
+      "assetPath": "assets/portrait-woman-2.svg",
+      "mimeType": "image/svg+xml",
+      "width": null,
+      "height": null,
+      "sortOrder": 7
+    },
+    {
+      "mediaId": "m_0008",
+      "title": "Дом в родной деревне",
+      "category": "archive",
+      "mediaType": "image",
+      "visibility": "PUBLIC",
+      "dateDisplay": "1950-е",
+      "altText": "Дом в родной деревне",
+      "publicCaption": "",
+      "familyCaption": "",
+      "sourceUrl": "",
+      "storage": "PUBLIC_ASSET",
+      "assetPath": "assets/archive-house.svg",
+      "mimeType": "image/svg+xml",
+      "width": null,
+      "height": null,
+      "sortOrder": 8
+    },
+    {
+      "mediaId": "m_0009",
+      "title": "Страница трудовой книжки",
+      "category": "documents",
+      "mediaType": "image",
+      "visibility": "PUBLIC",
+      "dateDisplay": "1938",
+      "altText": "Страница трудовой книжки",
+      "publicCaption": "",
+      "familyCaption": "",
+      "sourceUrl": "",
+      "storage": "PUBLIC_ASSET",
+      "assetPath": "assets/archive-workbook.svg",
+      "mimeType": "image/svg+xml",
+      "width": null,
+      "height": null,
+      "sortOrder": 9
+    },
+    {
+      "mediaId": "m_0010",
+      "title": "Семейный снимок (демонстрация закрытого файла Drive)",
+      "category": "archive",
+      "mediaType": "image",
+      "visibility": "FAMILY",
+      "dateDisplay": "1995",
+      "altText": "Семейный снимок (демонстрация закрытого файла Drive)",
+      "publicCaption": "",
+      "familyCaption": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY m0100): подпись закрытого файла Drive",
+      "sourceUrl": "https://drive.google.com/file/d/CANARYDRIVEFILEID0001/view",
+      "storage": "DRIVE",
+      "assetPath": "",
+      "mimeType": "image/jpeg",
+      "width": null,
+      "height": null,
+      "sortOrder": 10
+    },
+    {
+      "mediaId": "m_0011",
+      "title": "Семейная внешняя ссылка (демонстрация)",
+      "category": "archive",
+      "mediaType": "image",
+      "visibility": "FAMILY",
+      "dateDisplay": "2000",
+      "altText": "Семейная внешняя ссылка (демонстрация)",
+      "publicCaption": "",
+      "familyCaption": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY m0101): подпись внешней ссылки",
+      "sourceUrl": "https://example.org/family/CANARY-m0101.jpg",
+      "storage": "EXTERNAL",
+      "assetPath": "",
+      "mimeType": "image/jpeg",
+      "width": null,
+      "height": null,
+      "sortOrder": 11
+    }
+  ],
+  "personMedia": [
+    {
+      "personId": "p_0001",
+      "mediaId": "m_0002",
+      "role": "GALLERY"
+    },
+    {
+      "personId": "p_0001",
+      "mediaId": "m_0003",
+      "role": "SOURCE"
+    },
+    {
+      "personId": "p_0001",
+      "mediaId": "m_0004",
+      "role": "PORTRAIT"
+    },
+    {
+      "personId": "p_0003",
+      "mediaId": "m_0005",
+      "role": "GALLERY"
+    },
+    {
+      "personId": "p_0003",
+      "mediaId": "m_0006",
+      "role": "GALLERY"
+    },
+    {
+      "personId": "p_0004",
+      "mediaId": "m_0007",
+      "role": "PORTRAIT"
+    },
+    {
+      "personId": "p_0005",
+      "mediaId": "m_0008",
+      "role": "GALLERY"
+    },
+    {
+      "personId": "p_0003",
+      "mediaId": "m_0009",
+      "role": "SOURCE"
+    },
+    {
+      "personId": "p_0008",
+      "mediaId": "m_0010",
+      "role": "GALLERY"
+    },
+    {
+      "personId": "p_0010",
+      "mediaId": "m_0011",
+      "role": "GALLERY"
+    }
+  ],
+  "branches": [
+    {
+      "branchId": "Общие предки",
+      "label": "Общие предки",
+      "sortOrder": 1
+    },
+    {
+      "branchId": "Ветвь Ивана",
+      "label": "Ветвь Ивана",
+      "sortOrder": 2
+    },
+    {
+      "branchId": "Ветвь Петра",
+      "label": "Ветвь Петра",
+      "sortOrder": 3
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Макет семейного генеалогического архива рода Логвиновых.">
+  <meta name="theme-color" content="#182b3a">
+  <title>Род Логвиновых — семейный архив</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/tree.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body class="landing-page">
+  <a class="skip-link" href="#main-content">Перейти к содержанию</a>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Род Логвиновых — на главную">
+      <span class="brand-mark" aria-hidden="true">РЛ</span>
+      <span>Род Логвиновых</span>
+    </a>
+    <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
+      <a href="#tree">Древо</a>
+      <a href="#timeline">Хронология</a>
+      <a href="#gallery">Галерея</a>
+      <a href="#about">О проекте</a>
+    </nav>
+    <div class="header-actions">
+      <button class="button button-small button-outline header-access" type="button" data-open-login aria-label="Открыть полное древо">
+        <span aria-hidden="true">🔒</span><span class="access-label">Для семьи</span>
+      </button>
+      <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-map" aria-hidden="true"></div>
+      <div class="hero-content">
+        <p class="eyebrow eyebrow-light">Семейный архив · четыре поколения</p>
+        <h1 id="hero-title">Род Логвиновых</h1>
+        <p class="hero-subtitle">История семьи. Поколения. Память.</p>
+        <p class="hero-description">Сохраняем лица, имена и истории, чтобы семейная память оставалась живой для тех, кто придёт после нас.</p>
+        <div class="hero-actions">
+          <button class="button button-primary button-large" type="button" data-open-login>🔒 Открыть полное древо</button>
+          <a class="button button-ghost button-large" href="#tree">Познакомиться с архивом</a>
+        </div>
+      </div>
+      <div class="hero-meta" aria-label="Содержание демонстрационного архива">
+        <span>10 человек</span><span>4 поколения</span><span>1 общая история</span>
+      </div>
+    </section>
+
+    <section class="intro section-shell" aria-labelledby="intro-title">
+      <div>
+        <p class="eyebrow">Живая память</p>
+        <h2 id="intro-title">У каждой семьи есть история, которую важно услышать</h2>
+      </div>
+      <div class="intro-copy">
+        <p>Этот проект объединяет семейные фотографии, документы и воспоминания в одном спокойном и понятном пространстве. Здесь можно проследить связи поколений и увидеть личную историю рядом с событиями эпохи.</p>
+        <p>Архив создаётся родственниками и для родственников. Каждая карточка — приглашение вспомнить, уточнить и дополнить рассказ о человеке, а не просто строка в генеалогической таблице.</p>
+        <p>Сейчас перед вами интерактивный макет с демонстрационными данными. В будущем сюда войдут настоящие материалы семейного архива.</p>
+      </div>
+    </section>
+
+    <section class="landing-section" id="tree" aria-labelledby="tree-preview-title">
+      <div class="section-shell">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow">Связи поколений</p>
+            <h2 id="tree-preview-title">Семейное древо</h2>
+          </div>
+          <p>Исследуйте ветви рода, меняйте масштаб и открывайте истории людей одним нажатием.</p>
+        </div>
+        <div class="tree-preview" aria-label="Схема трёх поколений семьи">
+          <div class="preview-generation">
+            <span class="preview-label">I поколение</span>
+            <div class="preview-couple">
+              <span class="preview-person">Иван Петрович<small>1890–1955</small></span>
+              <span class="preview-marriage" aria-hidden="true"></span>
+              <span class="preview-person">Мария Ивановна<small>1895–1960</small></span>
+            </div>
+          </div>
+          <span class="preview-connector" aria-hidden="true"></span>
+          <div class="preview-generation">
+            <span class="preview-label">II поколение</span>
+            <div class="preview-couple preview-children">
+              <span class="preview-person">Иван Иванович<small>1918–1978</small></span>
+              <span class="preview-person">Пётр Иванович<small>1922–1985</small></span>
+            </div>
+          </div>
+          <span class="preview-connector" aria-hidden="true"></span>
+          <div class="preview-generation">
+            <span class="preview-label">III поколение</span>
+            <div class="preview-couple preview-children">
+              <span class="preview-person">Сергей Иванович<small>1947–2000</small></span>
+              <span class="preview-person">Борис Петрович<small>1950–2010</small></span>
+            </div>
+          </div>
+        </div>
+        <div class="section-action">
+          <a class="button button-primary" href="tree.html">Исследовать древо <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-section section-tinted" id="timeline" aria-labelledby="timeline-preview-title">
+      <div class="section-shell">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow">Семья и время</p>
+            <h2 id="timeline-preview-title">Хронология</h2>
+          </div>
+          <p>Рождения, браки и переезды — в контексте событий, которые меняли жизнь всей страны.</p>
+        </div>
+        <div class="timeline-preview">
+          <article><time datetime="1890">1890</time><div><h3>Начало семейной истории</h3><p>Родился Иван Петрович Логвинов — старший из известных предков в макете.</p></div></article>
+          <article><time datetime="1941">1941–1945</time><div><h3>Годы Великой Отечественной войны</h3><p>Исторический контекст, через который прошла жизнь второго поколения семьи.</p></div></article>
+          <article><time datetime="1975">1975</time><div><h3>Новое поколение</h3><p>Родился Алексей Сергеевич Логвинов. Карточка доступна в семейном режиме.</p></div></article>
+        </div>
+        <div class="section-action">
+          <a class="button button-secondary" href="timeline.html">Открыть всю хронологию <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-section" id="gallery" aria-labelledby="gallery-preview-title">
+      <div class="section-shell">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow">Фотографии и документы</p>
+            <h2 id="gallery-preview-title">Семейная галерея</h2>
+          </div>
+          <p>Лица, письма и места, через которые прошлое становится ближе и понятнее.</p>
+        </div>
+        <div class="gallery-preview">
+          <figure><img src="assets/archive-family.svg" alt="Стилизованная семейная фотография у дома" width="600" height="420"><figcaption>Семья у дома · 1930-е</figcaption></figure>
+          <figure><img src="assets/archive-letter.svg" alt="Стилизованное старое письмо" width="600" height="420"><figcaption>Письмо с фронта · 1944</figcaption></figure>
+          <figure><img src="assets/archive-wedding.svg" alt="Стилизованная свадебная фотография" width="600" height="420"><figcaption>Свадьба · 1946</figcaption></figure>
+        </div>
+        <div class="section-action">
+          <a class="button button-primary" href="gallery.html">Перейти в галерею <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section" id="about" aria-labelledby="about-title">
+      <div class="section-shell about-grid">
+        <div>
+          <p class="eyebrow eyebrow-light">О проекте</p>
+          <h2 id="about-title">Архив, который мы создаём вместе</h2>
+        </div>
+        <div>
+          <p>Цель проекта — не только восстановить родословную, но и сохранить характеры, голоса и повседневные истории семьи. Мы бережно относимся к личным данным: подробные сведения о живых родственниках доступны только в семейном режиме.</p>
+          <p>Если у вас есть фотографии, документы или воспоминания, вы можете дополнить архив. Для участия напишите хранителю проекта и укажите, к какой ветви семьи относятся материалы.</p>
+          <a class="text-link text-link-light" href="mailto:logvinovaleksander@gmail.com?subject=Участие%20в%20семейном%20архиве">Присоединиться к проекту: logvinovaleksander@gmail.com <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-main">
+      <div><a class="footer-brand" href="index.html">Род Логвиновых</a><p>Семейный архив и история поколений.</p></div>
+      <div><span class="footer-title">Архив</span><a href="tree.html">Древо</a><a href="timeline.html">Хронология</a><a href="gallery.html">Галерея</a></div>
+      <div><span class="footer-title">Участие</span><button class="footer-link" type="button" data-open-login>Для родственников</button><a href="#about">О проекте</a></div>
+    </div>
+    <div class="footer-bottom"><span>© Род Логвиновых, <span data-current-year></span></span><span>Демонстрационный макет · данные вымышлены</span><span class="developer-credit">Разработчик: <strong>Александр Сергеевич Логвинов</strong> · <a href="mailto:logvinovaleksander@gmail.com">logvinovaleksander@gmail.com</a></span></div>
+  </footer>
+
+  <dialog class="modal login-modal" id="login-modal" aria-labelledby="login-title">
+    <div class="modal-card">
+      <button class="icon-button modal-close" type="button" data-close-dialog aria-label="Закрыть окно">×</button>
+      <span class="modal-seal" aria-hidden="true">РЛ</span>
+      <p class="eyebrow">Семейный доступ</p>
+      <h2 id="login-title">Открыть полное древо</h2>
+      <p>В семейном режиме доступны биографии, родственные связи и материалы живых родственников.</p>
+      <form id="family-login-form">
+        <label for="family-password">Пароль семьи</label>
+        <input id="family-password" name="password" type="password" autocomplete="current-password" required aria-describedby="password-hint password-error">
+        <p class="form-hint" id="password-hint">Для демонстрации: <strong>семья2025</strong></p>
+        <p class="form-error" id="password-error" role="alert" hidden>Пароль не подошёл. Проверьте раскладку и попробуйте ещё раз.</p>
+        <button class="button button-primary button-full" type="submit">Войти в семейный режим</button>
+      </form>
+      <p class="access-request">Нет пароля? Напишите для запроса доступа:<br><a href="mailto:logvinovaleksander@gmail.com?subject=Доступ%20к%20семейному%20архиву">logvinovaleksander@gmail.com</a></p>
+      <p class="privacy-note">В макете пароль проверяется только в браузере. В рабочей версии потребуется серверная проверка.</p>
+    </div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

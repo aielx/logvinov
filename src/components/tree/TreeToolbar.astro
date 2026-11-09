@@ -1,0 +1,19 @@
+<div class="tree-toolbar" role="toolbar" aria-label="Управление древом">
+  <div class="toolbar-group zoom-controls" aria-label="Масштаб">
+    <button class="icon-button" id="zoom-out" type="button" aria-label="Уменьшить древо">−</button>
+    <button class="icon-button" id="zoom-in" type="button" aria-label="Увеличить древо">+</button>
+    <button class="button button-small button-quiet" id="zoom-reset" type="button">Сбросить</button>
+  </div>
+  <div class="toolbar-group view-switch" aria-label="Вид древа">
+    <button class="button button-small is-active" type="button" data-tree-view="generations" aria-pressed="true">Поколения</button>
+    <button class="button button-small" type="button" data-tree-view="list" aria-pressed="false">Список</button>
+  </div>
+  <label class="branch-filter" for="branch-select"><span>Ветвь семьи</span>
+    <select id="branch-select">
+      <option value="all">Все ветви</option>
+      <!-- Варианты ветвей добавляются контроллером из данных public.tree. -->
+    </select>
+  </label>
+  <button class="button button-small button-secondary family-mode-button" type="button" data-open-login>Семейный доступ</button>
+  <button class="button button-small button-quiet leave-private-button" type="button" data-leave-private hidden>Завершить семейный режим</button>
+</div>

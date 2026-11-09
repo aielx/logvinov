@@ -1,0 +1,56 @@
+---
+import { pageUrl } from "../lib/urls";
+
+interface Props {
+  compact?: boolean;
+  note?: string;
+}
+
+const { compact = false, note = "Демонстрационные данные · фотографии являются заглушками" } = Astro.props;
+---
+
+<footer class={`site-footer${compact ? " compact-footer" : ""}`}>
+  {
+    compact ? (
+      <div class="footer-bottom">
+        <span>© Род Логвиновых, <span data-current-year></span></span>
+        <span>
+          <button class="footer-link" type="button" data-open-login>Для родственников</button> ·{" "}
+          <a href={`${pageUrl("")}#about`}>О проекте</a>
+        </span>
+        <span class="developer-credit">
+          Разработчик: <strong>Александр Сергеевич Логвинов</strong> ·{" "}
+          <a href="mailto:logvinovaleksander@gmail.com">logvinovaleksander@gmail.com</a>
+        </span>
+      </div>
+    ) : (
+      <>
+        <div class="footer-main">
+          <div>
+            <a class="footer-brand" href={pageUrl("")}>Род Логвиновых</a>
+            <p>Семейный архив и история поколений.</p>
+          </div>
+          <div>
+            <span class="footer-title">Архив</span>
+            <a href={pageUrl("tree")}>Древо</a>
+            <a href={pageUrl("timeline")}>Хронология</a>
+            <a href={pageUrl("gallery")}>Галерея</a>
+          </div>
+          <div>
+            <span class="footer-title">Участие</span>
+            <button class="footer-link" type="button" data-open-login>Для родственников</button>
+            <a href={`${pageUrl("")}#about`}>О проекте</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© Род Логвиновых, <span data-current-year></span></span>
+          <span>{note}</span>
+          <span class="developer-credit">
+            Разработчик: <strong>Александр Сергеевич Логвинов</strong> ·{" "}
+            <a href="mailto:logvinovaleksander@gmail.com">logvinovaleksander@gmail.com</a>
+          </span>
+        </div>
+      </>
+    )
+  }
+</footer>

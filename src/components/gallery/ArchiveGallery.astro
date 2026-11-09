@@ -1,0 +1,14 @@
+<div class="gallery-toolbar">
+  <h2 class="visually-hidden" id="gallery-grid-title">Материалы архива</h2>
+  <div class="filter-buttons" role="group" aria-label="Фильтр материалов">
+    <button class="filter-button is-active" type="button" data-gallery-filter="all" aria-pressed="true">Все</button>
+    <button class="filter-button" type="button" data-gallery-filter="archive" aria-pressed="false">Архивные фото</button>
+    <button class="filter-button" type="button" data-gallery-filter="documents" aria-pressed="false">Документы</button>
+    <button class="filter-button" type="button" data-gallery-filter="portraits" aria-pressed="false">Портреты</button>
+  </div>
+  <p class="gallery-count" id="gallery-count" aria-live="polite">Загрузка…</p>
+</div>
+<div class="archive-grid" id="gallery-grid"></div>
+<div class="gallery-more" id="gallery-more" hidden>
+  <button class="button button-quiet" type="button" id="gallery-load-more">Показать ещё</button>
+</div>

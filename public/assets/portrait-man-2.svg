@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400">
+  <defs><radialGradient id="bg"><stop stop-color="#E9E2D5"/><stop offset="1" stop-color="#A9A295"/></radialGradient></defs>
+  <rect width="300" height="400" fill="url(#bg)"/>
+  <path d="M18 0h264v400H18z" fill="none" stroke="#F3EDE2" stroke-width="10"/>
+  <ellipse cx="150" cy="166" rx="118" ry="128" fill="#CFC7B8" opacity=".5"/>
+  <path d="M48 400c4-114 42-170 102-170s98 56 102 170" fill="#3F4947"/>
+  <path d="M105 235l45 60 45-60 22 165H83z" fill="#4C5753"/>
+  <path d="M130 232h40l-20 63z" fill="#E2D7C5"/>
+  <path d="M143 272h14l10 97-17 23-17-23z" fill="#705B48"/>
+  <ellipse cx="150" cy="153" rx="59" ry="78" fill="#B5A38F"/>
+  <path d="M92 146c-8-66 19-99 59-99 44 0 66 39 57 102l-13-52c-32 23-62 31-103 29z" fill="#494741"/>
+  <path d="M111 162c12 5 25 5 37 0m7 0c12 5 24 5 35-1" fill="none" stroke="#5C554C" stroke-width="3"/>
+  <path d="M132 202c13 5 26 5 38-1" fill="none" stroke="#786455" stroke-width="3"/>
+  <text x="150" y="378" text-anchor="middle" fill="#D8D0C3" font-family="Georgia,serif" font-size="11" letter-spacing="2">СЕМЕЙНЫЙ АРХИВ</text>
+</svg>

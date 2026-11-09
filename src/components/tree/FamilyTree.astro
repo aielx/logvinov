@@ -1,0 +1,21 @@
+<div class="tree-stage" id="tree-stage">
+  <svg id="family-tree" class="family-tree-svg" role="group"
+    aria-label="Генеалогическое древо Логвиновых. Перетаскивайте холст и используйте колесо мыши для масштабирования."></svg>
+  <div class="tree-list" id="tree-list" aria-label="Список членов семьи" hidden></div>
+  <div class="tree-loading" id="tree-loading" hidden>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+  </div>
+  <div class="tree-error" id="tree-error" role="alert" hidden>
+    <h2>Не удалось загрузить древо</h2>
+    <p id="tree-error-message">Архив временно недоступен. Попробуйте обновить страницу или откройте список.</p>
+    <button class="button button-quiet button-small" type="button" id="tree-retry">Попробовать снова</button>
+  </div>
+  <div class="tree-legend" aria-label="Обозначения">
+    <span><i class="legend-dot deceased"></i>Предки</span>
+    <span><i class="legend-dot living"></i>Живые · детали по паролю</span>
+    <span><i class="legend-line"></i>Брак</span>
+  </div>
+  <p class="tree-hint">Перетаскивайте холст · масштабируйте колесом или кнопками · нажмите на человека</p>
+</div>

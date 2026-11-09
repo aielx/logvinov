@@ -1,0 +1,43 @@
+{
+  "name": "logvinov-family-archive",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Семейный генеалогический архив рода Логвиновых: Astro + Google Sheets + Apps Script",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "build:e2e": "PUBLIC_APPS_SCRIPT_URL=http://127.0.0.1:8787/exec astro build",
+    "preview": "astro preview",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.server.json",
+    "test": "npm run test:server && npm run test:unit && npm run build && npm run test:dist-privacy && npm run test:e2e",
+    "test:server": "vitest run --config vitest.server.config.ts",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
+    "test:e2e": "npm run build:e2e && playwright test",
+    "test:e2e:staging": "playwright test --config=tests/e2e/staging.playwright.config.ts",
+    "test:a11y": "playwright test --grep @a11y",
+    "test:dist-privacy": "tsx scripts/check-dist-privacy.ts",
+    "gen:mock": "tsx scripts/generate-mock-data.ts",
+    "gen:csv": "tsx scripts/generate-csv.ts",
+    "gen:gs": "tsx scripts/generate-gs.ts",
+    "check:mock": "node --check family-archive-mock/js/tree.js && node --check family-archive-mock/js/app.js"
+  },
+  "dependencies": {
+    "astro": "^5.7.0",
+    "d3": "^7.9.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
+    "@playwright/test": "^1.52.0",
+    "@types/d3": "^7.4.3",
+    "@types/google-apps-script": "^1.0.100",
+    "@types/node": "^22.20.5",
+    "@vitest/coverage-v8": "^3.1.4",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}

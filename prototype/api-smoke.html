@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apps Script smoke-тест — семейный архив</title>
+  <style>
+    body { font: 14px/1.6 system-ui, sans-serif; max-width: 860px; margin: 32px auto; padding: 0 16px; color: #222; }
+    h1 { font-size: 1.3rem; }
+    fieldset { border: 1px solid #ccc; border-radius: 8px; margin-bottom: 16px; }
+    input[type="url"], input[type="password"], input[type="text"] { width: 100%; max-width: 560px; padding: 8px; box-sizing: border-box; }
+    button { padding: 6px 12px; margin: 2px; cursor: pointer; }
+    #log { background: #111; color: #9f9; padding: 12px; border-radius: 8px; white-space: pre-wrap; font: 12px/1.5 ui-monospace, monospace; max-height: 480px; overflow: auto; }
+    .warn { color: #ffd479; }
+    .err { color: #ff8a80; }
+  </style>
+</head>
+<body>
+  <h1>Smoke-тест Apps Script API</h1>
+  <p>Откройте эту страницу локально <em>или</em> с любого origin (включая GitHub Pages) и проверьте контракт до переноса frontend. Ожидается: JSON читается без <code>no-cors</code>, пароль и токен не попадают в URL.</p>
+
+  <fieldset>
+    <legend>Параметры</legend>
+    <p><label>URL Web App (/exec):<br><input type="url" id="api-url" placeholder="https://script.google.com/macros/s/…/exec" style="width:100%"></label></p>
+    <p><label>Семейный пароль (только для этого теста):<br><input type="password" id="api-password"></label></p>
+    <p><label>mediaId приватного материала:<br><input type="text" id="api-media" value="m_0100"></label></p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Действия</legend>
+    <button data-action="health">GET health</button>
+    <button data-action="public.tree">GET public.tree</button>
+    <button data-action="public.timeline">GET public.timeline</button>
+    <button data-action="public.gallery">GET public.gallery</button>
+    <button data-action="public.person">GET public.person (p_0001)</button>
+    <button data-action="auth.login">POST auth.login</button>
+    <button data-action="auth.status">POST auth.status (токен)</button>
+    <button data-action="private.person">POST private.person (p_0008)</button>
+    <button data-action="private.timeline">POST private.timeline</button>
+    <button data-action="private.gallery">POST private.gallery</button>
+    <button data-action="private.media">POST private.media</button>
+    <button data-action="auth.logout">POST auth.logout</button>
+    <button data-action="bad-login">POST auth.login (неверный пароль)</button>
+    <button data-action="no-token">POST private.person без токена</button>
+  </fieldset>
+
+  <h2>Журнал</h2>
+  <div id="log"></div>
+
+  <script>
+    (() => {
+      "use strict";
+      const logElement = document.getElementById("log");
+      let token = "";
+
+      function log(message, cls) {
+        const line = document.createElement("div");
+        if (cls) line.className = cls;
+        line.textContent = message;
+        logElement.appendChild(line);
+        logElement.scrollTop = logElement.scrollHeight;
+      }
+
+      function apiUrl() {
+        const value = document.getElementById("api-url").value.trim();
+        if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(value)) {
+          log("Укажите корректный /exec URL Web App.", "err");
+          return null;
+        }
+        return value;
+      }
+
+      async function run(kind) {
+        const base = apiUrl();
+        if (!base) return;
+        const password = document.getElementById("api-password").value;
+        const mediaId = document.getElementById("api-media").value.trim();
+        log(`→ ${kind}`);
+        try {
+          let response;
+          if (kind === "bad-login") {
+            response = await fetch(base, { method: "POST", credentials: "omit", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ action: "auth.login", password: "точно-неверный-пароль" }) });
+          } else if (kind === "no-token") {
+            response = await fetch(base, { method: "POST", credentials: "omit", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ action: "private.person", id: "p_0008" }) });
+          } else if (kind.startsWith("public.") || kind === "health") {
+            const params = new URLSearchParams({ action: kind });
+            if (kind === "public.person") params.set("id", "p_0001");
+            response = await fetch(`${base}?${params}`, { credentials: "omit" });
+          } else {
+            const body = new URLSearchParams({ action: kind });
+            if (kind === "auth.login") body.set("password", password);
+            if (kind === "private.person") body.set("id", "p_0008");
+            if (kind === "private.media") body.set("id", mediaId);
+            if (kind !== "auth.login" && token) body.set("token", token);
+            response = await fetch(base, { method: "POST", credentials: "omit", cache: "no-store", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body });
+          }
+          log(`  HTTP ${response.status} · content-type=${response.headers.get("content-type") ?? "?"}`, "warn");
+          const text = await response.text();
+          if (text.length > 900) {
+            log(`  ${text.slice(0, 900)}… (${text.length} байт)`);
+          } else {
+            log(`  ${text}`);
+          }
+          try {
+            const json = JSON.parse(text);
+            if (json && json.ok && json.data && json.data.token) {
+              token = json.data.token;
+              log("  токен сохранён для последующих приватных запросов", "warn");
+            }
+            if (json && json.ok === false) log(`  прикладная ошибка ${json.error.status} ${json.error.code}`, "err");
+          } catch {
+            log("  ОТВЕТ НЕ JSON: проверьте redirect/CORS (этап 1 плана)", "err");
+          }
+        } catch (error) {
+          log(`  СЕТЕВАЯ ОШИБКА / CORS: ${error}`, "err");
+        }
+      }
+
+      document.querySelectorAll("button[data-action]").forEach((button) => {
+        button.addEventListener("click", () => run(button.dataset.action));
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { pageUrl } from "../lib/urls";
+---
+
+<BaseLayout
+  title="Страница не найдена — Род Логвиновых"
+  description="Запрошенная страница семейного архива не найдена."
+>
+  <section class="page-intro section-shell">
+    <p class="eyebrow">404</p>
+    <h1>Страница не найдена</h1>
+    <p>Возможно, ссылка устарела. Начните с главной страницы архива.</p>
+    <p><a class="button button-primary" href={pageUrl("")}>На главную</a></p>
+  </section>
+</BaseLayout>

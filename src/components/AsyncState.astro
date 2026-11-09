@@ -1,0 +1,38 @@
+---
+/**
+ * Контейнер состояний загрузки/ошибки/пустых данных.
+ * Состояние управляется контроллером через атрибут data-state на корне.
+ */
+interface Props {
+  /** Префикс id внутренних блоков. */
+  idPrefix: string;
+  /** Заголовок ошибки. */
+  errorTitle?: string;
+  /** Подпись кнопки повтора. */
+  retryLabel?: string;
+  /** Высота области под skeleton. */
+  minHeight?: string;
+}
+
+const { idPrefix, errorTitle = "Не удалось загрузить данные", retryLabel = "Попробовать снова", minHeight = "220px" } = Astro.props;
+---
+
+<div class="async-state" data-async-root={idPrefix} style={`min-height:${minHeight}`}>
+  <div class="state-box async-loading" data-async="loading" hidden aria-busy="true">
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+    <div class="skeleton-line"></div>
+  </div>
+  <div class="state-box async-error" data-async="error" hidden role="alert">
+    <h3>{errorTitle}</h3>
+    <p data-async="error-message">Архив временно недоступен.</p>
+    <button class="button button-quiet button-small" type="button" data-async="retry">{retryLabel}</button>
+  </div>
+  <div class="state-box async-empty" data-async="empty" hidden>
+    <h3 data-async="empty-title">Пока ничего нет</h3>
+    <p data-async="empty-message">Раздел заполняется семейным архивом.</p>
+  </div>
+  <div data-async="content" hidden>
+    <slot />
+  </div>
+</div>

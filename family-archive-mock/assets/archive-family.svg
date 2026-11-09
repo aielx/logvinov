@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+  <rect width="600" height="420" fill="#B8B3A5"/>
+  <rect x="18" y="18" width="564" height="384" fill="#D3CCBA" stroke="#EEE8DA" stroke-width="8"/>
+  <rect x="34" y="34" width="532" height="326" fill="#AAA99C"/>
+  <path d="M34 263c110-46 192-35 278-9 96 29 173 22 254-9v115H34z" fill="#777C6F"/>
+  <path d="M74 165l117-82 117 82v154H74z" fill="#8A806E"/>
+  <path d="M55 166l136-96 136 96z" fill="#625D53"/>
+  <rect x="101" y="191" width="54" height="67" fill="#C0B7A2" stroke="#5D584E" stroke-width="6"/>
+  <rect x="229" y="191" width="50" height="128" fill="#5D584E"/>
+  <path d="M397 94v218M370 135l27 28 35-42M368 202l29 23 39-49" stroke="#666B5F" stroke-width="12" fill="none"/>
+  <g fill="#4D514B">
+    <circle cx="362" cy="224" r="24"/><path d="M326 340c0-71 12-98 36-98s37 27 37 98z"/>
+    <circle cx="421" cy="231" r="22"/><path d="M389 340c1-67 11-91 32-91s32 24 33 91z"/>
+    <circle cx="474" cy="250" r="17"/><path d="M450 340c1-48 8-70 24-70s24 22 25 70z"/>
+  </g>
+  <path d="M326 275l-25 28m98-28 25 25m26-15 21 15" stroke="#4D514B" stroke-width="13"/>
+  <rect x="34" y="360" width="532" height="26" fill="#C7BEAB"/>
+  <text x="300" y="380" text-anchor="middle" fill="#565248" font-family="Georgia,serif" font-size="13" letter-spacing="3">СЕМЬЯ У ДОМА · 1930-е</text>
+</svg>

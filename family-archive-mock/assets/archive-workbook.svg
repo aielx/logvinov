@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+  <rect width="600" height="420" fill="#9B9281"/>
+  <path d="M73 56c84-18 157-14 226 12 71-26 146-30 228-12v310c-82-18-157-14-228 12-69-26-142-30-226-12z" fill="#DCD2B9" stroke="#EEE4CF" stroke-width="5"/>
+  <path d="M299 69v309" stroke="#A99B80" stroke-width="4"/>
+  <text x="185" y="105" text-anchor="middle" fill="#625947" font-family="Georgia,serif" font-size="17">ТРУДОВАЯ КНИЖКА</text>
+  <text x="411" y="104" text-anchor="middle" fill="#766951" font-family="Georgia,serif" font-size="12">Записи о работе</text>
+  <path d="M105 130h156M104 151h160M102 172h151M101 193h162M99 214h155M97 235h160M96 256h145M94 277h160M92 298h155M328 134h158M328 158h158M328 182h158M328 206h158M328 230h158M328 254h158M328 278h158M328 302h158" stroke="#93856D" opacity=".65"/>
+  <path d="M112 145c22-14 36 12 57-3s36 10 58-2M107 190c24-14 37 11 60-3s38 10 60-2M101 236c23-14 38 11 60-3s37 9 59-2M334 151c22-13 37 10 58-2s37 9 60-2M334 199c24-13 38 10 61-2s37 9 58-2" fill="none" stroke="#615A4D" stroke-width="2"/>
+  <circle cx="412" cy="265" r="36" fill="none" stroke="#8B5E45" stroke-width="4" opacity=".7"/>
+  <circle cx="412" cy="265" r="27" fill="none" stroke="#8B5E45" opacity=".7"/>
+  <text x="412" y="270" text-anchor="middle" fill="#8B5E45" font-family="Georgia,serif" font-size="12">1938</text>
+</svg>

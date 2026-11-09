@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Хронология семьи Логвиновых и исторический контекст — демонстрационный макет.">
+  <meta name="theme-color" content="#F5F1EB">
+  <title>Хронология — Род Логвиновых</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/tree.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Перейти к содержанию</a>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Род Логвиновых — на главную"><span class="brand-mark" aria-hidden="true">РЛ</span><span>Род Логвиновых</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Основная навигация"><a href="tree.html">Древо</a><a href="timeline.html" aria-current="page">Хронология</a><a href="gallery.html">Галерея</a><a href="index.html#about">О проекте</a></nav>
+    <div class="header-actions"><button class="button button-small button-outline header-access" type="button" data-open-login aria-label="Открыть полное древо"><span aria-hidden="true">🔒</span><span class="access-label">Для семьи</span></button><button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button></div>
+  </header>
+
+  <main id="main-content">
+    <section class="page-intro section-shell">
+      <p class="eyebrow">Семья и время</p>
+      <h1>Хронология рода</h1>
+      <p>Личные события не существуют отдельно от эпохи. На одной линии времени мы соединяем семейные даты и исторические вехи.</p>
+      <div class="timeline-key"><span><i class="key-dot family"></i>Семейные события</span><span><i class="key-dot history"></i>Исторический контекст</span></div>
+    </section>
+    <section class="timeline-section section-shell" aria-label="События семейной истории">
+      <div class="timeline" id="timeline-list"></div>
+      <noscript><p class="noscript-note">Для отображения хронологии необходимо включить JavaScript.</p></noscript>
+    </section>
+    <section class="archive-note section-shell"><p>Это демонстрационные события. В рабочем архиве каждую дату можно будет подтвердить документом, фотографией или семейным воспоминанием.</p></section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-main">
+      <div><a class="footer-brand" href="index.html">Род Логвиновых</a><p>Семейный архив и история поколений.</p></div>
+      <div><span class="footer-title">Архив</span><a href="tree.html">Древо</a><a href="timeline.html">Хронология</a><a href="gallery.html">Галерея</a></div>
+      <div><span class="footer-title">Участие</span><button class="footer-link" type="button" data-open-login>Для родственников</button><a href="index.html#about">О проекте</a></div>
+    </div>
+    <div class="footer-bottom"><span>© Род Логвиновых, <span data-current-year></span></span><span>Демонстрационный макет · данные вымышлены</span><span class="developer-credit">Разработчик: <strong>Александр Сергеевич Логвинов</strong> · <a href="mailto:logvinovaleksander@gmail.com">logvinovaleksander@gmail.com</a></span></div>
+  </footer>
+
+  <dialog class="modal login-modal" id="login-modal" aria-labelledby="login-title">
+    <div class="modal-card">
+      <button class="icon-button modal-close" type="button" data-close-dialog aria-label="Закрыть окно">×</button><span class="modal-seal" aria-hidden="true">РЛ</span><p class="eyebrow">Семейный доступ</p><h2 id="login-title">Открыть полное древо</h2><p>В семейном режиме доступны биографии, родственные связи и материалы живых родственников.</p>
+      <form id="family-login-form"><label for="family-password">Пароль семьи</label><input id="family-password" name="password" type="password" autocomplete="current-password" required aria-describedby="password-hint password-error"><p class="form-hint" id="password-hint">Для демонстрации: <strong>семья2025</strong></p><p class="form-error" id="password-error" role="alert" hidden>Пароль не подошёл. Проверьте раскладку и попробуйте ещё раз.</p><button class="button button-primary button-full" type="submit">Войти в семейный режим</button></form>
+      <p class="access-request">Нет пароля? Напишите для запроса доступа:<br><a href="mailto:logvinovaleksander@gmail.com?subject=Доступ%20к%20семейному%20архиву">logvinovaleksander@gmail.com</a></p>
+      <p class="privacy-note">В макете пароль проверяется только в браузере. В рабочей версии потребуется серверная проверка.</p>
+    </div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

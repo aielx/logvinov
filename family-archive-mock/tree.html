@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Интерактивное семейное древо рода Логвиновых — демонстрационный макет.">
+  <meta name="theme-color" content="#F5F1EB">
+  <title>Семейное древо — Род Логвиновых</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" defer></script>
+  <script src="js/tree.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body class="tree-page">
+  <a class="skip-link" href="#main-content">Перейти к содержанию</a>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Род Логвиновых — на главную"><span class="brand-mark" aria-hidden="true">РЛ</span><span>Род Логвиновых</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
+      <a href="tree.html" aria-current="page">Древо</a><a href="timeline.html">Хронология</a><a href="gallery.html">Галерея</a><a href="index.html#about">О проекте</a>
+    </nav>
+    <div class="header-actions">
+      <button class="button button-small button-outline header-access" type="button" data-open-login aria-label="Открыть полное древо"><span aria-hidden="true">🔒</span><span class="access-label">Для семьи</span></button>
+      <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main id="main-content" class="tree-main">
+    <section class="tree-workspace" aria-labelledby="tree-title">
+      <div class="tree-heading">
+        <div>
+          <p class="eyebrow">Интерактивный архив</p>
+          <h1 id="tree-title">Семейное древо</h1>
+        </div>
+        <div class="tree-heading-meta">
+          <span class="mode-badge" data-private-status>Публичная версия</span>
+          <span id="visible-count">10 из 10 человек</span>
+        </div>
+      </div>
+
+      <div class="tree-toolbar" role="toolbar" aria-label="Управление древом">
+        <div class="toolbar-group zoom-controls" aria-label="Масштаб">
+          <button class="icon-button" id="zoom-out" type="button" aria-label="Уменьшить древо">−</button>
+          <button class="icon-button" id="zoom-in" type="button" aria-label="Увеличить древо">+</button>
+          <button class="button button-small button-quiet" id="zoom-reset" type="button">Сбросить</button>
+        </div>
+        <div class="toolbar-group view-switch" aria-label="Вид древа">
+          <button class="button button-small is-active" type="button" data-tree-view="generations" aria-pressed="true">Поколения</button>
+          <button class="button button-small" type="button" data-tree-view="list" aria-pressed="false">Список</button>
+        </div>
+        <label class="branch-filter" for="branch-select"><span>Ветвь семьи</span>
+          <select id="branch-select">
+            <option value="all">Все ветви</option>
+            <option value="ivan">Ветвь Ивана</option>
+            <option value="peter">Ветвь Петра</option>
+          </select>
+        </label>
+        <button class="button button-small button-secondary family-mode-button" type="button" data-open-login>Семейный доступ</button>
+        <button class="button button-small button-quiet leave-private-button" type="button" data-leave-private hidden>Завершить семейный режим</button>
+      </div>
+
+      <div class="tree-stage" id="tree-stage">
+        <svg id="family-tree" role="group" aria-label="Генеалогическое древо Логвиновых. Перетаскивайте холст и используйте колесо мыши для масштабирования."></svg>
+        <div class="tree-list" id="tree-list" aria-label="Список членов семьи" hidden></div>
+        <div class="tree-error" id="tree-error" role="alert" hidden>
+          <h2>Не удалось загрузить древо</h2>
+          <p>Для визуализации нужен доступ к CDN D3.js. Попробуйте обновить страницу или откройте список.</p>
+        </div>
+        <div class="tree-legend" aria-label="Обозначения">
+          <span><i class="legend-dot deceased"></i>Предки</span><span><i class="legend-dot living"></i>Живые · детали по паролю</span><span><i class="legend-line"></i>Брак</span>
+        </div>
+        <p class="tree-hint">Перетаскивайте холст · масштабируйте колесом или кнопками · нажмите на человека</p>
+      </div>
+      <p class="tree-privacy-copy">Имена и годы видны всем. <button class="inline-button" type="button" data-open-login>Введите семейный пароль</button>, чтобы открыть подробные карточки живых родственников.</p>
+      <noscript><p class="noscript-note">Для интерактивного древа необходимо включить JavaScript.</p></noscript>
+    </section>
+  </main>
+
+  <footer class="site-footer compact-footer">
+    <div class="footer-bottom"><span>© Род Логвиновых, <span data-current-year></span></span><span><button class="footer-link" type="button" data-open-login>Для родственников</button> · <a href="index.html#about">О проекте</a></span><span class="developer-credit">Разработчик: <strong>Александр Сергеевич Логвинов</strong> · <a href="mailto:logvinovaleksander@gmail.com">logvinovaleksander@gmail.com</a></span></div>
+  </footer>
+
+  <dialog class="person-dialog" id="person-dialog" aria-labelledby="person-name">
+    <article class="person-panel">
+      <button class="icon-button person-close" type="button" id="person-close" aria-label="Закрыть карточку">×</button>
+      <div id="person-content"></div>
+    </article>
+  </dialog>
+
+  <dialog class="modal login-modal" id="login-modal" aria-labelledby="login-title">
+    <div class="modal-card">
+      <button class="icon-button modal-close" type="button" data-close-dialog aria-label="Закрыть окно">×</button>
+      <span class="modal-seal" aria-hidden="true">РЛ</span>
+      <p class="eyebrow">Семейный доступ</p>
+      <h2 id="login-title">Открыть полное древо</h2>
+      <p>В семейном режиме доступны биографии, родственные связи и материалы живых родственников.</p>
+      <form id="family-login-form">
+        <label for="family-password">Пароль семьи</label>
+        <input id="family-password" name="password" type="password" autocomplete="current-password" required aria-describedby="password-hint password-error">
+        <p class="form-hint" id="password-hint">Для демонстрации: <strong>семья2025</strong></p>
+        <p class="form-error" id="password-error" role="alert" hidden>Пароль не подошёл. Проверьте раскладку и попробуйте ещё раз.</p>
+        <button class="button button-primary button-full" type="submit">Войти в семейный режим</button>
+      </form>
+      <p class="access-request">Нет пароля? Напишите для запроса доступа:<br><a href="mailto:logvinovaleksander@gmail.com?subject=Доступ%20к%20семейному%20архиву">logvinovaleksander@gmail.com</a></p>
+      <p class="privacy-note">В макете пароль проверяется только в браузере. В рабочей версии потребуется серверная проверка.</p>
+    </div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

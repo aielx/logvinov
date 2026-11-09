@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TreeToolbar from "../components/tree/TreeToolbar.astro";
+import FamilyTree from "../components/tree/FamilyTree.astro";
+import PersonPanel from "../components/tree/PersonPanel.astro";
+import "../styles/features/tree.css";
+---
+
+<BaseLayout
+  title="Семейное древо — Род Логвиновых"
+  description="Интерактивное семейное древо рода Логвиновых."
+  current="tree"
+  bodyClass="tree-page"
+  compactFooter={true}
+>
+  <section class="tree-workspace" id="tree-root" aria-labelledby="tree-title">
+    <div class="tree-heading">
+      <div>
+        <p class="eyebrow">Интерактивный архив</p>
+        <h1 id="tree-title">Семейное древо</h1>
+      </div>
+      <div class="tree-heading-meta">
+        <span class="mode-badge" data-private-status>Публичная версия</span>
+        <span id="visible-count" aria-live="polite">Загрузка…</span>
+      </div>
+    </div>
+
+    <TreeToolbar />
+    <FamilyTree />
+
+    <p class="tree-privacy-copy">Имена и годы видны всем. <button class="inline-button" type="button" data-open-login>Введите семейный пароль</button>, чтобы открыть подробные карточки живых родственников.</p>
+    <noscript><p class="noscript-note">Для интерактивного древа необходимо включить JavaScript.</p></noscript>
+  </section>
+  <PersonPanel />
+  <script src="../components/tree/tree-controller.ts"></script>
+</BaseLayout>

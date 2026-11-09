@@ -1,0 +1,23 @@
+<!-- Логин-диалог: серверная проверка пароля (Apps Script), без клиентских секретов. -->
+<dialog class="modal login-modal" id="login-modal" aria-labelledby="login-title">
+  <div class="modal-card">
+    <button class="icon-button modal-close" type="button" data-close-dialog aria-label="Закрыть окно">×</button>
+    <span class="modal-seal" aria-hidden="true">РЛ</span>
+    <p class="eyebrow">Семейный доступ</p>
+    <h2 id="login-title">Открыть полное древо</h2>
+    <p>В семейном режиме доступны биографии, родственные связи и материалы живых родственников.</p>
+    <form id="family-login-form">
+      <label for="family-password">Пароль семьи</label>
+      <input id="family-password" name="password" type="password" autocomplete="current-password" required
+        aria-describedby="password-hint password-error">
+      <p class="form-hint" id="password-hint">Пароль проверяется на сервере и не хранится в браузере.</p>
+      <p class="form-error" id="password-error" role="alert" hidden>Пароль не подошёл. Проверьте раскладку и попробуйте ещё раз.</p>
+      <button class="button button-primary button-full" type="submit">Войти в семейный режим</button>
+    </form>
+    <p class="access-request">
+      Нет пароля? Напишите для запроса доступа:<br>
+      <a href="mailto:logvinovaleksander@gmail.com?subject=Доступ%20к%20семейному%20архиву">logvinovaleksander@gmail.com</a>
+    </p>
+    <p class="privacy-note">Проверка пароля выполняется на сервере архива; подробности живых родственников недоступны без семейной сессии.</p>
+  </div>
+</dialog>

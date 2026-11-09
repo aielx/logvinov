@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400">
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#E8E0D3"/><stop offset="1" stop-color="#B8AC9A"/></linearGradient></defs>
+  <rect width="300" height="400" fill="url(#bg)"/>
+  <rect x="15" y="15" width="270" height="370" rx="135" fill="none" stroke="#8F826F" stroke-width="2"/>
+  <circle cx="150" cy="72" r="38" fill="#5C5045"/>
+  <path d="M78 185c-7-92 19-139 72-139s80 47 72 139l-22 66H100z" fill="#65584C"/>
+  <ellipse cx="150" cy="151" rx="56" ry="74" fill="#BEA990"/>
+  <path d="M95 137c5-56 24-82 58-82 35 1 55 28 55 83-24-9-48-31-57-53-10 25-28 42-56 52z" fill="#67594C"/>
+  <path d="M112 159c12 5 22 5 33 0m11 0c11 5 21 5 31-1" fill="none" stroke="#685B4E" stroke-width="3"/>
+  <path d="M135 201c10 4 20 4 30-1" fill="none" stroke="#896E5D" stroke-width="3"/>
+  <path d="M54 400c10-112 42-174 96-174s86 62 96 174" fill="#676B5F"/>
+  <path d="M107 227l43 58 43-58 19 173H88z" fill="#777A6C"/>
+  <path d="M127 225h46l-23 60z" fill="#DDD0BA"/>
+  <circle cx="150" cy="300" r="8" fill="#C3B59E"/>
+  <text x="150" y="378" text-anchor="middle" fill="#E4DCCC" font-family="Georgia,serif" font-size="11" letter-spacing="2">АРХИВНЫЙ ПОРТРЕТ</text>
+</svg>

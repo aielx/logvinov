@@ -1,0 +1,18 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "types": ["node"],
+    "exactOptionalPropertyTypes": false
+  },
+  "include": [
+    "src/**/*",
+    "scripts/check-dist-privacy.ts",
+    "tests/unit/front/**/*",
+    "tests/e2e/**/*.ts",
+    "playwright.config.ts",
+    "tests/e2e/staging.playwright.config.ts",
+    "vitest.unit.config.ts"
+  ],
+  "exclude": ["dist", "node_modules", "family-archive-mock", "apps-script"]
+}

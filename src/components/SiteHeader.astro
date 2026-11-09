@@ -1,0 +1,38 @@
+---
+import { pageUrl } from "../lib/urls";
+
+interface Props {
+  current?: "" | "tree" | "timeline" | "gallery";
+}
+
+const { current } = Astro.props;
+const links: Array<{ page: "" | "tree" | "timeline" | "gallery"; label: string }> = [
+  { page: "tree", label: "Древо" },
+  { page: "timeline", label: "Хронология" },
+  { page: "gallery", label: "Галерея" }
+];
+---
+
+<header class="site-header">
+  <a class="brand" href={pageUrl("")} title="Род Логвиновых — на главную">
+    <span class="brand-mark" aria-hidden="true">РЛ</span>
+    <span>Род Логвиновых</span>
+  </a>
+  <nav class="site-nav" id="site-nav" aria-label="Основная навигация">
+    {links.map(({ page, label }) => (
+      <a href={pageUrl(page)} aria-current={current === page ? "page" : undefined}>{label}</a>
+    ))}
+    <a href={`${pageUrl("")}#about`}>О проекте</a>
+  </nav>
+  <div class="header-actions">
+    <button class="button button-small button-outline header-access" type="button" data-open-login aria-label="Для семьи — открыть полное древо">
+      <span aria-hidden="true">🔒</span><span class="access-label">Для семьи</span>
+    </button>
+    <button class="button button-small button-quiet header-leave" type="button" data-leave-private aria-label="Выйти из семейного режима" hidden>
+      <span aria-hidden="true">🔓</span><span class="access-label">Выйти</span>
+    </button>
+    <button class="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>

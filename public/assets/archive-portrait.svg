@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420">
+  <rect width="600" height="420" fill="#B2A897"/>
+  <rect x="172" y="18" width="256" height="384" fill="#D9CFBD" stroke="#EEE6D8" stroke-width="9"/>
+  <rect x="191" y="37" width="218" height="298" fill="#AAA393"/>
+  <ellipse cx="300" cy="171" rx="91" ry="115" fill="#C9C0AF"/>
+  <path d="M208 334c4-94 34-139 92-139s88 45 92 139" fill="#4C514D"/>
+  <path d="M270 204h60l-30 63z" fill="#DCCFBA"/>
+  <ellipse cx="300" cy="139" rx="52" ry="69" fill="#B3A18A"/>
+  <path d="M249 134c-4-57 20-88 54-86 39 2 57 33 50 86-14-12-20-29-22-46-19 20-47 31-82 29z" fill="#554D44"/>
+  <path d="M267 150c11 5 21 5 31 0m8 0c10 5 20 5 29-1M285 184c11 4 21 4 31-1" fill="none" stroke="#665A4D" stroke-width="3"/>
+  <text x="300" y="370" text-anchor="middle" fill="#5D5549" font-family="Georgia,serif" font-size="13" letter-spacing="2">И. П. ЛОГВИНОВ</text>
+  <path d="M55 72h80M55 88h54M470 318h70M490 334h50" stroke="#8B806F" opacity=".5"/>
+</svg>
