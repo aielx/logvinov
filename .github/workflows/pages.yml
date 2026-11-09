@@ -50,7 +50,7 @@ jobs:
         run: npm run test:unit
 
       - name: E2E against local contract-mock
-        run: npx playwright test
+        run: npm run test:e2e
 
   build:
     name: Build and privacy scan
