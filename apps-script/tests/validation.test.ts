@@ -43,6 +43,7 @@ describe("Разбор дат", () => {
   it("мусор отклоняется", () => {
     expect(parseFlexibleDate("31.02.1937")).toBeNull();
     expect(parseFlexibleDate("14.03.37")).toBeNull();
+    expect(parseFlexibleDate("09.11.0194")).toBeNull();
     expect(parseFlexibleDate("1937-13")).toBeNull();
     expect(parseFlexibleDate("abc")).toBeNull();
   });

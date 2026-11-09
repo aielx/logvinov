@@ -45,6 +45,7 @@ function parseFlexibleDate(raw) {
     const day2 = parseInt(dotted[1], 10);
     const month2 = parseInt(dotted[2], 10);
     const year2 = parseInt(dotted[3], 10);
+    if (year2 < 1e3 || year2 > 2200) return null;
     if (month2 < 1 || month2 > 12) return null;
     if (day2 < 1 || day2 > daysInMonth(year2, month2)) return null;
     return { year: year2, month: month2, day: day2, precision: "DAY", sortKey: year2 * 1e4 + month2 * 100 + day2 };

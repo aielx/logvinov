@@ -59,6 +59,7 @@ export function parseFlexibleDate(raw: unknown): ParsedDate | null {
     const day = parseInt(dotted[1], 10);
     const month = parseInt(dotted[2], 10);
     const year = parseInt(dotted[3], 10);
+    if (year < 1000 || year > 2200) return null; // опечатки вида 09.11.0194
     if (month < 1 || month > 12) return null;
     if (day < 1 || day > daysInMonth(year, month)) return null;
     return { year, month, day, precision: "DAY", sortKey: year * 10000 + month * 100 + day };
