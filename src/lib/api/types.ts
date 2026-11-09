@@ -195,6 +195,7 @@ export interface PrivateGalleryItem {
 
 export type PrivateMediaPayload =
   | { mediaId: string; storage: "EXTERNAL"; url: string; mimeType: string }
+  | { mediaId: string; storage: "DRIVE_PUBLIC"; url: string; mimeType: string }
   | { mediaId: string; storage: "PUBLIC_ASSET"; path: string; mimeType: string }
   | { mediaId: string; storage: "DRIVE"; fileName: string; mimeType: string; byteSize: number; base64: string };
 

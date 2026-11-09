@@ -25,6 +25,10 @@ function serializeFamilyMediaPayload(media: ValidatedMedia): object {
   if (media.storage === "EXTERNAL" && media.externalUrl) {
     return { mediaId: media.mediaId, storage: "EXTERNAL", url: media.externalUrl, mimeType: media.mimeType };
   }
+  if (media.storage === "DRIVE_PUBLIC" && media.externalUrl) {
+    // Фото из Drive — публичная прямая ссылка (файлу включён доступ «по ссылке»).
+    return { mediaId: media.mediaId, storage: "DRIVE_PUBLIC", url: media.externalUrl, mimeType: media.mimeType };
+  }
   if (media.storage === "PUBLIC_ASSET" && media.assetPath) {
     return { mediaId: media.mediaId, storage: "PUBLIC_ASSET", path: media.assetPath, mimeType: media.mimeType };
   }

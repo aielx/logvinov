@@ -44,7 +44,7 @@ function resolvePhoto(raw) {
   if (value === "") return null;
   if (isDriveUrl(value)) {
     const id = extractDriveFileId(value);
-    return id ? { storage: "DRIVE_PUBLIC", url: `https://drive.google.com/uc?export=view&id=${id}` } : "INVALID";
+    return id ? { storage: "DRIVE_PUBLIC", url: driveImageUrl(id, 400) } : "INVALID";
   }
   if (isSafeExternalUrl(value)) return { storage: "EXTERNAL", url: value };
   if (isSafeAssetPath(value)) return { storage: "PUBLIC_ASSET", path: value };
@@ -372,15 +372,22 @@ function validateMaterials(raw, archive, drafts) {
     }
     const sourceUrl = toText(row.sourceUrl);
     const assetPath = toText(row.assetPath);
+    const category = normalizeCategory(row.category);
     let storage;
     let driveFileId = null;
     let externalUrl = null;
     if (sourceUrl && isDriveUrl(sourceUrl)) {
-      storage = "DRIVE";
-      driveFileId = extractDriveFileId(sourceUrl);
-      if (!driveFileId) {
-        issue(archive, sheet, row.rowNumber, toText(row.title).slice(0, 40), "MEDIA_BAD_DRIVE_URL", "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0438\u0437\u0432\u043B\u0435\u0447\u044C ID \u0444\u0430\u0439\u043B\u0430 \u0438\u0437 \u0441\u0441\u044B\u043B\u043A\u0438 Drive.");
+      const driveId = extractDriveFileId(sourceUrl);
+      if (!driveId) {
+        issue(archive, sheet, row.rowNumber, toText(row.title).slice(0, 40), "MEDIA_BAD_DRIVE_URL", "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0438\u0437\u0432\u043B\u0435\u0447\u044C ID \u0444\u0430\u0439\u043B\u0430 \u0438\u0437 \u0441\u0441\u044B\u043B\u043A\u0438 Drive (\u043D\u0443\u0436\u043D\u0430 \u0441\u0441\u044B\u043B\u043A\u0430 \u043D\u0430 \u0444\u0430\u0439\u043B, \u043D\u0435 \u043D\u0430 \u043F\u0430\u043F\u043A\u0443).");
         return;
+      }
+      if (category === "documents") {
+        storage = "DRIVE";
+        driveFileId = driveId;
+      } else {
+        storage = "DRIVE_PUBLIC";
+        externalUrl = driveImageUrl(driveId, 1200);
       }
     } else if (sourceUrl) {
       if (!isSafeExternalUrl(sourceUrl)) {
@@ -410,7 +417,7 @@ function validateMaterials(raw, archive, drafts) {
     archive.media.set(mediaId, {
       mediaId,
       title: toText(row.title),
-      category: normalizeCategory(row.category),
+      category,
       mediaType: isPdf ? "document" : "image",
       visibility,
       storage,

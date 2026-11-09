@@ -93,7 +93,13 @@ describe("Приватные сериализаторы (только после
     expect(person.personId).toBe("p_0008");
     expect(String(person.bio)).toContain("CANARY p0008");
     expect(person.contacts).toContain("CANARY");
-    expect((person.materials as unknown[]).length).toBe(1);
+    const materials = person.materials as Array<Record<string, unknown>>;
+    expect(materials.length).toBe(2);
+    // Фото-ссылка Drive — публичный URL; закрытый документ — без URL (байты отдельно).
+    const drivePhoto = materials.find((m) => m.storage === "DRIVE_PUBLIC");
+    expect(String(drivePhoto?.url)).toContain("https://drive.google.com/thumbnail?id=");
+    const driveDoc = materials.find((m) => m.storage === "DRIVE");
+    expect(driveDoc?.url).toBeNull();
   });
 
   it("private.timeline возвращает семейное событие", () => {
@@ -105,7 +111,9 @@ describe("Приватные сериализаторы (только после
 
   it("private.gallery возвращает только семейные материалы", () => {
     const gallery = serializePrivateGallery(archive) as { items: Array<Record<string, unknown>> };
-    expect(gallery.items.length).toBe(2);
-    expect(gallery.items.every((item) => item.storage === "DRIVE" || item.storage === "EXTERNAL")).toBe(true);
+    expect(gallery.items.length).toBe(3);
+    expect(gallery.items.every((item) => item.storage === "DRIVE" || item.storage === "EXTERNAL" || item.storage === "DRIVE_PUBLIC")).toBe(true);
+    const drivePhoto = gallery.items.find((item) => item.storage === "DRIVE_PUBLIC");
+    expect(String(drivePhoto?.url)).toContain("https://drive.google.com/thumbnail?id=");
   });
 });

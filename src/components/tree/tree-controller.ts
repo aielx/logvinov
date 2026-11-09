@@ -18,6 +18,10 @@ import { showToast } from "../../scripts/notify";
 
 const NEUTRAL_AVATAR = "assets/portrait-neutral.svg";
 
+/** Фоновый префетч карточек: пауза между запросами и верхняя граница очереди. */
+const PREFETCH_PAUSE_MS = 300;
+const PREFETCH_MAX = 60;
+
 interface TreeDom {
   root: HTMLElement | null;
   svg: SVGSVGElement | null;
@@ -114,6 +118,7 @@ function render(fit = false): void {
   showErrorStateOnly();
   if (dom.svg) dom.svg.style.display = currentView === "generations" ? "block" : "none";
   if (fit) requestAnimationFrame(() => fitTree());
+  scheduleVisiblePrefetch();
 }
 
 function updateCount(): void {
@@ -212,6 +217,10 @@ function renderGraph(): void {
     .on("click", (event: MouseEvent, node: any) => {
       event.stopPropagation();
       void openPerson(node.person.personId);
+    })
+    .on("pointerenter", (event: PointerEvent, node: any) => {
+      if (event.pointerType === "touch") return;
+      hoverPrefetch(node.person.personId);
     })
     .on("keydown", (event: KeyboardEvent, node: any) => {
       if (event.key === "Enter" || event.key === " ") {
@@ -428,6 +437,69 @@ async function fetchPrivatePerson(personId: string): Promise<PrivatePerson | nul
   }
 }
 
+// ---------------------------------------------------------------------------
+// Фоновый префетч карточек: после входа (и на hover) данные тянутся заранее,
+// и клик по человеку показывает карточку мгновенно.
+// ---------------------------------------------------------------------------
+
+let prefetchQueue: string[] = [];
+let prefetchScheduled = false;
+let hoverPrefetchInFlight = false;
+
+function prefetchNeeded(personId: string): boolean {
+  if (store.privatePersons.has(personId)) return false;
+  const person = store.getPersonSummary(personId);
+  return !(person?.hasPublicDetails && store.cards.has(personId));
+}
+
+/** Карточки видимых людей уходят в фоновую очередь с паузами между запросами. */
+function scheduleVisiblePrefetch(): void {
+  if (!store.familyMode || !getToken()) return;
+  const ids = visiblePeople()
+    .map((person) => person.personId)
+    .filter((id) => prefetchNeeded(id) && !prefetchQueue.includes(id))
+    .slice(0, PREFETCH_MAX);
+  prefetchQueue.push(...ids);
+  pumpPrefetchQueue();
+}
+
+function pumpPrefetchQueue(): void {
+  if (prefetchScheduled || prefetchQueue.length === 0) return;
+  if (document.hidden || !store.familyMode || !getToken()) return; // пауза до видимости/входа
+  prefetchScheduled = true;
+  window.setTimeout(() => {
+    prefetchScheduled = false;
+    const personId = prefetchQueue.shift();
+    if (personId) void prefetchPerson(personId).finally(() => pumpPrefetchQueue());
+  }, PREFETCH_PAUSE_MS);
+}
+
+async function prefetchPerson(personId: string): Promise<void> {
+  if (!prefetchNeeded(personId)) return;
+  const jobs: Array<Promise<unknown>> = [];
+  if (store.familyMode && getToken()) jobs.push(fetchPrivatePerson(personId));
+  const person = store.getPersonSummary(personId);
+  if (person?.hasPublicDetails && !store.cards.has(personId)) {
+    jobs.push(
+      apiGet<PublicPersonCard>("public.person", { id: personId })
+        .then((data) => store.setCard(data))
+        .catch(() => undefined)
+    );
+  }
+  await Promise.all(jobs);
+}
+
+/** Наведение на узел — тихая догрузка одной карточки (не спамим при проводе мышью). */
+function hoverPrefetch(personId: string): void {
+  if (hoverPrefetchInFlight || !prefetchNeeded(personId) || !store.familyMode) return;
+  hoverPrefetchInFlight = true;
+  void prefetchPerson(personId).finally(() => {
+    window.setTimeout(() => {
+      hoverPrefetchInFlight = false;
+    }, 200);
+  });
+}
+
 async function openPerson(personId: string): Promise<void> {
   const person = store.getPersonSummary(personId);
   if (!person) return;
@@ -459,7 +531,7 @@ async function openPerson(personId: string): Promise<void> {
         })
     );
   }
-  if (store.familyMode || (!person.hasPublicDetails && getToken())) {
+  if ((store.familyMode || (!person.hasPublicDetails && getToken())) && !store.privatePersons.has(personId)) {
     requests.push(fetchPrivatePerson(personId));
   }
 
@@ -508,6 +580,12 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string): 
   const element = document.createElement(tag);
   if (className) element.className = className;
   return element;
+}
+
+function makeFamilyPlaceholder(): HTMLElement {
+  const placeholder = el("span", "material-placeholder");
+  placeholder.textContent = "🔒 семейный материал";
+  return placeholder;
 }
 
 function relationSection(title: string, people: PublicTreePerson[], relation: string): HTMLElement | null {
@@ -683,9 +761,22 @@ function renderPersonCard(person: PublicTreePerson, card: PublicPersonCard | nul
   (privateData?.materials ?? []).forEach((material) => {
     const button = el("button");
     button.type = "button";
-    const placeholder = el("span", "material-placeholder");
-    placeholder.textContent = "🔒 семейный материал";
-    button.append(placeholder);
+    // Прямые ссылки (внешние и фото из Drive) открываются сразу;
+    // закрытые DRIVE-документы — через private.media с байтами.
+    const directUrl = material.storage === "EXTERNAL" || material.storage === "DRIVE_PUBLIC" ? material.url : null;
+    if (directUrl && material.mediaType !== "document") {
+      const image = document.createElement("img");
+      image.src = directUrl;
+      image.alt = material.altText || material.title;
+      image.loading = "lazy";
+      image.onerror = () => {
+        image.remove();
+        button.append(makeFamilyPlaceholder());
+      };
+      button.append(image);
+    } else {
+      button.append(makeFamilyPlaceholder());
+    }
     button.setAttribute("aria-label", `Открыть семейный материал: ${material.title}`);
     button.addEventListener("click", () => {
       void openMediaInViewer({
@@ -693,7 +784,8 @@ function renderPersonCard(person: PublicTreePerson, card: PublicPersonCard | nul
         title: material.title,
         caption: material.caption || material.title,
         altText: material.altText,
-        requiresSession: true
+        publicUrl: directUrl,
+        requiresSession: !directUrl
       });
     });
     grid.append(button);
@@ -810,9 +902,14 @@ export function initFamilyTree(): void {
       store.pendingPersonId = null;
       void openPerson(pending);
     }
+    if (store.familyMode) scheduleVisiblePrefetch();
   });
   store.addEventListener(STORE_EVENTS.RESET_PRIVATE, () => {
+    prefetchQueue = [];
     applyPrivacyRefresh();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) pumpPrefetchQueue();
   });
 
   void loadTree();

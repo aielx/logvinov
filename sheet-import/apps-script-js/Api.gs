@@ -1,5 +1,6 @@
 const GET_ACTIONS = ["health", "public.tree", "public.person", "public.timeline", "public.gallery"];
 const POST_ACTIONS = ["auth.login", "auth.status", "auth.logout", "private.person", "private.timeline", "private.gallery", "private.media"];
+const PRIVATE_CACHED_ACTIONS = ["private.person", "private.timeline", "private.gallery", "private.media"];
 function handleGet(e) {
   const action = toText(e.parameter.action);
   try {
@@ -12,7 +13,7 @@ function handleGet(e) {
       );
     }
     if (action !== "health") {
-      const cached = readPublicCache(action, e.parameter);
+      const cached = readActionCache(action, e.parameter);
       if (cached) {
         const parsed = JSON.parse(cached);
         return jsonOk(parsed.data, parsed.meta);
@@ -20,7 +21,7 @@ function handleGet(e) {
     }
     const result = dispatchGet(action, e.parameter);
     if (action !== "health") {
-      writePublicCache(action, e.parameter, { data: result.body, meta: result.meta });
+      writeActionCache(action, e.parameter, { data: result.body, meta: result.meta });
     }
     return jsonOk(result.body, result.meta);
   } catch (error) {
@@ -83,20 +84,31 @@ function dispatchPost(action, params) {
   if (!validSession) {
     return jsonError(401, "SESSION_INVALID", "\u0421\u0435\u043C\u0435\u0439\u043D\u0430\u044F \u0441\u0435\u0441\u0441\u0438\u044F \u043D\u0435\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u044C\u043D\u0430. \u0412\u043E\u0439\u0434\u0438\u0442\u0435 \u0435\u0449\u0451 \u0440\u0430\u0437.");
   }
+  const useCache = PRIVATE_CACHED_ACTIONS.includes(action);
+  if (useCache) {
+    const cached = readActionCache(action, params);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      return jsonOk(parsed.data, parsed.meta);
+    }
+  }
   const archive = loadArchive();
   const meta = { dataRevision: archive.dataRevision };
+  let body;
   if (action === "private.person") {
     const id = requirePersonId(params);
-    return jsonOk(serializePrivatePerson(archive, id), meta);
+    body = serializePrivatePerson(archive, id);
+  } else if (action === "private.timeline") {
+    body = serializePrivateTimeline(archive);
+  } else if (action === "private.gallery") {
+    body = serializePrivateGallery(archive);
+  } else {
+    body = loadFamilyMedia(archive, toText(params.id));
   }
-  if (action === "private.timeline") {
-    return jsonOk(serializePrivateTimeline(archive), meta);
+  if (useCache && !("base64" in body)) {
+    writeActionCache(action, params, { data: body, meta });
   }
-  if (action === "private.gallery") {
-    return jsonOk(serializePrivateGallery(archive), meta);
-  }
-  const mediaId = toText(params.id);
-  return jsonOk(loadFamilyMedia(archive, mediaId), meta);
+  return jsonOk(body, meta);
 }
 function handleLogin(params) {
   const password = toText(params.password);
@@ -158,15 +170,15 @@ function currentMeta() {
   }
 }
 function cacheKey(action, params, revision) {
-  const extra = action === "public.person" ? toText(params.id) : action === "public.gallery" ? `${toText(params.cursor)}|${toText(params.limit)}` : "";
+  const extra = action === "public.person" || action === "private.person" || action === "private.media" ? toText(params.id) : action === "public.gallery" ? `${toText(params.cursor)}|${toText(params.limit)}` : "";
   return `v1:${revision}:${action}:${extra}`;
 }
-function readPublicCache(action, params) {
+function readActionCache(action, params) {
   const revision = cachedRevision();
   if (!revision) return null;
   return CacheService.getScriptCache().get(cacheKey(action, params, revision));
 }
-function writePublicCache(action, params, payload) {
+function writeActionCache(action, params, payload) {
   try {
     const cache = CacheService.getScriptCache();
     cache.put(cacheKey(action, params, payload.meta.dataRevision), JSON.stringify(payload), PUBLIC_CACHE_TTL_SECONDS);
@@ -175,12 +187,11 @@ function writePublicCache(action, params, payload) {
 }
 function cachedRevision() {
   const cache = CacheService.getScriptCache();
-  const cacheBox = "settings:dataRevision";
-  let revision = cache.get(cacheBox);
+  let revision = cache.get(REVISION_CACHE_KEY);
   if (!revision) {
     try {
       revision = readDataRevision();
-      cache.put(cacheBox, revision, 60);
+      cache.put(REVISION_CACHE_KEY, revision, 60);
     } catch {
       return null;
     }

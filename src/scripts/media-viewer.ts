@@ -147,7 +147,7 @@ export async function openMediaInViewer(descriptor: MediaDescriptor): Promise<vo
       20_000,
       currentController.signal
     );
-    if (payload.storage === "EXTERNAL" && payload.url) {
+    if ((payload.storage === "EXTERNAL" || payload.storage === "DRIVE_PUBLIC") && payload.url) {
       if (payload.mimeType === "application/pdf") showDocument(payload.url, descriptor.title);
       else showImage(payload.url, descriptor.altText || descriptor.title);
     } else if (payload.storage === "PUBLIC_ASSET" && payload.path) {

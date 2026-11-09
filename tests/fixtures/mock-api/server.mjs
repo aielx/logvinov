@@ -240,7 +240,7 @@ function handlePost(action, params) {
           mediaType: media.mediaType,
           mimeType: media.mimeType,
           storage: media.storage,
-          url: media.storage === "EXTERNAL" ? media.sourceUrl : null
+          url: media.storage === "EXTERNAL" || media.storage === "DRIVE_PUBLIC" ? media.sourceUrl : null
         }))
     });
   }
@@ -277,7 +277,7 @@ function handlePost(action, params) {
           caption: media.familyCaption || media.publicCaption,
           mimeType: media.mimeType,
           storage: media.storage,
-          url: media.storage === "EXTERNAL" ? media.sourceUrl : null,
+          url: media.storage === "EXTERNAL" || media.storage === "DRIVE_PUBLIC" ? media.sourceUrl : null,
           width: media.width,
           height: media.height
         }))
@@ -288,6 +288,7 @@ function handlePost(action, params) {
     const media = mediaById(params.id);
     if (!media || media.visibility !== "FAMILY") return failure(404, "MEDIA_NOT_FOUND", "Материал не найден.");
     if (media.storage === "EXTERNAL") return envelope({ mediaId: media.mediaId, storage: "EXTERNAL", url: media.sourceUrl, mimeType: media.mimeType });
+    if (media.storage === "DRIVE_PUBLIC") return envelope({ mediaId: media.mediaId, storage: "DRIVE_PUBLIC", url: media.sourceUrl, mimeType: media.mimeType });
     if (media.storage === "PUBLIC_ASSET") return envelope({ mediaId: media.mediaId, storage: "PUBLIC_ASSET", path: media.assetPath, mimeType: media.mimeType });
     return envelope({
       mediaId: media.mediaId,

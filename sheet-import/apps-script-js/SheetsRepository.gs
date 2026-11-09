@@ -311,6 +311,10 @@ function readDataRevision() {
 function bumpDataRevision() {
   const next = String(parseInt(readDataRevision(), 10) + 1);
   PropertiesService.getScriptProperties().setProperty(PROP.DATA_REVISION, next);
+  try {
+    CacheService.getScriptCache().put(REVISION_CACHE_KEY, next, 60);
+  } catch {
+  }
   return next;
 }
 function nextPersonNumber(sheet) {

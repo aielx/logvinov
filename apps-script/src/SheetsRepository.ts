@@ -15,6 +15,7 @@ import {
   HEADERS,
   LIST_VALIDATIONS,
   PERSON_REF_COLUMNS,
+  REVISION_CACHE_KEY,
   REQUIRED_HEADERS,
   SERVICE_COLUMNS,
   PROP,
@@ -423,10 +424,16 @@ export function readDataRevision(): string {
   return PropertiesService.getScriptProperties().getProperty(PROP.DATA_REVISION) ?? DEFAULT_DATA_REVISION;
 }
 
-/** Рост ревизии делает ключи публичного кэша недействительными немедленно. */
+/** Рост ревизии делает ключи кэша ответов (публичных и приватных) недействительными немедленно. */
 export function bumpDataRevision(): string {
   const next = String(parseInt(readDataRevision(), 10) + 1);
   PropertiesService.getScriptProperties().setProperty(PROP.DATA_REVISION, next);
+  try {
+    // Обновляем и ячейку кэша ревизии, иначе «Обновить публичный кэш» догонял бы до 60 с.
+    CacheService.getScriptCache().put(REVISION_CACHE_KEY, next, 60);
+  } catch {
+    // Кэш не критичен.
+  }
   return next;
 }
 

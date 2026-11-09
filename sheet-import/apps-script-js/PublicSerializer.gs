@@ -102,7 +102,9 @@ function publicPersonMaterials(archive, personId) {
       mediaType: media.mediaType,
       storage: media.storage,
       path: media.storage === "PUBLIC_ASSET" ? media.assetPath : null,
-      url: media.storage === "EXTERNAL" ? media.externalUrl : media.storage === "DRIVE" ? `https://drive.google.com/uc?export=view&id=${media.driveFileId}` : null
+      // Публичные фото — прямые ссылки (EXTERNAL/DRIVE_PUBLIC); публичный файл
+      // Drive c категорией «Документы» тоже требует доступа «по ссылке».
+      url: media.storage === "EXTERNAL" || media.storage === "DRIVE_PUBLIC" ? media.externalUrl : media.storage === "DRIVE" ? `https://drive.google.com/uc?export=view&id=${media.driveFileId}` : null
     };
   });
 }
@@ -133,7 +135,7 @@ function serializeGalleryPage(archive, offset, limit) {
       caption: media.publicCaption,
       storage: media.storage,
       path: media.storage === "PUBLIC_ASSET" ? media.assetPath : null,
-      url: media.storage === "EXTERNAL" ? media.externalUrl : media.storage === "DRIVE" ? `https://drive.google.com/uc?export=view&id=${media.driveFileId}` : null,
+      url: media.storage === "EXTERNAL" || media.storage === "DRIVE_PUBLIC" ? media.externalUrl : media.storage === "DRIVE" ? `https://drive.google.com/uc?export=view&id=${media.driveFileId}` : null,
       mimeType: media.mimeType,
       width: media.width,
       height: media.height

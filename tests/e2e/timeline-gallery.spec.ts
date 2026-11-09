@@ -69,10 +69,10 @@ test.describe("Галерея", () => {
     await page.locator("#family-password").fill(FAMILY_PASSWORD);
     await page.getByRole("button", { name: "Войти в семейный режим" }).click();
     const familyCard = page.locator(".archive-card[data-family=true]");
-    await expect(familyCard).toHaveCount(2, { timeout: 10_000 });
-    await expect(page.locator("#gallery-count")).toHaveText("10 материалов");
+    await expect(familyCard).toHaveCount(3, { timeout: 10_000 });
+    await expect(page.locator("#gallery-count")).toHaveText("11 материалов");
 
-    // Закрытый Drive-файл отдаётся по mediaId и показывается через Object URL
+    // Закрытый Drive-документ отдаётся по mediaId и показывается через Object URL
     await familyCard.filter({ hasText: "закрытого файла Drive" }).locator("button").click();
     await expect(page.locator("#media-viewer")).toBeVisible();
     await expect(page.locator("#media-viewer-image")).toBeVisible({ timeout: 10_000 });

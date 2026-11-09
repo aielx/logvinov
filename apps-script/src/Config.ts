@@ -22,8 +22,11 @@ export const PROP = {
 export const PASSWORD_ITERATIONS = 2000;
 export const MIN_FAMILY_PASSWORD_LENGTH = 10;
 
-/** Публичный кэш CacheService. */
+/** Кэш ответов API в CacheService (публичные GET и приватные данные). */
 export const PUBLIC_CACHE_TTL_SECONDS = 300;
+
+/** Ячейка кэша с текущей ревизией: быстрый ключ для всех кэшей ответов. */
+export const REVISION_CACHE_KEY = "settings:dataRevision";
 
 /** Лимиты входа: глобальные (Apps Script не даёт надёжного IP клиента). */
 export const LOGIN_MAX_FAILURES = 5;

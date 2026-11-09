@@ -8,7 +8,13 @@ export type RowStatus = "DRAFT" | "PUBLISHED";
 export type Visibility = "PUBLIC" | "FAMILY";
 export type EventType = "FAMILY" | "HISTORY";
 export type MediaCategory = "archive" | "documents" | "portraits";
-export type MediaStorage = "PUBLIC_ASSET" | "DRIVE" | "EXTERNAL";
+/**
+ * Фото (аватары, категории «Фотоархив»/«Портреты») — единообразные публичные
+ * ссылки: DRIVE_PUBLIC = ссылка на файл Drive с доступом «по ссылке»,
+ * сервер превращает её в прямую картинку. DRIVE — закрытый файл Drive,
+ * который сервер читает сам и отдаёт только семье (для документов).
+ */
+export type MediaStorage = "PUBLIC_ASSET" | "DRIVE" | "EXTERNAL" | "DRIVE_PUBLIC";
 export type DatePrecision = "YEAR" | "MONTH" | "DAY";
 export type MaterialRole = "PORTRAIT" | "GALLERY" | "SOURCE";
 

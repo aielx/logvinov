@@ -53,6 +53,53 @@ describe("Извлечение Drive ID и проверка URL", () => {
   });
 });
 
+describe("Единообразные публичные фото-ссылки", () => {
+  const driveLink = "https://drive.google.com/file/d/ABCdef1234567890/view";
+
+  function materialRow(rowNumber: number, overrides: Record<string, string>) {
+    return {
+      rowNumber, title: "Материал", caption: "", date: "2000", category: "Фотоархив",
+      visibility: "Публичное", sourceUrl: "", assetPath: "", person: "", role: "Галерея", draft: "FALSE",
+      ...overrides
+    };
+  }
+
+  it("Drive-ссылка в «Фото» человека превращается в прямую картинку", () => {
+    const raw = demoRecords();
+    (raw.people[0] as { photo: string }).photo = driveLink;
+    const archive = validateArchive(raw);
+    const avatar = (archive.people.get("p_0001") as { publicAvatarUrl: { storage: string; url: string } }).publicAvatarUrl;
+    expect(avatar.storage).toBe("DRIVE_PUBLIC");
+    expect(avatar.url).toBe("https://drive.google.com/thumbnail?id=ABCdef1234567890&sz=w400");
+  });
+
+  it("фото из Drive (Фотоархив) — публичная ссылка; документ из Drive — закрытый прокси", () => {
+    const raw = demoRecords();
+    (raw.materials as never[]).push(
+      materialRow(41, { title: "Фото из Drive", category: "Фотоархив", sourceUrl: driveLink }) as never,
+      materialRow(42, { title: "Документ из Drive", category: "Документы", sourceUrl: driveLink, visibility: "Семейное" }) as never
+    );
+    const archive = validateArchive(raw);
+    const photo = archive.media.get("m_0041") as { storage: string; externalUrl: string | null; driveFileId: string | null };
+    const doc = archive.media.get("m_0042") as { storage: string; externalUrl: string | null; driveFileId: string | null };
+    expect(photo.storage).toBe("DRIVE_PUBLIC");
+    expect(photo.externalUrl).toBe("https://drive.google.com/thumbnail?id=ABCdef1234567890&sz=w1200");
+    expect(photo.driveFileId).toBeNull();
+    expect(doc.storage).toBe("DRIVE");
+    expect(doc.driveFileId).toBe("ABCdef1234567890");
+    expect(doc.externalUrl).toBeNull();
+    expect(archive.issues.some((i) => i.code === "MEDIA_BAD_DRIVE_URL")).toBe(false);
+  });
+
+  it("ссылка на папку Drive отклоняется с понятной ошибкой", () => {
+    const raw = demoRecords();
+    (raw.materials as never[]).push(materialRow(41, { title: "Папка", sourceUrl: "https://drive.google.com/drive/u/0/folders/1b-xyz" }) as never);
+    const archive = validateArchive(raw);
+    expect(archive.issues.some((i) => i.code === "MEDIA_BAD_DRIVE_URL")).toBe(true);
+    expect(archive.media.has("m_0041")).toBe(false);
+  });
+});
+
 describe("Валидация демо-датасета v2", () => {
   it("проходит без ошибок: 10 человек, 4 поколения, обе ветви, оба родителя", () => {
     const archive = validateArchive(demoRecords());
@@ -64,8 +111,8 @@ describe("Валидация демо-датасета v2", () => {
     expect((archive.people.get("p_0008") as { generation: number }).generation).toBe(4);
     expect((archive.people.get("p_0001") as { spouseIds: string[] }).spouseIds).toEqual(["p_0002"]);
     expect(archive.events.length).toBe(12);
-    expect(archive.media.size).toBe(10);
-    expect(archive.personMaterials.length).toBe(10);
+    expect(archive.media.size).toBe(11);
+    expect(archive.personMaterials.length).toBe(11);
   });
 
   it("ветви: первыми идут ветви корней (общие предки), branchId = подпись", () => {

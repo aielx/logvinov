@@ -26,6 +26,7 @@ import {
 } from "./Types";
 import { ALLOWED_MIME_TYPES, SCHEMA_VERSION } from "./Config";
 import {
+  driveImageUrl,
   extractDriveFileId,
   isBlank,
   isDriveUrl,
@@ -85,13 +86,16 @@ export function normalizeRole(value: unknown): MaterialRole {
   return "GALLERY";
 }
 
-/** Фото: ссылка Drive / внешний https / путь assets/… — или null (заглушка). */
+/**
+ * Фото (единое правило): публичная ссылка на файл — Drive (с доступом «по ссылке»,
+ * превращается в прямую картинку), внешний https или путь assets/… — или null (заглушка).
+ */
 export function resolvePhoto(raw: string): ResolvedPhoto | "INVALID" | null {
   const value = toText(raw);
   if (value === "") return null;
   if (isDriveUrl(value)) {
     const id = extractDriveFileId(value);
-    return id ? { storage: "DRIVE_PUBLIC", url: `https://drive.google.com/uc?export=view&id=${id}` } : "INVALID";
+    return id ? { storage: "DRIVE_PUBLIC", url: driveImageUrl(id, 400) } : "INVALID";
   }
   if (isSafeExternalUrl(value)) return { storage: "EXTERNAL", url: value };
   if (isSafeAssetPath(value)) return { storage: "PUBLIC_ASSET", path: value };
@@ -471,15 +475,24 @@ function validateMaterials(raw: RawRecords, archive: ValidatedArchive, drafts: M
 
     const sourceUrl = toText(row.sourceUrl);
     const assetPath = toText(row.assetPath);
+    const category = normalizeCategory(row.category);
     let storage: MediaStorage;
     let driveFileId: string | null = null;
     let externalUrl: string | null = null;
     if (sourceUrl && isDriveUrl(sourceUrl)) {
-      storage = "DRIVE";
-      driveFileId = extractDriveFileId(sourceUrl);
-      if (!driveFileId) {
-        issue(archive, sheet, row.rowNumber, toText(row.title).slice(0, 40), "MEDIA_BAD_DRIVE_URL", "Не удалось извлечь ID файла из ссылки Drive.");
+      const driveId = extractDriveFileId(sourceUrl);
+      if (!driveId) {
+        issue(archive, sheet, row.rowNumber, toText(row.title).slice(0, 40), "MEDIA_BAD_DRIVE_URL", "Не удалось извлечь ID файла из ссылки Drive (нужна ссылка на файл, не на папку).");
         return;
+      }
+      if (category === "documents") {
+        // Документы из Drive остаются закрытыми: сервер читает файл сам и отдаёт только семье.
+        storage = "DRIVE";
+        driveFileId = driveId;
+      } else {
+        // Фото — единообразная публичная ссылка: файлу нужен доступ «по ссылке».
+        storage = "DRIVE_PUBLIC";
+        externalUrl = driveImageUrl(driveId, 1200);
       }
     } else if (sourceUrl) {
       if (!isSafeExternalUrl(sourceUrl)) {
@@ -515,7 +528,7 @@ function validateMaterials(raw: RawRecords, archive: ValidatedArchive, drafts: M
     archive.media.set(mediaId, {
       mediaId,
       title: toText(row.title),
-      category: normalizeCategory(row.category),
+      category,
       mediaType: isPdf ? "document" : "image",
       visibility,
       storage,

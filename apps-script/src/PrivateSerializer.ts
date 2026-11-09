@@ -43,8 +43,9 @@ function privatePersonMaterials(archive: ValidatedArchive, personId: string): ob
       mediaType: media.mediaType,
       mimeType: media.mimeType,
       storage: media.storage,
-      // Внешние семейные ссылки выдаются только после входа.
-      url: media.storage === "EXTERNAL" ? media.externalUrl : null
+      // Прямые ссылки (внешние и фото из Drive) выдаются только после входа;
+      // закрытые DRIVE-документы грузятся отдельным запросом private.media.
+      url: media.storage === "EXTERNAL" || media.storage === "DRIVE_PUBLIC" ? media.externalUrl : null
     });
   });
   return items;
@@ -92,7 +93,7 @@ export function serializePrivateGallery(archive: ValidatedArchive): object {
       caption: media.familyCaption || media.publicCaption,
       mimeType: media.mimeType,
       storage: media.storage,
-      url: media.storage === "EXTERNAL" ? media.externalUrl : null,
+      url: media.storage === "EXTERNAL" || media.storage === "DRIVE_PUBLIC" ? media.externalUrl : null,
       width: media.width,
       height: media.height
     }));

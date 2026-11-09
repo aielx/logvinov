@@ -5,6 +5,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { handleGet, handlePost } from "../src/Api";
 import { setFamilyPassword } from "../src/Auth";
+import { bumpDataRevision } from "../src/SheetsRepository";
 import { addMockDriveFile, resetMockState, setMockSheets } from "./globals-mock";
 import { demoSheetValues, CANARY_STRINGS } from "./fixture";
 
@@ -117,8 +118,40 @@ describe("Вход и приватные запросы", () => {
     expect(String(person.bio)).toContain("CANARY p0008");
     const timeline = post("private.timeline", { token }).data as { events: Array<{ eventId: string }> };
     expect(timeline.events.some((e) => e.eventId === "e_0013")).toBe(true);
-    const gallery = post("private.gallery", { token }).data as { items: unknown[] };
-    expect(gallery.items.length).toBe(2);
+    const gallery = post("private.gallery", { token }).data as { items: Array<Record<string, unknown>> };
+    expect(gallery.items.length).toBe(3);
+  });
+
+  it("приватные ответы кэшируются по ревизии и сбрасываются при её росте", () => {
+    const token = (post("auth.login", { password: FAMILY_PASSWORD }).data as { token: string }).token;
+    const first = post("private.person", { id: "p_0008", token }).data as { bio: string };
+    expect(first.bio).toContain("CANARY p0008");
+
+    // Правка листа без роста ревизии → тот же ответ из кэша (TTL 300 с).
+    const sheets = demoSheetValues();
+    (sheets["Люди"][8] as unknown[])[10] = "СЕМЕЙНЫЕ ДАННЫЕ (CANARY p0008-EDIT): изменённая биография";
+    setMockSheets(sheets);
+    const cached = post("private.person", { id: "p_0008", token }).data as { bio: string };
+    expect(cached.bio).toBe(first.bio);
+
+    // Рост ревизии («Обновить публичный кэш») → свежие данные из листа.
+    bumpDataRevision();
+    const fresh = post("private.person", { id: "p_0008", token }).data as { bio: string };
+    expect(fresh.bio).toContain("CANARY p0008-EDIT");
+  });
+
+  it("private.media для фото-ссылки Drive отдаёт прямую ссылку, а не байты", () => {
+    const token = (post("auth.login", { password: FAMILY_PASSWORD }).data as { token: string }).token;
+    const media = post("private.media", { id: "m_0012", token }).data as Record<string, unknown>;
+    expect(media.storage).toBe("DRIVE_PUBLIC");
+    expect(String(media.url)).toContain("https://drive.google.com/thumbnail?id=CANARYDRIVEFILEID0002");
+    expect(media.base64).toBeUndefined();
+    // Кэш: повторный запрос не перечитывает лист.
+    const sheets = demoSheetValues();
+    delete sheets["Материалы"];
+    setMockSheets(sheets);
+    const cachedAgain = post("private.media", { id: "m_0012", token }).data as Record<string, unknown>;
+    expect(cachedAgain.storage).toBe("DRIVE_PUBLIC");
   });
 
   it("logout отзывает только текущую сессию и идемпотентен", () => {

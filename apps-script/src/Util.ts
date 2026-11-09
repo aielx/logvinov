@@ -136,6 +136,14 @@ export function isDriveUrl(rawUrl: string): boolean {
   return /^https:\/\/(drive|docs)\.google\.com\//.test(url);
 }
 
+/**
+ * Прямая ссылка-картинка на файл Drive с доступом «по ссылке».
+ * endpoint thumbnail надёжнее uc?export=view для <img> и умеет сжатие по ширине.
+ */
+export function driveImageUrl(fileId: string, maxWidth: number): string {
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${maxWidth}`;
+}
+
 /** Внешние ссылки: только HTTPS, без управляющих символов и пробелов. */
 export function isSafeExternalUrl(rawUrl: string): boolean {
   const url = toText(rawUrl);

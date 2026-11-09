@@ -105,6 +105,9 @@ function isDriveUrl(rawUrl) {
   const url = toText(rawUrl);
   return /^https:\/\/(drive|docs)\.google\.com\//.test(url);
 }
+function driveImageUrl(fileId, maxWidth) {
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${maxWidth}`;
+}
 function isSafeExternalUrl(rawUrl) {
   const url = toText(rawUrl);
   return /^https:\/\/[^\s"'<>()]+$/i.test(url);

@@ -1,15 +1,17 @@
 /**
  * Роутер API: единая точка входа /exec?action=…
- * Публичные GET кэшируются (санитизированный JSON в CacheService).
- * Вход и приватные запросы — POST application/x-www-form-urlencoded,
- * токен передаётся в теле, чтобы не вызывать CORS preflight.
+ * Публичные GET и приватные данные-ответы кэшируются в CacheService по dataRevision
+ * (TTL 300 c; рост ревизии сбрасывает кэш немедленно). Вход и приватные запросы —
+ * POST application/x-www-form-urlencoded, токен передаётся в теле,
+ * чтобы не вызывать CORS preflight.
  */
 import {
   GALLERY_DEFAULT_LIMIT,
   GALLERY_MAX_LIMIT,
   LOGIN_MAX_FAILURES,
   LOGIN_WINDOW_SECONDS,
-  PUBLIC_CACHE_TTL_SECONDS
+  PUBLIC_CACHE_TTL_SECONDS,
+  REVISION_CACHE_KEY
 } from "./Config";
 import { ApiFailure, HttpEvent, ValidatedArchive } from "./Types";
 import { jsonError, jsonInternalError, jsonOk, ResponseMeta } from "./Responses";
@@ -28,6 +30,13 @@ type Params = Record<string, string>;
 const GET_ACTIONS = ["health", "public.tree", "public.person", "public.timeline", "public.gallery"];
 const POST_ACTIONS = ["auth.login", "auth.status", "auth.logout", "private.person", "private.timeline", "private.gallery", "private.media"];
 
+/**
+ * Приватные данные-действия, кэшируемые по ревизии: содержимое не зависит от токена
+ * (сессия проверяется при каждом запросе до отдачи кэша), поэтому чтение таблицы
+ * и валидация выполняются один раз на TTL, а не при каждом открытии карточки.
+ */
+const PRIVATE_CACHED_ACTIONS = ["private.person", "private.timeline", "private.gallery", "private.media"];
+
 export function handleGet(e: HttpEvent): GoogleAppsScript.Content.TextOutput {
   const action = toText(e.parameter.action);
   try {
@@ -41,7 +50,7 @@ export function handleGet(e: HttpEvent): GoogleAppsScript.Content.TextOutput {
     }
     if (action !== "health") {
       // Кэшируется пара {data, meta} — конверт пересобирается с новым requestId.
-      const cached = readPublicCache(action, e.parameter);
+      const cached = readActionCache(action, e.parameter);
       if (cached) {
         const parsed = JSON.parse(cached) as { data: unknown; meta: ResponseMeta };
         return jsonOk(parsed.data, parsed.meta);
@@ -49,7 +58,7 @@ export function handleGet(e: HttpEvent): GoogleAppsScript.Content.TextOutput {
     }
     const result = dispatchGet(action, e.parameter);
     if (action !== "health") {
-      writePublicCache(action, e.parameter, { data: result.body, meta: result.meta });
+      writeActionCache(action, e.parameter, { data: result.body, meta: result.meta });
     }
     return jsonOk(result.body, result.meta);
   } catch (error) {
@@ -127,22 +136,37 @@ function dispatchPost(action: string, params: Params): GoogleAppsScript.Content.
   if (!validSession) {
     return jsonError(401, "SESSION_INVALID", "Семейная сессия недействительна. Войдите ещё раз.");
   }
+
+  // Кэш приватных ответов: ключ по dataRevision (без токена — сессия уже проверена
+  // выше, содержимое одинаково для всех семейных сессий). Правка таблицы или меню
+  // «Обновить публичный кэш» поднимают ревизию — кэш сбрасывается сам.
+  const useCache = PRIVATE_CACHED_ACTIONS.includes(action);
+  if (useCache) {
+    const cached = readActionCache(action, params);
+    if (cached) {
+      const parsed = JSON.parse(cached) as { data: unknown; meta: ResponseMeta };
+      return jsonOk(parsed.data, parsed.meta);
+    }
+  }
+
   const archive = loadArchive();
   const meta: ResponseMeta = { dataRevision: archive.dataRevision };
-
+  let body: object;
   if (action === "private.person") {
     const id = requirePersonId(params);
-    return jsonOk(serializePrivatePerson(archive, id), meta);
+    body = serializePrivatePerson(archive, id) as object;
+  } else if (action === "private.timeline") {
+    body = serializePrivateTimeline(archive) as object;
+  } else if (action === "private.gallery") {
+    body = serializePrivateGallery(archive) as object;
+  } else {
+    // private.media: байты DRIVE-файлов (>100 КБ) в кэш не кладём — только ссылки.
+    body = loadFamilyMedia(archive, toText(params.id)) as object;
   }
-  if (action === "private.timeline") {
-    return jsonOk(serializePrivateTimeline(archive), meta);
+  if (useCache && !("base64" in body)) {
+    writeActionCache(action, params, { data: body, meta });
   }
-  if (action === "private.gallery") {
-    return jsonOk(serializePrivateGallery(archive), meta);
-  }
-  // private.media
-  const mediaId = toText(params.id);
-  return jsonOk(loadFamilyMedia(archive, mediaId), meta);
+  return jsonOk(body, meta);
 }
 
 function handleLogin(params: Params): GoogleAppsScript.Content.TextOutput {
@@ -216,34 +240,38 @@ function currentMeta(): ResponseMeta {
 }
 
 function cacheKey(action: string, params: Params, revision: string): string {
-  const extra = action === "public.person" ? toText(params.id) : action === "public.gallery" ? `${toText(params.cursor)}|${toText(params.limit)}` : "";
+  const extra =
+    action === "public.person" || action === "private.person" || action === "private.media"
+      ? toText(params.id)
+      : action === "public.gallery"
+        ? `${toText(params.cursor)}|${toText(params.limit)}`
+        : "";
   return `v1:${revision}:${action}:${extra}`;
 }
 
-function readPublicCache(action: string, params: Params): string | null {
+function readActionCache(action: string, params: Params): string | null {
   const revision = cachedRevision();
   if (!revision) return null;
   return CacheService.getScriptCache().get(cacheKey(action, params, revision));
 }
 
-function writePublicCache(action: string, params: Params, payload: { data: unknown; meta: ResponseMeta }): void {
+function writeActionCache(action: string, params: Params, payload: { data: unknown; meta: ResponseMeta }): void {
   try {
     const cache = CacheService.getScriptCache();
     cache.put(cacheKey(action, params, payload.meta.dataRevision), JSON.stringify(payload), PUBLIC_CACHE_TTL_SECONDS);
   } catch {
-    // Кэш не критичен.
+    // Кэш не критичен (например, ответ больше лимита CacheService — просто не кэшируем).
   }
 }
 
 /** Ревизия для ключей кэша: короткий кэш поверх дешёвого чтения Settings. */
 function cachedRevision(): string | null {
   const cache = CacheService.getScriptCache();
-  const cacheBox = "settings:dataRevision";
-  let revision = cache.get(cacheBox);
+  let revision = cache.get(REVISION_CACHE_KEY);
   if (!revision) {
     try {
       revision = readDataRevision();
-      cache.put(cacheBox, revision, 60);
+      cache.put(REVISION_CACHE_KEY, revision, 60);
     } catch {
       return null;
     }

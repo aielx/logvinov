@@ -574,12 +574,12 @@
     },
     {
       "mediaId": "m_0010",
-      "title": "Семейный снимок (демонстрация закрытого файла Drive)",
-      "category": "archive",
+      "title": "Семейный документ (демонстрация закрытого файла Drive)",
+      "category": "documents",
       "mediaType": "image",
       "visibility": "FAMILY",
       "dateDisplay": "1995",
-      "altText": "Семейный снимок (демонстрация закрытого файла Drive)",
+      "altText": "Семейный документ (демонстрация закрытого файла Drive)",
       "publicCaption": "",
       "familyCaption": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY m0100): подпись закрытого файла Drive",
       "sourceUrl": "https://drive.google.com/file/d/CANARYDRIVEFILEID0001/view",
@@ -607,6 +607,24 @@
       "width": null,
       "height": null,
       "sortOrder": 11
+    },
+    {
+      "mediaId": "m_0012",
+      "title": "Семейное фото-ссылка Drive (демонстрация)",
+      "category": "archive",
+      "mediaType": "image",
+      "visibility": "FAMILY",
+      "dateDisplay": "1995",
+      "altText": "Семейное фото-ссылка Drive (демонстрация)",
+      "publicCaption": "",
+      "familyCaption": "СЕМЕЙНЫЕ ДАННЫЕ (CANARY m0102): подпись фото-ссылки Drive",
+      "sourceUrl": "https://drive.google.com/thumbnail?id=CANARYDRIVEFILEID0002&sz=w1200",
+      "storage": "DRIVE_PUBLIC",
+      "assetPath": "",
+      "mimeType": "image/jpeg",
+      "width": null,
+      "height": null,
+      "sortOrder": 12
     }
   ],
   "personMedia": [
@@ -653,11 +671,16 @@
     {
       "personId": "p_0008",
       "mediaId": "m_0010",
-      "role": "GALLERY"
+      "role": "SOURCE"
     },
     {
       "personId": "p_0010",
       "mediaId": "m_0011",
+      "role": "GALLERY"
+    },
+    {
+      "personId": "p_0008",
+      "mediaId": "m_0012",
       "role": "GALLERY"
     }
   ],
