@@ -37,6 +37,16 @@ export function parseFlexibleDate(raw: unknown): ParsedDate | null {
   if (text === "") {
     return { year: null, month: null, day: null, precision: "YEAR", sortKey: 0 };
   }
+  // Русский формат ДД.ММ.ГГГГ (09.11.1984) — частая привычка редакторов.
+  const dotted = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(text);
+  if (dotted) {
+    const day = parseInt(dotted[1], 10);
+    const month = parseInt(dotted[2], 10);
+    const year = parseInt(dotted[3], 10);
+    if (month < 1 || month > 12) return null;
+    if (day < 1 || day > daysInMonth(year, month)) return null;
+    return { year, month, day, precision: "DAY", sortKey: year * 10000 + month * 100 + day };
+  }
   const match = /^(\d{3,4})(?:-(\d{1,2}))?(?:-(\d{1,2}))?$/.exec(text);
   if (!match) return null;
   const year = parseInt(match[1], 10);
@@ -50,11 +60,16 @@ export function parseFlexibleDate(raw: unknown): ParsedDate | null {
     precision = "MONTH";
     if (match[3] !== undefined) {
       day = parseInt(match[3], 10);
-      if (day < 1 || day > 31) return null;
+      if (day < 1 || day > daysInMonth(year, month)) return null;
       precision = "DAY";
     }
   }
   return { year, month, day, precision, sortKey: year * 10000 + (month ?? 0) * 100 + (day ?? 0) };
+}
+
+/** Дней в месяце — для проверки дат вида 31.02. */
+function daysInMonth(year: number, month: number): number {
+  return new Date(year, month, 0).getDate();
 }
 
 /** Публичное отображение лет жизни: всегда только годы. */

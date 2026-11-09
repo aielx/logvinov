@@ -9,7 +9,7 @@
  */
 import { handleGet, handlePost } from "./Api";
 import { HttpEvent } from "./Types";
-import { applyPersonRefValidations, bumpDataRevision, ensureStructure, fillMissingPersonNumbers, getSpreadsheet, readRawRecords, writeValidationReport } from "./SheetsRepository";
+import { applyPersonRefValidations, autoFillOnEdit, bumpDataRevision, ensureStructure, fillMissingPersonNumbers, getSpreadsheet, readRawRecords, writeValidationReport } from "./SheetsRepository";
 import { seedDemoData } from "./Seed";
 import { validateArchive } from "./Validation";
 import { setFamilyPassword, revokeAllSessionsByEpoch } from "./Auth";
@@ -22,6 +22,14 @@ function doGet(e: HttpEvent): GoogleAppsScript.Content.TextOutput {
 
 function doPost(e: HttpEvent): GoogleAppsScript.Content.TextOutput {
   return handlePost(e ?? { parameter: {} });
+}
+
+/**
+ * Простой триггер: Google Sheets вызывает функцию с именем ровно «onEdit».
+ * № новому человеку и обновление списка подстановки (в статическом режиме «Выбора»).
+ */
+function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit): void {
+  autoFillOnEdit(e);
 }
 
 // ---------------------------------------------------------------------------

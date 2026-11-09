@@ -459,36 +459,57 @@ export function fillMissingPersonNumbers(): number {
   const numbers = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
   const names = sheet.getRange(2, headers.indexOf("ФИО") + 1, lastRow - 1, 1).getValues();
   let filled = 0;
-  numbers.forEach((value, index) => {
-    if (!isBlank(value[0]) || isBlank(names[index][0])) return;
-    sheet.getRange(index + 2, 1).setValue(nextPersonNumber(sheet));
+  let nextNumber = nextPersonNumber(sheet);
+  const out: unknown[][] = numbers.map((value, index) => {
+    if (!isBlank(value[0]) || isBlank(names[index][0])) return [value[0]];
     filled += 1;
+    return [nextNumber++];
   });
+  if (filled > 0) {
+    sheet.getRange(2, 1, out.length, 1).setValues(out);
+    refreshStaticChoice(sheet);
+  }
   return filled;
 }
 
-/** Простой триггер onEdit: № новому человеку и формула «(кто)» для изменённой строки. */
+/**
+ * Простой триггер onEdit (см. onEdit в Code.ts): № новому человеку — всем строкам
+ * изменённого диапазона (вставка нескольких строк сразу) — и обновление
+ * списка подстановки в статическом режиме «Выбора».
+ */
 export function autoFillOnEdit(e: GoogleAppsScript.Events.SheetsOnEdit): void {
   const sheet = e.range.getSheet();
   const name = sheet.getName();
   const headers = HEADERS[name];
   if (!headers) return;
-  const row = e.range.getRow();
-  if (row < 2) return;
+  const firstRow = e.range.getRow();
+  if (firstRow < 2) return;
 
   if (name === SHEETS.PEOPLE) {
     const numberIndex = headerColumnIndex(sheet, "№");
     const nameIndex = headerColumnIndex(sheet, "ФИО");
-    const numberCell = numberIndex === -1 ? null : sheet.getRange(row, numberIndex + 1);
-    const nameCell = nameIndex === -1 ? null : sheet.getRange(row, nameIndex + 1);
-    if (numberCell && nameCell && isBlank(numberCell.getValue()) && !isBlank(nameCell.getValue())) {
-      numberCell.setValue(nextPersonNumber(sheet));
+    if (numberIndex !== -1 && nameIndex !== -1) {
+      const rows = Math.min(e.range.getNumRows(), 100);
+      const names = sheet.getRange(firstRow, nameIndex + 1, rows, 1).getValues();
+      const numbers = sheet.getRange(firstRow, numberIndex + 1, rows, 1).getValues();
+      let nextNumber = nextPersonNumber(sheet);
+      let changed = false;
+      const out = numbers.map((row, index) => {
+        if (!isBlank(row[0]) || isBlank(names[index][0])) return [row[0]];
+        changed = true;
+        return [nextNumber++];
+      });
+      if (changed) sheet.getRange(firstRow, numberIndex + 1, rows, 1).setValues(out);
     }
-    // Статический режим «Выбор» (без формулы): обновляем список значений.
-    const choiceIndex = headerColumnIndex(sheet, "Выбор");
-    if (choiceIndex !== -1 && isBlank(sheet.getRange(2, choiceIndex + 1).getFormula())) {
-      writeStaticChoiceValues(sheet);
-    }
+    refreshStaticChoice(sheet);
   }
+}
 
+/** В статическом режиме «Выбора» (формула не прижилась) пересобрать значения списка. */
+function refreshStaticChoice(sheet: GoogleAppsScript.Spreadsheet.Sheet): void {
+  const choiceIndex = headerColumnIndex(sheet, "Выбор");
+  if (choiceIndex === -1) return;
+  if (isBlank(sheet.getRange(2, choiceIndex + 1).getFormula())) {
+    writeStaticChoiceValues(sheet);
+  }
 }

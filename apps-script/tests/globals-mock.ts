@@ -139,11 +139,69 @@ const scriptLock = {
 };
 
 function makeSheet(name: string, values: unknown[][]): unknown {
+  const formulas = new Map<string, string>();
+  const lastColumn = () => values.reduce((max, row) => Math.max(max, row.length), 1);
+  const ensure = (row: number, col: number): void => {
+    while (values.length < row) values.push([]);
+    const target = values[row - 1] as unknown[];
+    while (target.length < col) target.push("");
+  };
+  const makeRange = (row: number, col: number, numRows: number, numCols: number) => ({
+    getRow: () => row,
+    getColumn: () => col,
+    getNumRows: () => numRows,
+    getNumColumns: () => numCols,
+    getValues: () => {
+      const out: unknown[][] = [];
+      for (let r = 0; r < numRows; r += 1) {
+        const line = values[row - 1 + r] ?? [];
+        out.push(Array.from({ length: numCols }, (_, c) => line[col - 1 + c] ?? ""));
+      }
+      return out;
+    },
+    getValue: () => (values[row - 1] ?? [])[col - 1] ?? "",
+    setValue: (v: unknown) => {
+      ensure(row, col);
+      (values[row - 1] as unknown[])[col - 1] = v;
+      return makeRange(row, col, numRows, numCols);
+    },
+    setValues: (vs: unknown[][]) => {
+      vs.forEach((line, r) =>
+        line.forEach((v, c) => {
+          ensure(row + r, col + c);
+          (values[row - 1 + r] as unknown[])[col - 1 + c] = v;
+        })
+      );
+      return makeRange(row, col, numRows, numCols);
+    },
+    getFormula: () => formulas.get(`${row}:${col}`) ?? "",
+    setFormula: (f: string) => {
+      formulas.set(`${row}:${col}`, f);
+      return makeRange(row, col, numRows, numCols);
+    },
+    clearContent: () => {
+      formulas.delete(`${row}:${col}`);
+      for (let r = 0; r < numRows; r += 1) {
+        const line = values[row - 1 + r];
+        if (!line) continue;
+        for (let c = 0; c < numCols; c += 1) if (col - 1 + c < line.length) line[col - 1 + c] = "";
+      }
+      return makeRange(row, col, numRows, numCols);
+    }
+  });
   return {
     getName: () => name,
     getDataRange: () => ({ getValues: () => values }),
-    getLastRow: () => values.length,
-    getMaxRows: () => Math.max(values.length, 100)
+    getLastRow: () => {
+      let last = 0;
+      values.forEach((row, index) => {
+        if (row.some((cell) => cell !== "" && cell !== undefined && cell !== null)) last = index + 1;
+      });
+      return last;
+    },
+    getLastColumn: () => lastColumn(),
+    getMaxRows: () => Math.max(values.length, 100),
+    getRange: (row: number, col: number, numRows = 1, numCols = 1) => makeRange(row, col, numRows, numCols)
   };
 }
 

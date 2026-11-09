@@ -336,11 +336,16 @@ function fillMissingPersonNumbers() {
   const numbers = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
   const names = sheet.getRange(2, headers.indexOf("\u0424\u0418\u041E") + 1, lastRow - 1, 1).getValues();
   let filled = 0;
-  numbers.forEach((value, index) => {
-    if (!isBlank(value[0]) || isBlank(names[index][0])) return;
-    sheet.getRange(index + 2, 1).setValue(nextPersonNumber(sheet));
+  let nextNumber = nextPersonNumber(sheet);
+  const out = numbers.map((value, index) => {
+    if (!isBlank(value[0]) || isBlank(names[index][0])) return [value[0]];
     filled += 1;
+    return [nextNumber++];
   });
+  if (filled > 0) {
+    sheet.getRange(2, 1, out.length, 1).setValues(out);
+    refreshStaticChoice(sheet);
+  }
   return filled;
 }
 function autoFillOnEdit(e) {
@@ -348,20 +353,32 @@ function autoFillOnEdit(e) {
   const name = sheet.getName();
   const headers = HEADERS[name];
   if (!headers) return;
-  const row = e.range.getRow();
-  if (row < 2) return;
+  const firstRow = e.range.getRow();
+  if (firstRow < 2) return;
   if (name === SHEETS.PEOPLE) {
     const numberIndex = headerColumnIndex(sheet, "\u2116");
     const nameIndex = headerColumnIndex(sheet, "\u0424\u0418\u041E");
-    const numberCell = numberIndex === -1 ? null : sheet.getRange(row, numberIndex + 1);
-    const nameCell = nameIndex === -1 ? null : sheet.getRange(row, nameIndex + 1);
-    if (numberCell && nameCell && isBlank(numberCell.getValue()) && !isBlank(nameCell.getValue())) {
-      numberCell.setValue(nextPersonNumber(sheet));
+    if (numberIndex !== -1 && nameIndex !== -1) {
+      const rows = Math.min(e.range.getNumRows(), 100);
+      const names = sheet.getRange(firstRow, nameIndex + 1, rows, 1).getValues();
+      const numbers = sheet.getRange(firstRow, numberIndex + 1, rows, 1).getValues();
+      let nextNumber = nextPersonNumber(sheet);
+      let changed = false;
+      const out = numbers.map((row, index) => {
+        if (!isBlank(row[0]) || isBlank(names[index][0])) return [row[0]];
+        changed = true;
+        return [nextNumber++];
+      });
+      if (changed) sheet.getRange(firstRow, numberIndex + 1, rows, 1).setValues(out);
     }
-    const choiceIndex = headerColumnIndex(sheet, "\u0412\u044B\u0431\u043E\u0440");
-    if (choiceIndex !== -1 && isBlank(sheet.getRange(2, choiceIndex + 1).getFormula())) {
-      writeStaticChoiceValues(sheet);
-    }
+    refreshStaticChoice(sheet);
+  }
+}
+function refreshStaticChoice(sheet) {
+  const choiceIndex = headerColumnIndex(sheet, "\u0412\u044B\u0431\u043E\u0440");
+  if (choiceIndex === -1) return;
+  if (isBlank(sheet.getRange(2, choiceIndex + 1).getFormula())) {
+    writeStaticChoiceValues(sheet);
   }
 }
 

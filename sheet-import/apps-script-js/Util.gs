@@ -23,6 +23,15 @@ function parseFlexibleDate(raw) {
   if (text === "") {
     return { year: null, month: null, day: null, precision: "YEAR", sortKey: 0 };
   }
+  const dotted = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(text);
+  if (dotted) {
+    const day2 = parseInt(dotted[1], 10);
+    const month2 = parseInt(dotted[2], 10);
+    const year2 = parseInt(dotted[3], 10);
+    if (month2 < 1 || month2 > 12) return null;
+    if (day2 < 1 || day2 > daysInMonth(year2, month2)) return null;
+    return { year: year2, month: month2, day: day2, precision: "DAY", sortKey: year2 * 1e4 + month2 * 100 + day2 };
+  }
   const match = /^(\d{3,4})(?:-(\d{1,2}))?(?:-(\d{1,2}))?$/.exec(text);
   if (!match) return null;
   const year = parseInt(match[1], 10);
@@ -36,11 +45,14 @@ function parseFlexibleDate(raw) {
     precision = "MONTH";
     if (match[3] !== void 0) {
       day = parseInt(match[3], 10);
-      if (day < 1 || day > 31) return null;
+      if (day < 1 || day > daysInMonth(year, month)) return null;
       precision = "DAY";
     }
   }
   return { year, month, day, precision, sortKey: year * 1e4 + (month ?? 0) * 100 + (day ?? 0) };
+}
+function daysInMonth(year, month) {
+  return new Date(year, month, 0).getDate();
 }
 function formatYears(birthYear, deathYear, isLiving) {
   if (birthYear === null) return "\u0433\u043E\u0434\u044B \u043D\u0435 \u0443\u0442\u043E\u0447\u043D\u0435\u043D\u044B";

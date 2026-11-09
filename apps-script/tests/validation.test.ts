@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { validateArchive } from "../src/Validation";
-import { missingRequiredHeaders, recordsFromValues } from "../src/SheetsRepository";
+import { autoFillOnEdit, missingRequiredHeaders, recordsFromValues } from "../src/SheetsRepository";
 import { SHEETS } from "../src/Config";
 import { parseFlexibleDate, extractDriveFileId, isSafeExternalUrl, isSafeAssetPath, formatYears } from "../src/Util";
+import { SpreadsheetAppMock, resetMockState, setMockSheets } from "./globals-mock";
 import { demoSheetValues } from "./fixture";
 import type { RawRecords } from "../src/Types";
 
@@ -24,8 +25,15 @@ describe("Разбор дат", () => {
     expect(parseFlexibleDate("")).toMatchObject({ year: null, sortKey: 0 });
   });
 
+  it("русский формат ДД.ММ.ГГГГ принимается (привычка редакторов)", () => {
+    expect(parseFlexibleDate("09.11.1984")).toMatchObject({ year: 1984, month: 11, day: 9, precision: "DAY", sortKey: 19841109 });
+    expect(parseFlexibleDate("14.03.1937")).toMatchObject({ year: 1937, month: 3, day: 14, precision: "DAY", sortKey: 19370314 });
+    expect(parseFlexibleDate("1.5.1920")).toMatchObject({ year: 1920, month: 5, day: 1, precision: "DAY", sortKey: 19200501 });
+  });
+
   it("мусор отклоняется", () => {
-    expect(parseFlexibleDate("14.03.1937")).toBeNull();
+    expect(parseFlexibleDate("31.02.1937")).toBeNull();
+    expect(parseFlexibleDate("14.03.37")).toBeNull();
     expect(parseFlexibleDate("1937-13")).toBeNull();
     expect(parseFlexibleDate("abc")).toBeNull();
   });
@@ -268,5 +276,62 @@ describe("Привязка к заголовкам (не к позициям)", 
     expect(missingRequiredHeaders("Люди", [["ФИО", "Дата рождения"]])).toEqual(["№"]);
     expect(missingRequiredHeaders("Люди", [["№", "ФИО"]])).toEqual([]);
     expect(missingRequiredHeaders("События", [["Заголовок"]])).toEqual(["Дата"]);
+  });
+});
+
+describe("onEdit: новый человек получает № и попадает в подстановку", () => {
+  interface MockSheet {
+    getRange(row: number, col: number, numRows?: number, numCols?: number): { getValue(): unknown; getValues(): unknown[][] };
+  }
+
+  function sheetWithStaticChoice(): { values: Record<string, unknown[][]>; sheet: MockSheet } {
+    resetMockState();
+    const values = demoSheetValues();
+    (values[SHEETS.PEOPLE][0] as unknown[]).push("Выбор");
+    // Статический режим «Выбора» (формула не прижилась): значения только для текущих людей.
+    for (let index = 1; index <= 10; index += 1) {
+      const row = values[SHEETS.PEOPLE][index] as unknown[];
+      row[18] = `${row[0]} · ${row[1]}`;
+    }
+    setMockSheets(values);
+    const active = SpreadsheetAppMock.getActive() as { getSheetByName(name: string): unknown };
+    const sheet = active.getSheetByName(SHEETS.PEOPLE) as unknown as MockSheet;
+    return { values, sheet };
+  }
+
+  function editEvent(sheet: unknown, row: number, numRows: number): never {
+    return {
+      range: { getSheet: () => sheet, getRow: () => row, getNumRows: () => numRows }
+    } as never;
+  }
+
+  it("ввод ФИО в новой строке: № сам и «Выбор» обновляется (статический режим)", () => {
+    const { values, sheet } = sheetWithStaticChoice();
+    (values[SHEETS.PEOPLE] as unknown[][]).push(["", "ЛОГВИНОВ Александр Сергеевич", "09.11.1984", "", false, "Ветвь Петра"]);
+    autoFillOnEdit(editEvent(sheet, 12, 1));
+    expect(sheet.getRange(12, 1).getValue()).toBe(11);
+    expect(sheet.getRange(12, 19).getValue()).toBe("11 · ЛОГВИНОВ Александр Сергеевич");
+    // Дата с точками валидна: человек №11 попадает в архив.
+    const archive = validateArchive({
+      people: recordsFromValues(SHEETS.PEOPLE, values[SHEETS.PEOPLE]) as never,
+      events: [],
+      materials: [],
+      schemaErrors: []
+    });
+    expect(archive.people.has("p_0011")).toBe(true);
+    expect((archive.people.get("p_0011") as { birthDate: { precision: string } | null }).birthDate?.precision).toBe("DAY");
+  });
+
+  it("вставка нескольких строк сразу: № каждой строке одним заходом", () => {
+    const { values, sheet } = sheetWithStaticChoice();
+    (values[SHEETS.PEOPLE] as unknown[][]).push(
+      ["", "ЛОГВИНОВ Александр Сергеевич", "1984", "", true, "Ветвь Петра"],
+      ["", "Логвинова Мария Викторовна", "1964", "", true, "Ветвь Петра"]
+    );
+    autoFillOnEdit(editEvent(sheet, 12, 2));
+    expect(sheet.getRange(12, 1).getValue()).toBe(11);
+    expect(sheet.getRange(13, 1).getValue()).toBe(12);
+    expect(sheet.getRange(12, 19).getValue()).toBe("11 · ЛОГВИНОВ Александр Сергеевич");
+    expect(sheet.getRange(13, 19).getValue()).toBe("12 · Логвинова Мария Викторовна");
   });
 });
