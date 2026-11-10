@@ -86,7 +86,7 @@ describe("buildGraph", () => {
 });
 
 describe("filterByBranch", () => {
-  it("общая ветвь (первая по sortOrder) остаётся всегда; фильтр без новых запросов", () => {
+  it("ветвь + её предки + супруги; чужие ветви скрыты", () => {
     const people = [
       ...demoPeople().map((p) => ({ ...p, branchId: "b_common" })),
       person({ personId: "i_1", branchId: "b_ivan", generation: 3 }),
@@ -94,7 +94,30 @@ describe("filterByBranch", () => {
     ];
     const tree = treeOf(people);
     expect(filterByBranch(tree, "all")).toHaveLength(8);
-    expect(filterByBranch(tree, "b_ivan")).toHaveLength(7); // 6 общих + 1 иван
-    expect(filterByBranch(tree, "b_peter")).toHaveLength(7);
+    // У i_1 нет родителей и супругов — только он сам.
+    expect(filterByBranch(tree, "b_ivan").map((p) => p.personId)).toEqual(["i_1"]);
+    // Ветвь Петра: pe_1 без связей — только он.
+    expect(filterByBranch(tree, "b_peter").map((p) => p.personId)).toEqual(["pe_1"]);
+  });
+
+  it("предки выбранной ветви видны даже с другой подписью ветви", () => {
+    const people = [
+      person({ personId: "root", branchId: "b_ancestors", childIds: ["child"] }),
+      person({ personId: "inlaw", branchId: "b_ancestors", spouseIds: ["root"], childIds: ["child"] }),
+      person({ personId: "child", branchId: "b_ivan", parentIds: ["root", "inlaw"], generation: 2 }),
+      person({ personId: "stranger", branchId: "b_ivan" })
+    ];
+    const visible = filterByBranch(treeOf(people), "b_ivan").map((p) => p.personId).sort();
+    // child + его родители (в т.ч. вошедший по браку предок); stranger — тоже ветвь Ивана.
+    expect(visible).toEqual(["child", "inlaw", "root", "stranger"]);
+  });
+
+  it("супруг включённого человека не разрывает пару", () => {
+    const people = [
+      person({ personId: "hub", branchId: "b_ivan", spouseIds: ["wife"] }),
+      person({ personId: "wife", branchId: "b_other", spouseIds: ["hub"] })
+    ];
+    const visible = filterByBranch(treeOf(people), "b_ivan").map((p) => p.personId).sort();
+    expect(visible).toEqual(["hub", "wife"]);
   });
 });

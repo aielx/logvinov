@@ -129,8 +129,7 @@ function updateCount(): void {
 function buildBranchOptions(): void {
   const select = dom.branchSelect;
   if (!select || !store.tree || select.dataset.filled === "1") return;
-  store.tree.branches.forEach((branch, index) => {
-    if (index === 0) return; // первая ветвь по sortOrder — общие предки, всегда видна
+  store.tree.branches.forEach((branch) => {
     const option = document.createElement("option");
     option.value = branch.branchId;
     option.textContent = branch.label;

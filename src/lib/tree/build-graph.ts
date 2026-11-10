@@ -36,13 +36,29 @@ export interface TreeGraph {
 }
 
 /**
- * Фильтр ветви: выбранная ветвь + общие предки (первая ветвь по sortOrder).
- * Общие предки нужны, чтобы у отфильтрованных людей сохранялись родительские связи.
+ * Фильтр ветви: люди выбранной ветви + все их предки (контекст древа)
+ * + супруги включённых, чтобы пары не разрывались. Чужие ветви скрыты,
+ * даже если их подпись стоит у кого-то из «безродительских» людей.
  */
 export function filterByBranch(tree: PublicTree, branchId: string | "all"): PublicTreePerson[] {
   if (branchId === "all") return tree.people;
-  const commonBranchId = tree.branches.length > 0 ? tree.branches[0].branchId : "";
-  return tree.people.filter((person) => person.branchId === branchId || person.branchId === commonBranchId);
+  const byId = new Map(tree.people.map((person) => [person.personId, person]));
+  const keep = new Set<string>();
+  const queue = tree.people.filter((person) => person.branchId === branchId).map((person) => person.personId);
+  while (queue.length > 0) {
+    const personId = queue.pop() as string;
+    if (keep.has(personId)) continue;
+    keep.add(personId);
+    (byId.get(personId)?.parentIds ?? []).forEach((parentId) => {
+      if (byId.has(parentId) && !keep.has(parentId)) queue.push(parentId);
+    });
+  }
+  Array.from(keep).forEach((personId) => {
+    (byId.get(personId)?.spouseIds ?? []).forEach((spouseId) => {
+      if (byId.has(spouseId)) keep.add(spouseId);
+    });
+  });
+  return tree.people.filter((person) => keep.has(person.personId));
 }
 
 export function buildGraph(people: PublicTreePerson[]): TreeGraph {

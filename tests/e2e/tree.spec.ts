@@ -45,6 +45,10 @@ test.describe("Семейное древо", () => {
   });
 
   test("фильтр ветвей сохраняет общих предков", async ({ page }) => {
+    // Все ветви из данных видны в списке, включая ветвь общих предков.
+    const options = page.locator("#branch-select option");
+    await expect(options).toHaveCount(4); // «Все ветви» + 3 ветви
+    await expect(options.filter({ hasText: "Общие предки" })).toHaveCount(1);
     await page.locator("#branch-select").selectOption({ label: "Ветвь Ивана" });
     await expect(page.locator("#family-tree g.person-node")).toHaveCount(6);
     await expect(page.locator("#visible-count")).toHaveText("6 из 10 человек");

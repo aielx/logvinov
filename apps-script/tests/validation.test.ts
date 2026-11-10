@@ -154,6 +154,62 @@ describe("Валидация демо-датасета v2", () => {
   });
 });
 
+describe("Поколения супругов (вошедшие в род по браку)", () => {
+  const personRow = (row: number, number: string, fullName: string, father: string, mother: string, spouse: string) =>
+    ({
+      rowNumber: row, number, fullName, birthDate: "", deathDate: "", isLiving: "FALSE",
+      branch: "Ветвь X", father, mother, spouse, publicBio: "", familyBio: "",
+      publicBirthPlace: "", familyBirthPlace: "", familyContacts: "", familyNotes: "", photo: "",
+      cardVisibility: "", draft: "FALSE"
+    } as never);
+
+  it("супруг без родителей встаёт в поколение партнёра; сын — на ряд ниже", () => {
+    const raw = demoRecords();
+    (raw.people as never[]).push(
+      personRow(90, "70", "Пётр Афанасьевич", "", "", "71 · Наталья"),
+      personRow(91, "71", "Наталья (вошла по браку)", "", "", "70 · Пётр"),
+      personRow(92, "72", "Иван Петрович", "70 · Пётр", "71 · Наталья", "73 · Нина"),
+      personRow(93, "73", "Нина (вошла по браку)", "", "", "72 · Иван"),
+      personRow(94, "74", "Сергей Иванович", "72 · Иван", "73 · Нина", "75 · Мария"),
+      personRow(95, "75", "Мария (вошла по браку)", "", "", "74 · Сергей"),
+      personRow(96, "76", "Александр Сергеевич", "74 · Сергей", "75 · Мария", "")
+    );
+    const archive = validateArchive(raw);
+    const gen = (id: string) => (archive.people.get(id) as { generation: number }).generation;
+    expect(gen("p_0070")).toBe(1);
+    expect(gen("p_0071")).toBe(1);
+    expect(gen("p_0072")).toBe(2);
+    expect(gen("p_0073")).toBe(2); // Нина без родителей — но в ряду мужа
+    expect(gen("p_0074")).toBe(3);
+    expect(gen("p_0075")).toBe(3); // Мария без родителей — но в ряду мужа
+    expect(gen("p_0076")).toBe(4);
+    expect(archive.issues.filter((i) => i.code === "PERSON_GENERATION_CONFLICT")).toEqual([]);
+  });
+
+  it("демо: Анна Сергеевна (жена Ивана Ивановича) — в поколении мужа", () => {
+    const archive = validateArchive(demoRecords());
+    const gen = (id: string) => (archive.people.get(id) as { generation: number }).generation;
+    expect(gen("p_0004")).toBe(gen("p_0003"));
+  });
+
+  it("глубокая линия одного из супругов подтягивает пару и детей без конфликтов", () => {
+    const raw = demoRecords();
+    (raw.people as never[]).push(
+      personRow(97, "80", "Дед супруги", "", "", ""),
+      personRow(98, "81", "Отец супруги", "80 · Дед супруги", "", ""),
+      personRow(99, "82", "Супруга", "81 · Отец супруги", "", "83 · Муж"),
+      personRow(100, "83", "Муж (корень)", "", "", "82 · Супруга"),
+      personRow(101, "84", "Сын", "83 · Муж", "82 · Супруга", "")
+    );
+    const archive = validateArchive(raw);
+    const gen = (id: string) => (archive.people.get(id) as { generation: number }).generation;
+    expect(gen("p_0082")).toBe(3);
+    expect(gen("p_0083")).toBe(3);
+    expect(gen("p_0084")).toBe(4);
+    expect(archive.issues.filter((i) => i.code === "PERSON_GENERATION_CONFLICT")).toEqual([]);
+  });
+});
+
 describe("Ошибочные записи исключаются", () => {
   it("дубликат № и человек без №", () => {
     const raw = demoRecords();

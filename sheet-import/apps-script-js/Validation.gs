@@ -267,25 +267,49 @@ function descendsFrom(archive, ancestor, current) {
   return false;
 }
 function computeGenerations(archive) {
-  const resolved = /* @__PURE__ */ new Map();
-  const resolving = /* @__PURE__ */ new Set();
-  const resolve = (personId) => {
-    const cached = resolved.get(personId);
-    if (cached !== void 0) return cached;
-    if (resolving.has(personId)) return 0;
-    resolving.add(personId);
-    const person = archive.people.get(personId);
-    let generation = 1;
-    if (person && person.parentIds.length > 0) {
-      generation = 1 + Math.max(...person.parentIds.map((parentId) => resolve(parentId)));
-    }
-    resolving.delete(personId);
-    resolved.set(personId, generation);
-    return generation;
+  const spouseFloor = /* @__PURE__ */ new Map();
+  const applyBlood = () => {
+    const resolved = /* @__PURE__ */ new Map();
+    const resolving = /* @__PURE__ */ new Set();
+    const resolve = (personId) => {
+      const cached = resolved.get(personId);
+      if (cached !== void 0) return cached;
+      if (resolving.has(personId)) return 0;
+      resolving.add(personId);
+      const person = archive.people.get(personId);
+      let generation = spouseFloor.get(personId) ?? 1;
+      if (person && person.parentIds.length > 0) {
+        generation = Math.max(generation, 1 + Math.max(...person.parentIds.map((parentId) => resolve(parentId))));
+      }
+      resolving.delete(personId);
+      resolved.set(personId, generation);
+      return generation;
+    };
+    archive.people.forEach((person) => {
+      person.generation = resolve(person.personId);
+    });
   };
-  archive.people.forEach((person) => {
-    person.generation = resolve(person.personId);
-  });
+  applyBlood();
+  for (let pass = 0; pass <= archive.people.size; pass += 1) {
+    let changed = false;
+    archive.people.forEach((person) => {
+      person.spouseIds.forEach((spouseId) => {
+        const spouse = archive.people.get(spouseId);
+        if (!spouse) return;
+        const target = Math.max(person.generation, spouse.generation);
+        [person.personId, spouseId].forEach((id) => {
+          if (target > (spouseFloor.get(id) ?? 1)) {
+            spouseFloor.set(id, target);
+            changed = true;
+          }
+        });
+        person.generation = target;
+        spouse.generation = target;
+      });
+    });
+    if (!changed) break;
+    applyBlood();
+  }
   archive.people.forEach((person) => {
     person.parentIds.forEach((parentId) => {
       const parent = archive.people.get(parentId);
