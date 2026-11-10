@@ -1,10 +1,9 @@
 import { defineConfig } from "astro/config";
 
 // https://docs.astro.build/en/guides/deploy/github/
-// Публикация: https://aielx.github.io/logvinov/
+// Публикация: https://logvinov-tree.ru/ (GitHub Pages, кастомный домен)
 export default defineConfig({
-  site: "https://aielx.github.io",
-  base: "/logvinov",
+  site: "https://logvinov-tree.ru",
   output: "static",
   build: {
     inlineStylesheets: "auto"

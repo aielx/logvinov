@@ -1,6 +1,6 @@
 # Род Логвиновых — семейный архив
 
-Семейный генеалогический архив: интерактивное древо, хронология и галерея. Сайт — статическая сборка [Astro](https://astro.build), публикуемая на GitHub Pages (`https://aielx.github.io/logvinov/`); данные — закрытая Google Sheet + проектная папка Google Drive через Apps Script Web App. Подробности — `plans/astro-family-archive-plan.md`.
+Семейный генеалогический архив: интерактивное древо, хронология и галерея. Сайт — статическая сборка [Astro](https://astro.build), публикуемая на GitHub Pages (`https://logvinov-tree.ru/`); данные — закрытая Google Sheet + проектная папка Google Drive через Apps Script Web App. Подробности — `plans/astro-family-archive-plan.md`.
 
 ## Быстрый старт
 

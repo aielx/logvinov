@@ -9,7 +9,7 @@ Google Sheet (закрытая)  ←→  Apps Script Web App (/exec)  ←→  С
 Google Drive (проектная папка) ↗ (только приватные медиа)
 ```
 
-- Сайт: `https://aielx.github.io/logvinov/` — статическая сборка Astro, публикуется GitHub Actions из `dist`.
+- Сайт: `https://logvinov-tree.ru/` — статическая сборка Astro, публикуется GitHub Actions из `dist` (кастомный домен GitHub Pages).
 - API: Apps Script Web App из `apps-script/`, выполняется от имени владельца, доступ «Все» (анонимно), каждая приватная операция проверяет серверную сессию.
 - Семейный пароль, хеши сессий и настройки — в Script Properties проекта Apps Script.
 
@@ -78,14 +78,18 @@ npm run test:e2e:staging
 Репозиторий `aielx/logvinov`:
 
 1. **Settings → Pages → Source: GitHub Actions**.
-2. **Settings → Secrets and variables → Actions → Variables** (не Secrets!): `PUBLIC_APPS_SCRIPT_URL = https://script.google.com/macros/s/<DEPLOYMENT_ID>/exec`.
-3. Семейный пароль в CI не добавляется. Для авторизованных staging-проверок секрет `E2E_FAMILY_PASSWORD` задаётся только для окружения ручного запуска и не доступен из fork-PR.
-4. Push в `main` → workflow `.github/workflows/pages.yml`: тесты → build → privacy scan → публикация `dist`.
+2. **Кастомный домен**: в Settings → Pages → Custom domain указать `logvinov-tree.ru`. Домен берётся из файла `public/CNAME`, попадающего в `dist` при сборке. У регистратора домена нужны DNS-записи:
+   - apex `logvinov-tree.ru` → A-записи `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`;
+   - `www.logvinov-tree.ru` → CNAME на `aielx.github.io.`
+   После проверки DNS включить **Enforce HTTPS** (сертификат Let's Encrypt выпускается автоматически).
+3. **Settings → Secrets and variables → Actions → Variables** (не Secrets!): `PUBLIC_APPS_SCRIPT_URL = https://script.google.com/macros/s/<DEPLOYMENT_ID>/exec`.
+4. Семейный пароль в CI не добавляется. Для авторизованных staging-проверок секрет `E2E_FAMILY_PASSWORD` задаётся только для окружения ручного запуска и не доступен из fork-PR.
+5. Push в `main` → workflow `.github/workflows/pages.yml`: тесты → build → privacy scan → публикация `dist`.
 
 ## Шаг 6. Приёмка на production
 
 После первого деплоя проверьте по чек-листу `plans/astro-family-archive-plan.md` (раздел 11):
-- `https://aielx.github.io/logvinov/` открывается; прямые переходы `/tree/`, `/timeline/`, `/gallery/` не дают 404;
+- `https://logvinov-tree.ru/` открывается (и `https://www.logvinov-tree.ru/` редиректит на него); прямые переходы `/tree/`, `/timeline/`, `/gallery/` не дают 404;
 - D3 загружается из сборки (без CDN);
 - вход/выход работают с реального origin GitHub Pages;
 - правка Sheet видна на сайте в течение 5 минут (или сразу после «Обновить публичный кэш»).
