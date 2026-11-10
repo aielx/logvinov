@@ -88,7 +88,7 @@ function renderTreePreview(tree: PublicTree): void {
   });
   const generations = Array.from(byGeneration.keys()).sort((a, b) => a - b).slice(0, GENERATIONS_SHOWN);
   if (generations.length === 0) {
-    previewHint(root, "Древо пока пусто — добавьте людей в семейную таблицу.");
+    previewHint(root, "Древо появится здесь, когда будут опубликованы первые поколения рода.");
     return;
   }
 
@@ -148,7 +148,7 @@ function renderTimelinePreview(events: PublicTimelineEvent[]): void {
   const root = document.getElementById("timeline-preview");
   if (!root) return;
   if (events.length === 0) {
-    previewHint(root, "Опубликовано пока мало событий — дополните хронологию в семейной таблице.");
+    previewHint(root, "События появятся здесь по мере наполнения архива.");
     return;
   }
   const sorted = [...events].sort((a, b) => a.sortKey - b.sortKey);
@@ -199,7 +199,7 @@ function renderGalleryPreview(items: PublicGalleryItem[]): void {
     })
     .filter((figure): figure is HTMLElement => figure !== null);
   if (figures.length === 0) {
-    previewHint(root, "Публичные материалы появятся после наполнения семейной таблицы.");
+    previewHint(root, "Материалы появятся здесь по мере наполнения архива.");
     return;
   }
   root.replaceChildren(...figures);

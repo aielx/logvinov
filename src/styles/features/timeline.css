@@ -38,8 +38,6 @@
 .timeline-card h2 { margin-bottom: 10px; font-size: 1.35rem; }
 .timeline-card p { margin-bottom: 0; color: var(--muted); font-size: 0.88rem; }
 .timeline-card .family-badge { margin-top: 10px; }
-.archive-note { margin-bottom: 75px; padding: 22px 28px; border-left: 3px solid var(--archive-brown); background: var(--archive-soft); }
-.archive-note p { margin: 0; color: var(--muted); font-size: 0.85rem; }
 
 @media (max-width: 760px) {
   .page-intro { padding-block: 50px 34px; }
@@ -48,7 +46,6 @@
   .timeline-item, .timeline-item:nth-child(even) { width: 100%; margin-left: 0; padding: 0 0 28px 52px; }
   .timeline-marker, .timeline-item:nth-child(even) .timeline-marker { top: 18px; right: auto; left: 1px; }
   .timeline-card { padding: 20px; }
-  .archive-note { margin-bottom: 55px; }
 }
 
 @media (max-width: 480px) {

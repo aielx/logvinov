@@ -172,7 +172,7 @@ async function loadGalleryPage(root: HTMLElement, append: boolean): Promise<void
     const total = store.gallery.items.length + store.gallery.familyItems.length;
     setAsyncState(root, total === 0 ? "empty" : "content");
     if (total === 0) {
-      setAsyncState(root, "empty", { emptyTitle: "Галерея пока пуста", emptyMessage: "Материалы появятся после наполнения семейной таблицы." });
+      setAsyncState(root, "empty", { emptyTitle: "Галерея пока пуста", emptyMessage: "Материалы появятся по мере наполнения архива." });
     }
   } catch (error) {
     if (append) return; // догрузка молча терпит неудачу

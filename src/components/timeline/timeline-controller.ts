@@ -86,7 +86,7 @@ async function loadTimeline(root: HTMLElement): Promise<void> {
     store.setTimeline(payload.events);
     setAsyncState(root, payload.events.length === 0 ? "empty" : "content");
     if (payload.events.length === 0) {
-      setAsyncState(root, "empty", { emptyTitle: "События пока не добавлены", emptyMessage: "Хронология появится после наполнения семейной таблицы." });
+      setAsyncState(root, "empty", { emptyTitle: "События пока не добавлены", emptyMessage: "Хронология появится по мере наполнения архива." });
     }
     renderTimeline();
     await loadFamilyEvents();
