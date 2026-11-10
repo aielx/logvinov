@@ -8,6 +8,7 @@
 .key-dot { width: 9px; height: 9px; border-radius: 50%; }
 .key-dot.family { background: var(--forest); }
 .key-dot.history { background: var(--archive-brown); }
+.key-vital b { font-family: var(--serif); font-weight: 600; }
 .timeline-section { padding-bottom: 60px; }
 .timeline { position: relative; max-width: 1080px; margin-inline: auto; padding-block: 12px; }
 .timeline::before { position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: #B9AB9B; content: ""; }
@@ -39,6 +40,48 @@
 .timeline-card p { margin-bottom: 0; color: var(--muted); font-size: 0.88rem; }
 .timeline-card .family-badge { margin-top: 10px; }
 
+/* Фильтры-чипы над лентой */
+.timeline-controls { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+.timeline-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--paper-light);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+}
+.timeline-chip:hover { border-color: var(--forest); }
+.timeline-chip[aria-pressed="false"] { background: transparent; border-style: dashed; color: var(--muted); }
+.timeline-chip[aria-pressed="false"] .key-dot { background: var(--border); }
+.timeline-filter-empty { padding: 28px 0 8px; color: var(--muted); font-size: 0.9rem; text-align: center; }
+
+/* Компактные строки рождений и смертей: тоньше карточек, без описаний */
+.timeline-item.is-vital { padding-bottom: 20px; }
+.is-vital .timeline-marker { top: 10px; width: 28px; height: 28px; border-width: 3px; font-size: 0.82rem; }
+.vital-card {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 10px 18px;
+  border: 1px dashed #C7B9A4;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+}
+.vital-card .timeline-date { margin-bottom: 0; }
+.vital-names { margin: 0; font-family: var(--serif); font-size: 1.02rem; line-height: 1.5; }
+.vital-names a { color: var(--forest-dark); font-weight: 600; text-decoration-color: rgba(47, 66, 42, 0.35); }
+.vital-names a:hover { text-decoration-color: var(--forest-dark); }
+.vital-sep { margin: 0 6px; color: var(--muted); }
+.vital-card .family-badge-mini { padding: 2px 7px; font-size: 0.56rem; }
+
 @media (max-width: 760px) {
   .page-intro { padding-block: 50px 34px; }
   .page-intro h1 { font-size: 2.65rem; }
@@ -46,6 +89,13 @@
   .timeline-item, .timeline-item:nth-child(even) { width: 100%; margin-left: 0; padding: 0 0 28px 52px; }
   .timeline-marker, .timeline-item:nth-child(even) .timeline-marker { top: 18px; right: auto; left: 1px; }
   .timeline-card { padding: 20px; }
+  .is-vital { padding-bottom: 16px; }
+  .is-vital .timeline-marker { top: 12px; }
+  .vital-card { padding: 9px 14px; }
+}
+
+@media (max-width: 480px) {
+  .timeline-key { align-items: center; flex-direction: column; gap: 7px; }
 }
 
 @media (max-width: 480px) {

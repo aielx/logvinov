@@ -70,11 +70,28 @@ describe("Allowlist публичных сериализаторов", () => {
 
   it("public.timeline и public.gallery не содержат семейных событий и материалов", () => {
     const timeline = serializeTimeline(archive) as { events: unknown[] };
-    expect(timeline.events.length).toBe(11);
+    // 6 ручных публичных строк + 14 автособытий (рождения и смерти публичных людей)
+    expect(timeline.events.length).toBe(20);
     const gallery = serializeGalleryPage(archive, 0, 60);
     expect((gallery.items as unknown[]).length).toBe(8);
     const serialized = JSON.stringify({ timeline, gallery });
     CANARY_STRINGS.forEach((canary) => expect(serialized).not.toContain(canary));
+  });
+
+  it("автособытия рождений и смертей выводятся из листа «Люди»", () => {
+    const timeline = serializeTimeline(archive) as { events: Array<Record<string, unknown>> };
+    const annaBirth = timeline.events.find((event) => event.kind === "BIRTH" && event.primaryPersonId === "p_0004");
+    expect(annaBirth).toMatchObject({
+      title: "Анна Сергеевна Логвинова",
+      date: "1921",
+      eventType: "FAMILY",
+      description: ""
+    });
+    const deaths = timeline.events.filter((event) => event.kind === "DEATH").map((event) => event.primaryPersonId);
+    expect([...deaths].sort()).toEqual(["p_0001", "p_0002", "p_0003", "p_0004", "p_0005", "p_0007", "p_0009"]);
+    // Живые и люди с карточкой «Семейная» в публичную ленту не попадают
+    const vitalPeople = new Set(timeline.events.filter((event) => event.kind).map((event) => event.primaryPersonId));
+    ["p_0006", "p_0008", "p_0010"].forEach((id) => expect(vitalPeople.has(id)).toBe(false));
   });
 
   it("пагинация: лимит и курсор-смещение", () => {
@@ -102,11 +119,18 @@ describe("Приватные сериализаторы (только после
     expect(driveDoc?.url).toBeNull();
   });
 
-  it("private.timeline возвращает семейное событие", () => {
+  it("private.timeline возвращает семейное событие и семейные автособытия", () => {
     const timeline = serializePrivateTimeline(archive) as { events: Array<Record<string, unknown>> };
     const familyEvent = timeline.events.find((e) => String(e.description ?? "").includes("CANARY"));
     expect(familyEvent).toBeDefined();
-    expect(familyEvent?.eventId).toBe("e_0013");
+    expect(familyEvent?.eventId).toBe("e_0008");
+    const ids = timeline.events.map((event) => event.eventId);
+    // Екатерина («Семейная» карточка) и живой Алексей — только после входа
+    expect(ids).toContain("auto-birth-p_0006");
+    expect(ids).toContain("auto-death-p_0006");
+    expect(ids).toContain("auto-birth-p_0008");
+    // Ручная строка 1978 про Дмитрия глушит его автособытие рождения (дедуп)
+    expect(ids).not.toContain("auto-birth-p_0010");
   });
 
   it("private.gallery возвращает только семейные материалы", () => {

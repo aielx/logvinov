@@ -120,6 +120,8 @@ export interface PublicPersonCard {
 export interface PublicTimelineEvent {
   eventId: string;
   eventType: EventType;
+  /** Только у автособытий: рождения и смерти, выведенные из листа «Люди». */
+  kind?: "BIRTH" | "DEATH";
   title: string;
   date: string;
   sortKey: number;

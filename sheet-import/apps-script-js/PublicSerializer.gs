@@ -82,14 +82,6 @@ function serializePerson(archive, personId) {
     materials: publicPersonMaterials(archive, personId)
   };
 }
-function formatIsoDate(date) {
-  if (date.year === null) return null;
-  const year = String(date.year);
-  if (date.month === null) return year;
-  const month = String(date.month).padStart(2, "0");
-  if (date.day === null) return `${year}-${month}`;
-  return `${year}-${month}-${String(date.day).padStart(2, "0")}`;
-}
 function publicPersonMaterials(archive, personId) {
   return archive.personMaterials.filter((link) => link.personId === personId).filter((link) => {
     const media = archive.media.get(link.mediaId);
@@ -114,8 +106,8 @@ function publicPersonMaterials(archive, personId) {
   });
 }
 function serializeTimeline(archive) {
-  return {
-    events: archive.events.filter((event) => event.visibility === "PUBLIC").map((event) => ({
+  const events = [
+    ...archive.events.filter((event) => event.visibility === "PUBLIC").map((event) => ({
       eventId: event.eventId,
       eventType: event.eventType,
       title: event.title,
@@ -123,8 +115,10 @@ function serializeTimeline(archive) {
       sortKey: event.startSortKey,
       description: event.publicDescription,
       primaryPersonId: event.primaryPersonId
-    }))
-  };
+    })),
+    ...deriveVitalEvents(archive).filter((vital) => vital.visibility === "PUBLIC").map(vitalTimelineEvent)
+  ].sort(compareTimelineEntries);
+  return { events };
 }
 function serializeGalleryPage(archive, offset, limit) {
   const sorted = Array.from(archive.media.values()).filter((media) => media.visibility === "PUBLIC").sort((a, b) => a.sortOrder - b.sortOrder || a.sortKey - b.sortKey || a.mediaId.localeCompare(b.mediaId));

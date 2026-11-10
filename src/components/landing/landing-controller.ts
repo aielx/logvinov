@@ -151,7 +151,11 @@ function renderTimelinePreview(events: PublicTimelineEvent[]): void {
     previewHint(root, "События появятся здесь по мере наполнения архива.");
     return;
   }
-  const sorted = [...events].sort((a, b) => a.sortKey - b.sortKey);
+  // Автостроки рождений/смерти без описаний на превью смотрятся голо —
+  // показываем содержательные события, а если их нет, любые.
+  const meaningful = events.filter((event) => event.kind !== "BIRTH" && event.kind !== "DEATH");
+  const source = meaningful.length > 0 ? meaningful : events;
+  const sorted = [...source].sort((a, b) => a.sortKey - b.sortKey);
   const picks = sorted.length <= PREVIEW_ITEMS ? sorted : [sorted[0], sorted[Math.floor((sorted.length - 1) / 2)], sorted[sorted.length - 1]];
   const articles = picks.map((event) => {
     const article = el("article");

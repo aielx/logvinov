@@ -7,13 +7,13 @@ test.describe("Публичный сайт", () => {
 
     // Счётчики hero и схема поколений — из public.tree, не из зашитого демо
     await expect(page.locator("#hero-eyebrow")).toHaveText("Семейный архив · 4 поколения", { timeout: 15_000 });
-    await expect(page.locator("#hero-meta")).toHaveText("10 человек4 поколения11 событий");
+    await expect(page.locator("#hero-meta")).toHaveText("10 человек4 поколения20 событий");
     await expect(page.locator("#tree .preview-person").first()).toContainText("Иван Петрович");
     await expect(page.locator("#tree .preview-label").first()).toHaveText("I поколение");
 
-    // Хронология: первое и среднее событие из public.timeline
-    await expect(page.locator("#timeline .timeline-preview h3").first()).toContainText("Рождение Ивана Петровича");
-    await expect(page.locator("#timeline .timeline-preview time").nth(1)).toHaveText("1941–1945");
+    // Хронология: превью показывает содержательные события, а не автостроки рождений
+    await expect(page.locator("#timeline .timeline-preview h3").first()).toContainText("Революция и начало новой эпохи");
+    await expect(page.locator("#timeline .timeline-preview time").nth(1)).toHaveText("1946");
 
     // Галерея: первые материалы из public.gallery с реальными подписями
     await expect(page.locator("#gallery .gallery-preview figure")).toHaveCount(3, { timeout: 15_000 });

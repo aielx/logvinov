@@ -128,7 +128,7 @@ describe("Валидация демо-датасета v2", () => {
     expect(ivan.parentIds.sort()).toEqual(["p_0001", "p_0002"]);
     expect((archive.people.get("p_0008") as { generation: number }).generation).toBe(4);
     expect((archive.people.get("p_0001") as { spouseIds: string[] }).spouseIds).toEqual(["p_0002"]);
-    expect(archive.events.length).toBe(12);
+    expect(archive.events.length).toBe(7);
     expect(archive.media.size).toBe(11);
     expect(archive.personMaterials.length).toBe(11);
   });
@@ -150,7 +150,7 @@ describe("Валидация демо-датасета v2", () => {
     const archive = validateArchive(demoRecords());
     const family = archive.events.find((event) => event.familyDescription.includes("CANARY"));
     expect(family?.visibility).toBe("FAMILY");
-    expect(archive.events.filter((event) => event.visibility === "PUBLIC")).toHaveLength(11);
+    expect(archive.events.filter((event) => event.visibility === "PUBLIC")).toHaveLength(6);
   });
 });
 

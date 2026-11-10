@@ -54,6 +54,44 @@ function mediaById(id) {
   return data.media.find((m) => m.mediaId === id);
 }
 
+// Автособытия рождений и смертей из листа «Люди» — зеркало логики Apps Script
+// (apps-script/src/AutoEvents.ts): видимость по правилу подробной карточки,
+// ручная строка про того же человека с тем же годом глушит автособытие.
+function deriveVitalEvents() {
+  const manualYears = new Set();
+  data.events.forEach((event) => {
+    if (event.primaryPersonId) manualYears.add(`${event.primaryPersonId}|${Math.floor(event.startSortKey / 10000)}`);
+  });
+  const result = [];
+  data.people.forEach((person) => {
+    const visibility = !person.isLiving && person.detailsVisibility !== "FAMILY" ? "PUBLIC" : "FAMILY";
+    const dates = [
+      ["BIRTH", person.birthYear],
+      ["DEATH", person.isLiving ? null : person.deathYear]
+    ];
+    dates.forEach(([kind, year]) => {
+      if (!year || manualYears.has(`${person.personId}|${year}`)) return;
+      result.push({
+        eventId: `auto-${kind.toLowerCase()}-${person.personId}`,
+        eventType: "FAMILY",
+        kind,
+        title: person.displayName,
+        date: String(year),
+        sortKey: year * 10000,
+        description: "",
+        visibility,
+        primaryPersonId: person.personId
+      });
+    });
+  });
+  return result;
+}
+
+function compareTimelineEntries(a, b) {
+  const vitalRank = (entry) => (entry.kind === "BIRTH" || entry.kind === "DEATH" ? 1 : 0);
+  return a.sortKey - b.sortKey || vitalRank(a) - vitalRank(b) || String(a.eventId).localeCompare(String(b.eventId));
+}
+
 function avatarOf(person) {
   return person.avatar ?? null;
 }
@@ -140,17 +178,22 @@ function handleGet(action, params) {
   }
   if (action === "public.timeline") {
     return envelope({
-      events: data.events
-        .filter((event) => event.visibility === "PUBLIC")
-        .map((event) => ({
-          eventId: event.eventId,
-          eventType: event.eventType,
-          title: event.title,
-          date: event.displayDate,
-          sortKey: event.startSortKey,
-          description: event.publicDescription,
-          primaryPersonId: event.primaryPersonId || null
-        }))
+      events: [
+        ...data.events
+          .filter((event) => event.visibility === "PUBLIC")
+          .map((event) => ({
+            eventId: event.eventId,
+            eventType: event.eventType,
+            title: event.title,
+            date: event.displayDate,
+            sortKey: event.startSortKey,
+            description: event.publicDescription,
+            primaryPersonId: event.primaryPersonId || null
+          })),
+        ...deriveVitalEvents()
+          .filter((vital) => vital.visibility === "PUBLIC")
+          .map(({ visibility, ...vital }) => vital)
+      ].sort(compareTimelineEntries)
     });
   }
   if (action === "public.gallery") {
@@ -261,6 +304,9 @@ function handlePost(action, params) {
         events.push({ eventId: event.eventId, familyDescription: event.familyDescription });
       }
     });
+    deriveVitalEvents()
+      .filter((vital) => vital.visibility === "FAMILY")
+      .forEach(({ visibility, ...vital }) => events.push(vital));
     return envelope({ events });
   }
   if (action === "private.gallery") {

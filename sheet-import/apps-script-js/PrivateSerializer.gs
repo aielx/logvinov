@@ -63,6 +63,7 @@ function serializePrivateTimeline(archive) {
       });
     }
   });
+  deriveVitalEvents(archive).filter((vital) => vital.visibility === "FAMILY").map(vitalTimelineEvent).sort(compareTimelineEntries).forEach((item) => items.push(item));
   return { events: items };
 }
 function serializePrivateGallery(archive) {

@@ -4,7 +4,8 @@
  * Вызывается только после серверной проверки сессии.
  */
 import { ApiFailure, ValidatedArchive, ValidatedPerson } from "./Types";
-import { formatIsoDate } from "./PublicSerializer";
+import { formatIsoDate } from "./Util";
+import { compareTimelineEntries, deriveVitalEvents, vitalTimelineEvent } from "./AutoEvents";
 
 export function serializePrivatePerson(archive: ValidatedArchive, personId: string): object {
   const person = archive.people.get(personId);
@@ -53,7 +54,8 @@ function privatePersonMaterials(archive: ValidatedArchive, personId: string): ob
 
 /**
  * Семейная хронология: полные данные событий с visibility=FAMILY и семейные описания публичных.
- * Массив для слияния по eventId.
+ * Массив для слияния по eventId. Автособытия рождений и смертей живых
+ * и «семейных» людей приходят только сюда — после входа.
  */
 export function serializePrivateTimeline(archive: ValidatedArchive): object {
   const items: object[] = [];
@@ -75,6 +77,11 @@ export function serializePrivateTimeline(archive: ValidatedArchive): object {
       });
     }
   });
+  deriveVitalEvents(archive)
+    .filter((vital) => vital.visibility === "FAMILY")
+    .map(vitalTimelineEvent)
+    .sort(compareTimelineEntries)
+    .forEach((item) => items.push(item));
   return { events: items };
 }
 

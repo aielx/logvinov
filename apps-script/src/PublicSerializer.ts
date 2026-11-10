@@ -11,7 +11,8 @@ import {
   ValidatedPerson
 } from "./Types";
 import { SHEETS } from "./Config";
-import { formatYears } from "./Util";
+import { formatIsoDate, formatYears } from "./Util";
+import { compareTimelineEntries, deriveVitalEvents, vitalTimelineEvent, SerializedTimelineEvent } from "./AutoEvents";
 
 export interface PublicAvatar {
   storage: "PUBLIC_ASSET" | "EXTERNAL" | "DRIVE_PUBLIC";
@@ -117,15 +118,6 @@ export function serializePerson(archive: ValidatedArchive, personId: string): ob
   };
 }
 
-export function formatIsoDate(date: { year: number | null; month: number | null; day: number | null }): string | null {
-  if (date.year === null) return null;
-  const year = String(date.year);
-  if (date.month === null) return year;
-  const month = String(date.month).padStart(2, "0");
-  if (date.day === null) return `${year}-${month}`;
-  return `${year}-${month}-${String(date.day).padStart(2, "0")}`;
-}
-
 export function publicPersonMaterials(archive: ValidatedArchive, personId: string): object[] {
   return archive.personMaterials
     .filter((link) => link.personId === personId)
@@ -158,10 +150,12 @@ export function publicPersonMaterials(archive: ValidatedArchive, personId: strin
 }
 
 export function serializeTimeline(archive: ValidatedArchive): object {
-  return {
-    events: archive.events
+  // Ручные строки «Событий» + автособытия рождений и смертей из листа «Люди»
+  // (только публичные — про живых и «Семейная» см. serializePrivateTimeline).
+  const events: SerializedTimelineEvent[] = [
+    ...archive.events
       .filter((event) => event.visibility === "PUBLIC")
-      .map((event: ValidatedEvent) => ({
+      .map((event: ValidatedEvent): SerializedTimelineEvent => ({
         eventId: event.eventId,
         eventType: event.eventType,
         title: event.title,
@@ -169,8 +163,12 @@ export function serializeTimeline(archive: ValidatedArchive): object {
         sortKey: event.startSortKey,
         description: event.publicDescription,
         primaryPersonId: event.primaryPersonId
-      }))
-  };
+      })),
+    ...deriveVitalEvents(archive)
+      .filter((vital) => vital.visibility === "PUBLIC")
+      .map(vitalTimelineEvent)
+  ].sort(compareTimelineEntries);
+  return { events };
 }
 
 export function serializeGalleryPage(

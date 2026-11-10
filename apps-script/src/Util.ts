@@ -96,6 +96,16 @@ export function formatYears(birthYear: number | null, deathYear: number | null, 
   return deathYear === null ? String(birthYear) : `${birthYear}–${deathYear}`;
 }
 
+/** ISO-представление разобранной даты: 1890 | 1890-05 | 1890-05-17. */
+export function formatIsoDate(date: { year: number | null; month: number | null; day: number | null }): string | null {
+  if (date.year === null) return null;
+  const year = String(date.year);
+  if (date.month === null) return year;
+  const month = String(date.month).padStart(2, "0");
+  if (date.day === null) return `${year}-${month}`;
+  return `${year}-${month}-${String(date.day).padStart(2, "0")}`;
+}
+
 export function sha256Hex(value: string): string {
   const bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, value, Utilities.Charset.UTF_8);
   return bytesToHex(bytes);

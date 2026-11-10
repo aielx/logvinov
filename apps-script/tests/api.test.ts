@@ -117,7 +117,7 @@ describe("Вход и приватные запросы", () => {
     const person = post("private.person", { id: "p_0008", token }).data as Record<string, unknown>;
     expect(String(person.bio)).toContain("CANARY p0008");
     const timeline = post("private.timeline", { token }).data as { events: Array<{ eventId: string }> };
-    expect(timeline.events.some((e) => e.eventId === "e_0013")).toBe(true);
+    expect(timeline.events.some((e) => e.eventId === "e_0008")).toBe(true);
     const gallery = post("private.gallery", { token }).data as { items: Array<Record<string, unknown>> };
     expect(gallery.items.length).toBe(3);
   });

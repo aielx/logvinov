@@ -935,7 +935,13 @@ export function initFamilyTree(): void {
     if (!document.hidden) pumpPrefetchQueue();
   });
 
-  void loadTree();
+  // Диплинк из хронологии/поделиться: /tree/?person=p_0003 — открыть карточку после загрузки древа.
+  const deepLinkPerson = new URLSearchParams(window.location.search).get("person");
+  void loadTree().then(() => {
+    if (deepLinkPerson && store.getPersonSummary(deepLinkPerson)) {
+      void openPerson(deepLinkPerson);
+    }
+  });
 }
 
 if (document.getElementById("tree-root")) {

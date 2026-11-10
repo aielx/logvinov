@@ -77,6 +77,14 @@ function formatYears(birthYear, deathYear, isLiving) {
   if (isLiving) return `${birthYear}\u2013\u043D. \u0432.`;
   return deathYear === null ? String(birthYear) : `${birthYear}\u2013${deathYear}`;
 }
+function formatIsoDate(date) {
+  if (date.year === null) return null;
+  const year = String(date.year);
+  if (date.month === null) return year;
+  const month = String(date.month).padStart(2, "0");
+  if (date.day === null) return `${year}-${month}`;
+  return `${year}-${month}-${String(date.day).padStart(2, "0")}`;
+}
 function sha256Hex(value) {
   const bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, value, Utilities.Charset.UTF_8);
   return bytesToHex(bytes);
