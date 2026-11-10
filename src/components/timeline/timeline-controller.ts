@@ -103,7 +103,7 @@ function renderVitalGroup(group: VitalGroup): HTMLElement {
   const date = document.createElement("time");
   date.className = "timeline-date";
   date.dateTime = group.date;
-  date.textContent = vitalDateLabel(group.date);
+  date.textContent = `${vitalLabel(group.kind)} · ${vitalDateLabel(group.date)}`;
   const line = document.createElement("p");
   line.className = "vital-names";
   group.members.forEach((member, index) => {

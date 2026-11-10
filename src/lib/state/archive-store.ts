@@ -58,7 +58,12 @@ class ArchiveStore extends EventTarget {
   }
 
   setTimeline(events: PublicTimelineEvent[]): void {
-    this.timeline = events;
+    const familyEvents = this.timeline.filter(
+      (event) => (event as PublicTimelineEvent & { familyOnly?: boolean }).familyOnly === true
+    );
+    const merged = new Map(events.map((event) => [event.eventId, event]));
+    familyEvents.forEach((event) => merged.set(event.eventId, event));
+    this.timeline = [...merged.values()].sort((a, b) => a.sortKey - b.sortKey);
     this.emit(STORE_EVENTS.TIMELINE);
   }
 

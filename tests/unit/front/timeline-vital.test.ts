@@ -64,11 +64,11 @@ describe("buildTimelineEntries", () => {
 });
 
 describe("маркеры и подписи", () => {
-  it("генеалогические символы и подписи для доступности", () => {
+  it("генеалогические символы и понятные подписи событий", () => {
     expect(vitalMarker("BIRTH")).toBe("*");
     expect(vitalMarker("DEATH")).toBe("†");
-    expect(vitalLabel("BIRTH")).toBe("Рождение");
-    expect(vitalLabel("DEATH")).toBe("Смерть");
+    expect(vitalLabel("BIRTH")).toBe("День рождения");
+    expect(vitalLabel("DEATH")).toBe("День памяти");
   });
 });
 

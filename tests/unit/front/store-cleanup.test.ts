@@ -32,6 +32,32 @@ describe("ArchiveStore", () => {
     expect(store.timeline.map((event) => event.eventId)).toEqual(["e1", "e2", "e3"]);
   });
 
+  it("сохраняет семейные события при более поздней загрузке публичной ленты", () => {
+    const familyEvent: PublicTimelineEvent & { familyOnly: true } = {
+      eventId: "family-race",
+      eventType: "FAMILY",
+      kind: "BIRTH",
+      title: "Семейное событие",
+      date: "1975-09-05",
+      sortKey: 19750905,
+      description: "",
+      primaryPersonId: null,
+      dayKey: "09-05",
+      familyOnly: true
+    };
+    store.setTimeline([]);
+    store.addFamilyEvents([familyEvent]);
+    store.setTimeline([
+      { eventId: "public-race", eventType: "FAMILY", title: "Публичное событие", date: "1900", sortKey: 19000000, description: "", primaryPersonId: null }
+    ]);
+
+    expect(store.timeline.map((event) => event.eventId)).toEqual(["public-race", "family-race"]);
+    expect(store.timeline.find((event) => event.eventId === "family-race")).toMatchObject({ familyOnly: true });
+
+    store.resetPrivate();
+    expect(store.timeline.map((event) => event.eventId)).toEqual(["public-race"]);
+  });
+
   it("resetPrivate полностью очищает приватное состояние и отзывает ресурсы", () => {
     registerObjectUrl("blob:1");
     registerObjectUrl("blob:2");

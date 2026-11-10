@@ -49,7 +49,7 @@ describe("selectOnThisDay", () => {
     expect(result.today[0].event.eventId).toBe("b1");
     expect(result.today[0].years).toBe(105);
     expect(result.today[0].daysUntil).toBe(0);
-    expect(result.upcoming).toBeNull();
+    expect(result.upcoming).toEqual([]);
   });
 
   it("сегодня несколько дат: рождения раньше событий, события раньше дней памяти", () => {
@@ -70,7 +70,7 @@ describe("selectOnThisDay", () => {
     ];
     const result = selectOnThisDay(events, new Date(2026, 8, 1));
     expect(result.today).toHaveLength(0);
-    expect(result.upcoming).toBeNull();
+    expect(result.upcoming).toEqual([]);
   });
 
   it("пусто сегодня: ближайшая дата вперёд с годами наступающей годовщины", () => {
@@ -80,25 +80,30 @@ describe("selectOnThisDay", () => {
     ];
     const result = selectOnThisDay(events, new Date(2026, 6, 16));
     expect(result.today).toHaveLength(0);
-    expect(result.upcoming?.event.eventId).toBe("m1");
-    expect(result.upcoming?.daysUntil).toBe(4);
-    expect(result.upcoming?.years).toBe(80);
+    expect(result.upcoming).toHaveLength(1);
+    expect(result.upcoming[0]?.event.eventId).toBe("m1");
+    expect(result.upcoming[0]?.daysUntil).toBe(4);
+    expect(result.upcoming[0]?.years).toBe(80);
   });
 
   it("ближайшая через границу года: декабрь → январь следующего года", () => {
     const events = [vital("b1", "BIRTH", "Анна Сергеевна Логвинова", "1921-01-04")];
     const result = selectOnThisDay(events, new Date(2026, 11, 30));
-    expect(result.upcoming?.daysUntil).toBe(5);
-    expect(result.upcoming?.years).toBe(106);
+    expect(result.upcoming[0]?.daysUntil).toBe(5);
+    expect(result.upcoming[0]?.years).toBe(106);
   });
 
-  it("при равной удалённости выигрывает более ранняя дата события", () => {
+  it("ближайшая дата: все её события по порядку, без более поздних", () => {
     const events = [
       vital("late", "BIRTH", "Поздний", "1980-07-22"),
-      vital("early", "BIRTH", "Ранний", "1920-07-22")
+      manual("event", "Семейное событие", "1946-07-22"),
+      vital("death", "DEATH", "День памяти", "1955-07-22"),
+      vital("early", "BIRTH", "Ранний", "1920-07-22"),
+      vital("next", "BIRTH", "Следующий", "1920-07-23")
     ];
     const result = selectOnThisDay(events, new Date(2026, 6, 20));
-    expect(result.upcoming?.event.eventId).toBe("early");
+    expect(result.upcoming.map((item) => item.event.eventId)).toEqual(["early", "late", "event", "death"]);
+    expect(result.upcoming.every((item) => item.daysUntil === 2)).toBe(true);
   });
 
   it("семейный флаг сохраняется в выбранных строках", () => {

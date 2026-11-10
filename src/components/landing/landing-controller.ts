@@ -260,7 +260,7 @@ function renderOnThisDay(): void {
   const root = document.getElementById("on-this-day");
   if (!root) return;
   const result = selectOnThisDay(store.timeline as OnThisDayEvent[], new Date());
-  const items = result.today.length > 0 ? result.today : result.upcoming ? [result.upcoming] : [];
+  const items = result.today.length > 0 ? result.today : result.upcoming;
   if (items.length === 0) {
     root.replaceChildren();
     root.hidden = true;

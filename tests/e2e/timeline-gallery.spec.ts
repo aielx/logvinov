@@ -12,6 +12,10 @@ test.describe("Хронология", () => {
     const text = await page.locator("#timeline-list").innerText();
     expect(text).toContain("Революция и начало новой эпохи");
     expect(text).toContain("Анна Сергеевна Логвинова");
+    const birth = page.locator('.timeline-item.is-vital time[datetime="1921-06-12"]');
+    await expect(birth).toHaveText("День рождения · 12 июня 1921 г.");
+    const death = page.locator('.timeline-item.is-vital time[datetime="1955-02-24"]');
+    await expect(death).toHaveText("День памяти · 24 февраля 1955 г.");
     expect(text).not.toContain("CANARY");
     // Живые и люди с карточкой «Семейная» не получают публичных автострок
     await expect(page.locator('.is-vital a[href*="p_0006"]')).toHaveCount(0);

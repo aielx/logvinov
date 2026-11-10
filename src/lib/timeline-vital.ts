@@ -43,7 +43,7 @@ export function vitalMarker(kind: VitalKind): string {
 }
 
 export function vitalLabel(kind: VitalKind): string {
-  return kind === "BIRTH" ? "Рождение" : "Смерть";
+  return kind === "BIRTH" ? "День рождения" : "День памяти";
 }
 
 /**

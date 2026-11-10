@@ -5,7 +5,7 @@
  * Правила:
  *  - участвуют только события с dayKey (точность «день»);
  *  - сегодня: совпадение месяц+день по местной дате посетителя;
- *  - если сегодня пусто — ближайшая годовщина вперёд («Скоро в роду»);
+ *  - если сегодня пусто — все годовщины ближайшей даты («Скоро в роду»);
  *  - годы рождения/события берутся из sortKey (floor(sortKey / 10000)).
  */
 import type { PublicTimelineEvent } from "./api/types";
@@ -26,8 +26,8 @@ export interface AnniversaryItem {
 export interface OnThisDayResult {
   /** Годовщины сегодняшнего дня; пусто — показываем upcoming. */
   today: AnniversaryItem[];
-  /** Ближайшая дата, когда сегодня ничего нет. */
-  upcoming: AnniversaryItem | null;
+  /** Все события ближайшей даты; пусто, если есть события сегодня или нет дат. */
+  upcoming: AnniversaryItem[];
 }
 
 const DAY_MS = 86_400_000;
@@ -105,20 +105,17 @@ export function selectOnThisDay(events: OnThisDayEvent[], today: Date): OnThisDa
     .map((item) => ({ event: item.event, kind: item.kind, years: today.getFullYear() - item.year, daysUntil: 0 }))
     .sort((a, b) => KIND_RANK[a.kind] - KIND_RANK[b.kind] || a.event.sortKey - b.event.sortKey);
 
-  if (todayItems.length > 0) return { today: todayItems, upcoming: null };
+  if (todayItems.length > 0) return { today: todayItems, upcoming: [] };
 
-  let upcoming: AnniversaryItem | null = null;
-  pool.forEach((item) => {
+  let nearestDays = Number.POSITIVE_INFINITY;
+  const upcomingItems = pool.map((item) => {
     const { days, occurrenceYear } = daysUntil(item.month, item.day, today);
-    const candidateItem: AnniversaryItem = { event: item.event, kind: item.kind, years: occurrenceYear - item.year, daysUntil: days };
-    if (
-      upcoming === null ||
-      candidateItem.daysUntil < upcoming.daysUntil ||
-      (candidateItem.daysUntil === upcoming.daysUntil && candidateItem.event.sortKey < upcoming.event.sortKey)
-    ) {
-      upcoming = candidateItem;
-    }
+    nearestDays = Math.min(nearestDays, days);
+    return { event: item.event, kind: item.kind, years: occurrenceYear - item.year, daysUntil: days };
   });
+  const upcoming = upcomingItems
+    .filter((item) => item.daysUntil === nearestDays)
+    .sort((a, b) => KIND_RANK[a.kind] - KIND_RANK[b.kind] || a.event.sortKey - b.event.sortKey);
   return { today: [], upcoming };
 }
 
