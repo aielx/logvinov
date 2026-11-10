@@ -108,6 +108,27 @@ test.describe("Семейное древо", () => {
     await expect(page.locator("[data-private-status]").first()).toHaveText("Семейный режим");
   });
 
+  test("семейные материалы в карточке: миниатюра DRIVE-фото и видимое название", async ({ page }) => {
+    await clickTreeNode(page, "p_0008");
+    await expect(page.locator("#login-modal")).toBeVisible();
+    await page.locator("#family-password").fill(FAMILY_PASSWORD);
+    await page.getByRole("button", { name: "Войти в семейный режим" }).click();
+    await expect(page.locator("#person-name")).toHaveText("Алексей Сергеевич Логвинов", { timeout: 10_000 });
+
+    // Два семейных материала: закрытый DRIVE-файл и фото-ссылка Drive
+    const grid = page.locator(".person-gallery");
+    await expect(grid.locator("button")).toHaveCount(2);
+    await expect(
+      grid.getByRole("button", { name: "Открыть семейный материал: Семейный документ (демонстрация закрытого файла Drive)" })
+    ).toBeAttached();
+
+    // Закрытый DRIVE-фото: миниатюра подтягивается через private.media как Object URL
+    await expect(grid.locator("img[src^='blob:']")).toBeVisible({ timeout: 10_000 });
+
+    // Недоступная внешняя картинка сменяется заглушкой с реальным названием
+    await expect(grid.locator(".material-placeholder-title").filter({ hasText: "Семейное фото-ссылка Drive" })).toBeVisible({ timeout: 10_000 });
+  });
+
   test("logout закрывает семейную карточку и возвращает публичное древо", async ({ page }) => {
     // вход
     await page.getByRole("button", { name: "Семейный доступ" }).click();

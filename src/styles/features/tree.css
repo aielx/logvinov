@@ -110,7 +110,10 @@ body.is-private .tree-privacy-copy { visibility: hidden; }
   display: grid;
   width: 100%;
   aspect-ratio: 1;
-  place-items: center;
+  place-content: center;
+  justify-items: center;
+  gap: 5px;
+  padding: 8px;
   border: 1px dashed #B9C3B2;
   border-radius: 4px;
   background: var(--forest-soft);
@@ -120,6 +123,14 @@ body.is-private .tree-privacy-copy { visibility: hidden; }
   letter-spacing: 0.04em;
   text-align: center;
   cursor: zoom-in;
+}
+.person-gallery .material-placeholder-icon { font-size: 0.95rem; line-height: 1; }
+.person-gallery .material-placeholder-title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow-wrap: anywhere;
 }
 .private-card-note { margin-bottom: 20px; padding: 10px 12px; border-left: 2px solid var(--forest); background: var(--forest-soft); color: var(--forest-dark); font-size: 0.72rem; }
 .person-loading { display: grid; gap: 12px; padding: 48px 0; }

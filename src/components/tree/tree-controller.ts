@@ -8,6 +8,7 @@ import { apiGet, apiPost, ApiError } from "../../lib/api/client";
 import type { PrivatePerson, PublicPersonCard, PublicTree, PublicTreePerson } from "../../lib/api/types";
 import { getToken } from "../../lib/auth/session";
 import { store, STORE_EVENTS } from "../../lib/state/archive-store";
+import { getFamilyThumbnail } from "../../lib/privacy/family-thumbnails";
 import { buildGraph, filterByBranch } from "../../lib/tree/build-graph";
 import type { TreeGraph } from "../../lib/tree/build-graph";
 import { assetUrl } from "../../lib/urls";
@@ -581,10 +582,31 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string): 
   return element;
 }
 
-function makeFamilyPlaceholder(): HTMLElement {
+/** Заглушка семейного материала: вместо анонимного «🔒» — реальное название. */
+function makeFamilyPlaceholder(title: string, isDocument: boolean): HTMLElement {
   const placeholder = el("span", "material-placeholder");
-  placeholder.textContent = "🔒 семейный материал";
+  const icon = el("span", "material-placeholder-icon");
+  icon.textContent = isDocument ? "📄" : "🔒";
+  const label = el("span", "material-placeholder-title");
+  label.textContent = title;
+  placeholder.append(icon, label);
   return placeholder;
+}
+
+/**
+ * Закрытые DRIVE-фото: миниатюра подтягивается отдельным запросом (private.media)
+ * и подменяет заглушку с названием, когда придёт. До входа/при ошибке остаётся название.
+ */
+function loadFamilyThumbnail(button: HTMLButtonElement, person: PublicTreePerson, material: { mediaId: string; title: string; altText: string }): void {
+  void getFamilyThumbnail(material.mediaId).then((url) => {
+    const cardReplaced = dom.personContent?.dataset.activePerson !== person.personId;
+    if (!url || cardReplaced || !button.isConnected) return;
+    const image = document.createElement("img");
+    image.src = url;
+    image.alt = material.altText || material.title;
+    image.loading = "lazy";
+    button.replaceChildren(image);
+  });
 }
 
 function relationSection(title: string, people: PublicTreePerson[], relation: string): HTMLElement | null {
@@ -761,20 +783,22 @@ function renderPersonCard(person: PublicTreePerson, card: PublicPersonCard | nul
     const button = el("button");
     button.type = "button";
     // Прямые ссылки (внешние и фото из Drive) открываются сразу;
-    // закрытые DRIVE-документы — через private.media с байтами.
+    // закрытые DRIVE-файлы — через private.media: фото как миниатюра, документы названием.
     const directUrl = material.storage === "EXTERNAL" || material.storage === "DRIVE_PUBLIC" ? material.url : null;
-    if (directUrl && material.mediaType !== "document") {
+    const isImage = material.mediaType !== "document";
+    if (directUrl && isImage) {
       const image = document.createElement("img");
       image.src = directUrl;
       image.alt = material.altText || material.title;
       image.loading = "lazy";
       image.onerror = () => {
         image.remove();
-        button.append(makeFamilyPlaceholder());
+        button.append(makeFamilyPlaceholder(material.title, false));
       };
       button.append(image);
     } else {
-      button.append(makeFamilyPlaceholder());
+      button.append(makeFamilyPlaceholder(material.title, !isImage));
+      if (material.storage === "DRIVE" && isImage) loadFamilyThumbnail(button, person, material);
     }
     button.setAttribute("aria-label", `Открыть семейный материал: ${material.title}`);
     button.addEventListener("click", () => {
