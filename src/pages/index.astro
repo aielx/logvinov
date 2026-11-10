@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "../styles/features/landing.css";
-import { assetUrl, pageUrl } from "../lib/urls";
+import { pageUrl } from "../lib/urls";
 ---
 
 <BaseLayout
@@ -14,7 +14,7 @@ import { assetUrl, pageUrl } from "../lib/urls";
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-map" aria-hidden="true"></div>
     <div class="hero-content">
-      <p class="eyebrow eyebrow-light">Семейный архив · четыре поколения</p>
+      <p class="eyebrow eyebrow-light" id="hero-eyebrow">Семейный архив</p>
       <h1 id="hero-title">Род Логвиновых</h1>
       <p class="hero-subtitle">История семьи. Поколения. Память.</p>
       <p class="hero-description">Сохраняем лица, имена и истории, чтобы семейная память оставалась живой для тех, кто придёт после нас.</p>
@@ -23,8 +23,8 @@ import { assetUrl, pageUrl } from "../lib/urls";
         <a class="button button-ghost button-large" href={pageUrl("tree")}>Познакомиться с архивом</a>
       </div>
     </div>
-    <div class="hero-meta" aria-label="Содержание семейного архива">
-      <span>10 человек</span><span>4 поколения</span><span>1 общая история</span>
+    <div class="hero-meta" id="hero-meta" aria-label="Содержание семейного архива" hidden>
+      <span>Загружаем данные архива…</span>
     </div>
   </section>
 
@@ -49,31 +49,8 @@ import { assetUrl, pageUrl } from "../lib/urls";
         </div>
         <p>Исследуйте ветви рода, меняйте масштаб и открывайте истории людей одним нажатием.</p>
       </div>
-      <div class="tree-preview" aria-label="Схема трёх поколений семьи">
-        <div class="preview-generation">
-          <span class="preview-label">I поколение</span>
-          <div class="preview-couple">
-            <span class="preview-person">Иван Петрович<small>1890–1955</small></span>
-            <span class="preview-marriage" aria-hidden="true"></span>
-            <span class="preview-person">Мария Ивановна<small>1895–1960</small></span>
-          </div>
-        </div>
-        <span class="preview-connector" aria-hidden="true"></span>
-        <div class="preview-generation">
-          <span class="preview-label">II поколение</span>
-          <div class="preview-couple preview-children">
-            <span class="preview-person">Иван Иванович<small>1918–1978</small></span>
-            <span class="preview-person">Пётр Иванович<small>1922–1985</small></span>
-          </div>
-        </div>
-        <span class="preview-connector" aria-hidden="true"></span>
-        <div class="preview-generation">
-          <span class="preview-label">III поколение</span>
-          <div class="preview-couple preview-children">
-            <span class="preview-person">Сергей Иванович<small>1947–2000</small></span>
-            <span class="preview-person">Борис Петрович<small>1950–2010</small></span>
-          </div>
-        </div>
+      <div class="tree-preview" id="tree-preview" aria-label="Схема поколений семьи">
+        <p class="preview-hint">Загружаем поколения…</p>
       </div>
       <div class="section-action">
         <a class="button button-primary" href={pageUrl("tree")}>Исследовать древо <span aria-hidden="true">→</span></a>
@@ -90,10 +67,8 @@ import { assetUrl, pageUrl } from "../lib/urls";
         </div>
         <p>Рождения, браки и переезды — в контексте событий, которые меняли жизнь всей страны.</p>
       </div>
-      <div class="timeline-preview">
-        <article><time datetime="1890">1890</time><div><h3>Начало семейной истории</h3><p>Родился Иван Петрович Логвинов — старший из известных предков архива.</p></div></article>
-        <article><time datetime="1941">1941–1945</time><div><h3>Годы Великой Отечественной войны</h3><p>Исторический контекст, через который прошла жизнь второго поколения семьи.</p></div></article>
-        <article><time datetime="1975">1975</time><div><h3>Новое поколение</h3><p>Родился Алексей Сергеевич Логвинов. Карточка доступна в семейном режиме.</p></div></article>
+      <div class="timeline-preview" id="timeline-preview">
+        <p class="preview-hint">Загружаем события…</p>
       </div>
       <div class="section-action">
         <a class="button button-secondary" href={pageUrl("timeline")}>Открыть всю хронологию <span aria-hidden="true">→</span></a>
@@ -110,19 +85,8 @@ import { assetUrl, pageUrl } from "../lib/urls";
         </div>
         <p>Лица, письма и места, через которые прошлое становится ближе и понятнее.</p>
       </div>
-      <div class="gallery-preview">
-        <figure>
-          <img src={assetUrl("assets/archive-family.svg")} alt="Стилизованная семейная фотография у дома" width="600" height="420">
-          <figcaption>Семья у дома · 1930-е</figcaption>
-        </figure>
-        <figure>
-          <img src={assetUrl("assets/archive-letter.svg")} alt="Стилизованное старое письмо" width="600" height="420">
-          <figcaption>Письмо с фронта · 1944</figcaption>
-        </figure>
-        <figure>
-          <img src={assetUrl("assets/archive-wedding.svg")} alt="Стилизованная свадебная фотография" width="600" height="420">
-          <figcaption>Свадьба · 1946</figcaption>
-        </figure>
+      <div class="gallery-preview" id="gallery-preview">
+        <p class="preview-hint">Загружаем материалы…</p>
       </div>
       <div class="section-action">
         <a class="button button-primary" href={pageUrl("gallery")}>Перейти в галерею <span aria-hidden="true">→</span></a>
@@ -143,4 +107,8 @@ import { assetUrl, pageUrl } from "../lib/urls";
       </div>
     </div>
   </section>
+
+  <noscript><p class="noscript-note">Превью разделов на главной заполняются из семейного архива — включите JavaScript.</p></noscript>
 </BaseLayout>
+
+<script src="../components/landing/landing-controller.ts"></script>

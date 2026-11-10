@@ -69,9 +69,11 @@
 .tree-preview {
   display: flex;
   min-height: 360px;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 32px;
+  gap: 20px;
+  row-gap: 22px;
   padding: 45px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -86,7 +88,7 @@
 .preview-children { gap: 20px; }
 .preview-person {
   display: flex;
-  width: 150px;
+  width: 140px;
   min-height: 82px;
   flex-direction: column;
   align-items: center;
@@ -99,16 +101,19 @@
   font-size: 0.96rem;
   text-align: center;
 }
+.preview-more-generations { flex-basis: 100%; order: 99; text-align: center; }
 .preview-person small { margin-top: 4px; color: var(--muted); font-family: var(--sans); font-size: 0.7rem; }
 .preview-marriage { width: 18px; height: 1px; background: var(--archive-brown); }
 .preview-connector { width: 30px; height: 1px; background: #98A293; }
+.preview-hint { margin: 0; color: var(--muted); font-size: 0.85rem; text-align: center; }
+.preview-more { color: var(--muted); font-size: 0.72rem; }
 .timeline-preview { max-width: 880px; margin-inline: auto; }
 .timeline-preview article { display: grid; grid-template-columns: 130px 1fr; gap: 30px; padding: 25px 0; border-bottom: 1px solid #D4C9BA; }
 .timeline-preview article:first-child { border-top: 1px solid #D4C9BA; }
 .timeline-preview time { color: var(--archive-brown); font-family: var(--serif); font-size: 1.35rem; font-weight: 600; }
 .timeline-preview h3 { margin-bottom: 7px; }
 .timeline-preview p { margin-bottom: 0; color: var(--muted); }
-.gallery-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.gallery-preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
 .gallery-preview figure { overflow: hidden; border-radius: 8px; background: var(--paper-light); box-shadow: var(--shadow); }
 .gallery-preview img { width: 100%; aspect-ratio: 10 / 7; object-fit: cover; filter: sepia(0.12); transition: transform 300ms ease; }
 .gallery-preview figure:hover img { transform: scale(1.025); }
