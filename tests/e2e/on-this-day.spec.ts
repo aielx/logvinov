@@ -13,7 +13,8 @@ test.describe("Карточка «В этот день» на главной", (
     await page.goto("");
     const card = page.locator("#on-this-day");
     await expect(card).toBeVisible({ timeout: 15_000 });
-    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ В этот день · 12 июня");
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ В этот день");
+    await expect(card.locator(".on-this-day-date")).toHaveText("12 июня");
     await expect(card.locator(".on-this-day-name")).toContainText("Анна Сергеевна Логвинова");
     await expect(card.locator(".on-this-day-detail")).toContainText("105 лет со дня рождения");
     await expect(card.locator(".on-this-day-avatar")).toBeVisible();
@@ -27,7 +28,8 @@ test.describe("Карточка «В этот день» на главной", (
     await page.goto("");
     const card = page.locator("#on-this-day");
     await expect(card).toBeVisible({ timeout: 15_000 });
-    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ В этот день · 24 февраля");
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ В этот день");
+    await expect(card.locator(".on-this-day-date")).toHaveText("24 февраля");
     await expect(card.locator(".on-this-day-name")).toContainText("Иван Петрович Логвинов");
     await expect(card.locator(".on-this-day-detail")).toHaveText("день памяти — 71 год");
   });
@@ -37,7 +39,8 @@ test.describe("Карточка «В этот день» на главной", (
     await page.goto("");
     const card = page.locator("#on-this-day");
     await expect(card).toBeVisible({ timeout: 15_000 });
-    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ Скоро в роду · 20 июля");
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ Скоро в роду");
+    await expect(card.locator(".on-this-day-date")).toHaveText("20 июля");
     await expect(card.locator(".on-this-day-name")).toContainText("Брак Ивана и Анны");
     await expect(card.locator(".on-this-day-detail")).toContainText("80 лет с события");
     await expect(card.locator(".on-this-day-detail")).toContainText("через 4 дня");
@@ -49,20 +52,23 @@ test.describe("Карточка «В этот день» на главной", (
     const card = page.locator("#on-this-day");
     await expect(card).toBeVisible({ timeout: 15_000 });
     // Публично Алексея нет: показывается ближайшая публичная дата
-    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ Скоро в роду · 24 февраля");
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ Скоро в роду");
+    await expect(card.locator(".on-this-day-date")).toHaveText("24 февраля");
     expect(await card.innerText()).not.toContain("Алексей");
 
     await page.getByRole("button", { name: "Для семьи — открыть полное древо" }).click();
     await page.locator("#family-password").fill(FAMILY_PASSWORD);
     await page.getByRole("button", { name: "Войти в семейный режим" }).click();
-    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ В этот день · 5 сентября", { timeout: 10_000 });
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ В этот день", { timeout: 10_000 });
+    await expect(card.locator(".on-this-day-date")).toHaveText("5 сентября");
     await expect(card.locator(".on-this-day-name")).toContainText("Алексей Сергеевич Логвинов");
     await expect(card.locator(".on-this-day-detail")).toContainText("исполняется 51 год");
     await expect(card.locator(".on-this-day-badge")).toHaveText("Семейное");
 
     // Выход возвращает публичную карточку
     await page.getByRole("button", { name: "Выйти из семейного режима" }).click();
-    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ Скоро в роду · 24 февраля", { timeout: 10_000 });
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ Скоро в роду", { timeout: 10_000 });
+    await expect(card.locator(".on-this-day-date")).toHaveText("24 февраля");
     expect(await card.innerText()).not.toContain("Алексей");
   });
 });

@@ -268,13 +268,15 @@ function renderOnThisDay(): void {
   }
   const isToday = result.today.length > 0;
   const card = el("div", "on-this-day-card");
+  const heading = el("div", "on-this-day-heading");
   const eyebrow = el("p", "on-this-day-eyebrow");
-  eyebrow.textContent = isToday
-    ? `✦ В этот день · ${dayKeyLabel(items[0].event.dayKey ?? "")}`
-    : `✦ Скоро в роду · ${dayKeyLabel(items[0].event.dayKey ?? "")}`;
+  eyebrow.textContent = isToday ? "✦ В этот день" : "✦ Скоро в роду";
+  const date = el("p", "on-this-day-date");
+  date.textContent = dayKeyLabel(items[0].event.dayKey ?? "");
+  heading.append(eyebrow, date);
   const list = el("ul", "on-this-day-list");
   items.forEach((item) => list.append(renderOnThisDayItem(item, !isToday)));
-  card.append(eyebrow, list);
+  card.append(heading, list);
   root.replaceChildren(card);
   root.hidden = false;
 }

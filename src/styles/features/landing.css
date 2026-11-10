@@ -167,36 +167,51 @@
   .timeline-preview article { grid-template-columns: 1fr; gap: 6px; }
 }
 
-/* «В этот день»: годовщины рода с точной датой (заполняется из архива). */
-.on-this-day-section { padding-block: 36px 0; }
+/* Памятные даты рода: сегодняшние годовщины или ближайшая дата. */
+.on-this-day-section { padding-block: 40px 4px; }
 .on-this-day-card {
-  width: min(680px, 100%);
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  align-items: center;
+  gap: 30px;
+  width: min(880px, 100%);
   margin-inline: auto;
-  padding: 24px 30px 26px;
-  border: 1px dashed var(--border);
-  border-radius: 10px;
+  padding: 26px 30px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--forest);
+  border-radius: 8px;
   background: var(--paper-light);
-  box-shadow: var(--shadow-large);
+  box-shadow: 0 2px 12px rgba(24, 43, 58, 0.05);
 }
+.on-this-day-heading { min-width: 0; }
 .on-this-day-eyebrow {
-  margin-bottom: 14px;
-  color: var(--forest);
+  margin: 0;
+  color: var(--archive-brown);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.16em;
   line-height: 1.4;
   text-transform: uppercase;
 }
-.on-this-day-list { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
-.on-this-day-item { display: flex; align-items: center; gap: 14px; }
+.on-this-day-date {
+  margin: 7px 0 0;
+  color: var(--forest-dark);
+  font-family: var(--serif);
+  font-size: 1.45rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.on-this-day-list { display: grid; gap: 18px; margin: 0; padding: 0; list-style: none; }
+.on-this-day-item { display: flex; align-items: center; gap: 16px; }
 .on-this-day-avatar {
   flex: none;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--border);
+  width: 54px;
+  height: 54px;
+  border: 1px solid #C9BBA8;
   border-radius: 50%;
   object-fit: cover;
   background: var(--paper-deep);
+  box-shadow: 0 0 0 4px var(--paper-deep);
 }
 .on-this-day-marker {
   margin-right: 7px;
@@ -206,16 +221,17 @@
   line-height: inherit;
 }
 .on-this-day-body { min-width: 0; }
-.on-this-day-name { margin: 0; font-family: var(--serif); font-size: 1.12rem; line-height: 1.35; }
-.on-this-day-name a { color: var(--forest-dark); font-weight: 600; text-decoration-color: rgba(53, 77, 48, 0.35); }
-.on-this-day-name a:hover { text-decoration-color: var(--forest-dark); }
-.on-this-day-detail { margin: 3px 0 0; color: #57524C; font-size: 0.92rem; }
+.on-this-day-name { margin: 0; font-family: var(--serif); font-size: 1.18rem; line-height: 1.35; }
+.on-this-day-name a { color: var(--ink); font-weight: 600; text-decoration-color: rgba(139, 69, 19, 0.35); }
+.on-this-day-name a:hover { color: var(--archive-brown); text-decoration-color: currentColor; }
+.on-this-day-detail { margin: 5px 0 0; color: var(--muted); font-size: 0.9rem; }
 .on-this-day-badge {
   display: inline-block;
-  margin-top: 7px;
+  margin-top: 8px;
   padding: 2px 8px;
-  border: 1px dashed var(--forest);
+  border: 1px solid #A9BAA2;
   border-radius: 999px;
+  background: var(--forest-soft);
   color: var(--forest-dark);
   font-size: 0.6rem;
   font-weight: 600;
@@ -224,9 +240,19 @@
 }
 
 @media (max-width: 760px) {
-  .on-this-day-section { padding-top: 26px; }
-  .on-this-day-card { padding: 20px 20px 22px; }
-  .on-this-day-item { gap: 11px; }
-  .on-this-day-avatar { width: 42px; height: 42px; }
-  .on-this-day-name { font-size: 1.02rem; }
+  .on-this-day-section { padding-top: 28px; }
+  .on-this-day-card { grid-template-columns: 1fr; gap: 18px; padding: 22px; }
+  .on-this-day-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 12px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border);
+  }
+  .on-this-day-date { margin: 0; font-size: 1.15rem; white-space: nowrap; }
+  .on-this-day-item { gap: 13px; }
+  .on-this-day-avatar { width: 48px; height: 48px; }
+  .on-this-day-name { font-size: 1.08rem; }
 }
