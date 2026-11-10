@@ -32,8 +32,9 @@ export default defineConfig({
   workers: process.env.CI ? 2 : undefined,
   reporter: [["list"]],
   use: {
-    // Хвостовой слэш обязателен: относительные goto("tree/") должны сохранять /logvinov/.
-    baseURL: `http://127.0.0.1:${PORT_SITE}/logvinov/`,
+    // Хвостовой слэш обязателен: относительные goto("tree/") должны сохранять базу.
+    // База — корень (кастомный домен logvinov-tree.ru, base path убран из astro.config).
+    baseURL: `http://127.0.0.1:${PORT_SITE}/`,
     trace: "retain-on-failure",
     screenshot: "only-on-failure"
   },
