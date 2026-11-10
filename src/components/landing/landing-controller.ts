@@ -2,10 +2,22 @@
  * Контроллер лендинга: живые превью разделов из публичного API.
  * Счётчики в hero, схема поколений, события хронологии и материалы галереи —
  * только реальные опубликованные данные, демо-подстановок на главной нет.
+ * Карточка «В этот день» собирает годовщины с точной датой; семейные даты
+ * подключаются после входа (общая лента в store).
  */
 import { apiGet } from "../../lib/api/client";
+import { loadFamilyTimeline } from "../../lib/api/family-timeline";
 import type { PublicGalleryItem, PublicTimelineEvent, PublicTree, PublicTreePerson } from "../../lib/api/types";
-import { assetUrl } from "../../lib/urls";
+import { store, STORE_EVENTS } from "../../lib/state/archive-store";
+import {
+  anniversaryDetail,
+  dayKeyLabel,
+  selectOnThisDay,
+  type AnniversaryItem,
+  type OnThisDayEvent
+} from "../../lib/on-this-day";
+import { vitalMarker } from "../../lib/timeline-vital";
+import { assetUrl, pageUrl } from "../../lib/urls";
 
 const GENERATIONS_SHOWN = 3;
 const PREVIEW_ITEMS = 3;
@@ -180,8 +192,94 @@ function renderTimelinePreview(events: PublicTimelineEvent[]): void {
   root.replaceChildren(...articles);
 }
 
-// --- Превью галереи: первые опубликованные материалы --------------------------
+// --- «В этот день»: годовщины с точной датой ----------------------------------
 
+function avatarSourceOf(avatar: PublicTreePerson["avatar"]): string | null {
+  if (avatar?.storage === "PUBLIC_ASSET" && avatar.path) return assetUrl(avatar.path);
+  if (avatar?.storage === "EXTERNAL" && avatar.url) return avatar.url;
+  if (avatar?.storage === "DRIVE_PUBLIC" && avatar.url) return avatar.url;
+  return null;
+}
+
+function pluralDays(count: number): string {
+  const mod100 = count % 100;
+  const mod10 = count % 10;
+  if (mod100 >= 11 && mod100 <= 14) return "дней";
+  if (mod10 === 1) return "день";
+  if (mod10 >= 2 && mod10 <= 4) return "дня";
+  return "дней";
+}
+
+function renderOnThisDayItem(item: AnniversaryItem, soon: boolean): HTMLLIElement {
+  const row = el("li", "on-this-day-item");
+  const personId = item.event.primaryPersonId;
+  const person = personId ? store.getPersonSummary(personId) : null;
+
+  if (person) {
+    const source = avatarSourceOf(person.avatar);
+    if (source) {
+      const photo = document.createElement("img");
+      photo.className = "on-this-day-avatar";
+      photo.src = source;
+      photo.alt = "";
+      photo.loading = "lazy";
+      row.append(photo);
+    }
+  }
+
+  const body = el("div", "on-this-day-body");
+  const name = el("p", "on-this-day-name");
+  // Маркер в строке имени: * рождение · † день памяти · ✦ событие.
+  const marker = el("span", "on-this-day-marker");
+  marker.setAttribute("aria-hidden", "true");
+  marker.textContent = item.kind === "EVENT" ? "✦" : vitalMarker(item.kind);
+  name.append(marker);
+  if (person && personId) {
+    const link = document.createElement("a");
+    link.href = `${pageUrl("tree")}?person=${encodeURIComponent(personId)}`;
+    link.textContent = item.event.title;
+    name.append(link);
+  } else {
+    name.append(item.event.title);
+  }
+  const detail = el("p", "on-this-day-detail");
+  const detailParts = [anniversaryDetail(item, { living: person?.isLiving === true })];
+  if (soon && item.daysUntil > 0) detailParts.push(`через ${item.daysUntil} ${pluralDays(item.daysUntil)}`);
+  detail.textContent = detailParts.join(" · ");
+  body.append(name, detail);
+  if (item.event.familyOnly === true) {
+    const badge = el("span", "on-this-day-badge");
+    badge.textContent = "Семейное";
+    body.append(badge);
+  }
+  row.append(body);
+  return row;
+}
+
+function renderOnThisDay(): void {
+  const root = document.getElementById("on-this-day");
+  if (!root) return;
+  const result = selectOnThisDay(store.timeline as OnThisDayEvent[], new Date());
+  const items = result.today.length > 0 ? result.today : result.upcoming ? [result.upcoming] : [];
+  if (items.length === 0) {
+    root.replaceChildren();
+    root.hidden = true;
+    return;
+  }
+  const isToday = result.today.length > 0;
+  const card = el("div", "on-this-day-card");
+  const eyebrow = el("p", "on-this-day-eyebrow");
+  eyebrow.textContent = isToday
+    ? `✦ В этот день · ${dayKeyLabel(items[0].event.dayKey ?? "")}`
+    : `✦ Скоро в роду · ${dayKeyLabel(items[0].event.dayKey ?? "")}`;
+  const list = el("ul", "on-this-day-list");
+  items.forEach((item) => list.append(renderOnThisDayItem(item, !isToday)));
+  card.append(eyebrow, list);
+  root.replaceChildren(card);
+  root.hidden = false;
+}
+
+// --- Превью галереи: первые опубликованные материалы --------------------------
 function renderGalleryPreview(items: PublicGalleryItem[]): void {
   const root = document.getElementById("gallery-preview");
   if (!root) return;
@@ -223,13 +321,23 @@ async function loadSection<T>(rootId: string, request: () => Promise<T>, render:
 export function initLanding(): void {
   if (!document.getElementById("tree-preview")) return;
 
+  // Карточка «В этот день» перерисовывается вместе с лентой в store —
+  // включая добавление семейных дат после входа и их сброс при выходе.
+  store.addEventListener(STORE_EVENTS.TIMELINE, renderOnThisDay);
+  store.addEventListener(STORE_EVENTS.RESET_PRIVATE, renderOnThisDay);
+  store.addEventListener(STORE_EVENTS.FAMILY_CHANGE, () => {
+    if (store.familyMode) void loadFamilyTimeline();
+  });
+
   void loadSection(
     "tree-preview",
     () => apiGet<PublicTree>("public.tree"),
     (tree) => {
+      store.setTree(tree);
       renderTreePreview(tree);
       apiGet<{ events: PublicTimelineEvent[] }>("public.timeline")
         .then((payload) => {
+          store.setTimeline(payload.events);
           renderHeroCounts(tree, payload.events.length);
           renderTimelinePreview(payload.events);
         })

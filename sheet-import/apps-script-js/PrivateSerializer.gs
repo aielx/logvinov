@@ -47,6 +47,7 @@ function serializePrivateTimeline(archive) {
   const items = [];
   archive.events.forEach((event) => {
     if (event.visibility === "FAMILY") {
+      const dayKey = event.precision === "DAY" ? dayKeyFromSortKey(event.startSortKey) : null;
       items.push({
         eventId: event.eventId,
         eventType: event.eventType,
@@ -54,7 +55,8 @@ function serializePrivateTimeline(archive) {
         date: event.displayDate,
         sortKey: event.startSortKey,
         description: event.familyDescription || event.publicDescription,
-        primaryPersonId: event.primaryPersonId
+        primaryPersonId: event.primaryPersonId,
+        ...dayKey ? { dayKey } : {}
       });
     } else if (event.familyDescription) {
       items.push({

@@ -107,15 +107,19 @@ function publicPersonMaterials(archive, personId) {
 }
 function serializeTimeline(archive) {
   const events = [
-    ...archive.events.filter((event) => event.visibility === "PUBLIC").map((event) => ({
-      eventId: event.eventId,
-      eventType: event.eventType,
-      title: event.title,
-      date: event.displayDate,
-      sortKey: event.startSortKey,
-      description: event.publicDescription,
-      primaryPersonId: event.primaryPersonId
-    })),
+    ...archive.events.filter((event) => event.visibility === "PUBLIC").map((event) => {
+      const dayKey = event.precision === "DAY" ? dayKeyFromSortKey(event.startSortKey) : null;
+      return {
+        eventId: event.eventId,
+        eventType: event.eventType,
+        title: event.title,
+        date: event.displayDate,
+        sortKey: event.startSortKey,
+        description: event.publicDescription,
+        primaryPersonId: event.primaryPersonId,
+        ...dayKey ? { dayKey } : {}
+      };
+    }),
     ...deriveVitalEvents(archive).filter((vital) => vital.visibility === "PUBLIC").map(vitalTimelineEvent)
   ].sort(compareTimelineEntries);
   return { events };

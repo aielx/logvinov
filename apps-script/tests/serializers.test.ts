@@ -83,7 +83,7 @@ describe("Allowlist публичных сериализаторов", () => {
     const annaBirth = timeline.events.find((event) => event.kind === "BIRTH" && event.primaryPersonId === "p_0004");
     expect(annaBirth).toMatchObject({
       title: "Анна Сергеевна Логвинова",
-      date: "1921",
+      date: "1921-06-12",
       eventType: "FAMILY",
       description: ""
     });
@@ -92,6 +92,23 @@ describe("Allowlist публичных сериализаторов", () => {
     // Живые и люди с карточкой «Семейная» в публичную ленту не попадают
     const vitalPeople = new Set(timeline.events.filter((event) => event.kind).map((event) => event.primaryPersonId));
     ["p_0006", "p_0008", "p_0010"].forEach((id) => expect(vitalPeople.has(id)).toBe(false));
+  });
+
+  it("dayKey получают только события с точным днём (блок «В этот день»)", () => {
+    const timeline = serializeTimeline(archive) as { events: Array<Record<string, unknown>> };
+    const annaBirth = timeline.events.find((event) => event.eventId === "auto-birth-p_0004");
+    expect(annaBirth?.dayKey).toBe("06-12");
+    const ivanDeath = timeline.events.find((event) => event.eventId === "auto-death-p_0001");
+    expect(ivanDeath).toMatchObject({ date: "1955-02-24", dayKey: "02-24" });
+    // Точность «год» — без dayKey
+    const yearBirth = timeline.events.find((event) => event.eventId === "auto-birth-p_0003");
+    expect(yearBirth?.dayKey).toBeUndefined();
+    // Ручное событие с полной датой тоже участвует
+    const marriage = timeline.events.find((event) => event.eventId === "e_0004");
+    expect(marriage).toMatchObject({ title: "Брак Ивана и Анны", dayKey: "07-20" });
+    // Диапазон 1941–1945 — точности «день» нет
+    const war = timeline.events.find((event) => event.eventId === "e_0003");
+    expect(war?.dayKey).toBeUndefined();
   });
 
   it("пагинация: лимит и курсор-смещение", () => {
@@ -131,6 +148,9 @@ describe("Приватные сериализаторы (только после
     expect(ids).toContain("auto-birth-p_0008");
     // Ручная строка 1978 про Дмитрия глушит его автособытие рождения (дедуп)
     expect(ids).not.toContain("auto-birth-p_0010");
+    // День рождения живого Алексея известен точно — семейская годовщина для «В этот день»
+    const alexeyBirth = timeline.events.find((event) => event.eventId === "auto-birth-p_0008");
+    expect(alexeyBirth).toMatchObject({ date: "1975-09-05", dayKey: "09-05" });
   });
 
   it("private.gallery возвращает только семейные материалы", () => {

@@ -26,7 +26,8 @@ function toTimelineEvent(vital) {
     date: vital.date,
     sortKey: vital.sortKey,
     description: "",
-    primaryPersonId: vital.primaryPersonId
+    primaryPersonId: vital.primaryPersonId,
+    ...vital.dayKey ? { dayKey: vital.dayKey } : {}
   };
 }
 function deriveVitalEvents(archive) {
@@ -35,6 +36,7 @@ function deriveVitalEvents(archive) {
   const push = (person, kind, date) => {
     if (!date || date.year === null) return;
     if (manualYears.has(`${person.personId}|${date.year}`)) return;
+    const dayKey = date.precision === "DAY" ? dayKeyFromSortKey(date.sortKey) : null;
     result.push({
       eventId: `auto-${kind.toLowerCase()}-${person.personId}`,
       kind,
@@ -42,7 +44,8 @@ function deriveVitalEvents(archive) {
       date: formatIsoDate(date) ?? String(date.year),
       sortKey: date.sortKey,
       visibility: isPublicVital(person) ? "PUBLIC" : "FAMILY",
-      primaryPersonId: person.personId
+      primaryPersonId: person.personId,
+      ...dayKey ? { dayKey } : {}
     });
   };
   archive.people.forEach((person) => {

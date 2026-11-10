@@ -127,6 +127,8 @@ export interface PublicTimelineEvent {
   sortKey: number;
   description: string;
   primaryPersonId: string | null;
+  /** «MM-DD» у событий с точным днём — для блока «В этот день» на главной. */
+  dayKey?: string;
 }
 
 // --- Галерея ---------------------------------------------------------------

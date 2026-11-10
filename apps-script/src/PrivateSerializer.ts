@@ -4,7 +4,7 @@
  * Вызывается только после серверной проверки сессии.
  */
 import { ApiFailure, ValidatedArchive, ValidatedPerson } from "./Types";
-import { formatIsoDate } from "./Util";
+import { dayKeyFromSortKey, formatIsoDate } from "./Util";
 import { compareTimelineEntries, deriveVitalEvents, vitalTimelineEvent } from "./AutoEvents";
 
 export function serializePrivatePerson(archive: ValidatedArchive, personId: string): object {
@@ -61,6 +61,7 @@ export function serializePrivateTimeline(archive: ValidatedArchive): object {
   const items: object[] = [];
   archive.events.forEach((event) => {
     if (event.visibility === "FAMILY") {
+      const dayKey = event.precision === "DAY" ? dayKeyFromSortKey(event.startSortKey) : null;
       items.push({
         eventId: event.eventId,
         eventType: event.eventType,
@@ -68,7 +69,8 @@ export function serializePrivateTimeline(archive: ValidatedArchive): object {
         date: event.displayDate,
         sortKey: event.startSortKey,
         description: event.familyDescription || event.publicDescription,
-        primaryPersonId: event.primaryPersonId
+        primaryPersonId: event.primaryPersonId,
+        ...(dayKey ? { dayKey } : {})
       });
     } else if (event.familyDescription) {
       items.push({

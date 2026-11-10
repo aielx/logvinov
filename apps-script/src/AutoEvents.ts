@@ -8,7 +8,7 @@
  * автособытие — ручное описание всегда важнее.
  */
 import { EventType, ValidatedArchive, ValidatedPerson, Visibility } from "./Types";
-import { formatIsoDate } from "./Util";
+import { dayKeyFromSortKey, formatIsoDate } from "./Util";
 
 export type VitalKind = "BIRTH" | "DEATH";
 
@@ -21,6 +21,8 @@ export interface VitalEvent {
   sortKey: number;
   visibility: Visibility;
   primaryPersonId: string;
+  /** «MM-DD», если известен точный день, — для блока «В этот день». */
+  dayKey?: string;
 }
 
 /** Сериализованное событие ленты: у автособытий заполнен kind, у ручных — нет. */
@@ -33,6 +35,8 @@ export interface SerializedTimelineEvent {
   sortKey: number;
   description: string;
   primaryPersonId: string | null;
+  /** «MM-DD» у событий с точным днём (рождения, смерти, памятные даты). */
+  dayKey?: string;
 }
 
 /** Публичное автособытие — то же правило, что hasPublicDetails в public.tree. */
@@ -64,7 +68,8 @@ function toTimelineEvent(vital: VitalEvent): SerializedTimelineEvent {
     date: vital.date,
     sortKey: vital.sortKey,
     description: "",
-    primaryPersonId: vital.primaryPersonId
+    primaryPersonId: vital.primaryPersonId,
+    ...(vital.dayKey ? { dayKey: vital.dayKey } : {})
   };
 }
 
@@ -75,6 +80,7 @@ export function deriveVitalEvents(archive: ValidatedArchive): VitalEvent[] {
   const push = (person: ValidatedPerson, kind: VitalKind, date: ValidatedPerson["birthDate"]): void => {
     if (!date || date.year === null) return;
     if (manualYears.has(`${person.personId}|${date.year}`)) return;
+    const dayKey = date.precision === "DAY" ? dayKeyFromSortKey(date.sortKey) : null;
     result.push({
       eventId: `auto-${kind.toLowerCase()}-${person.personId}`,
       kind,
@@ -82,7 +88,8 @@ export function deriveVitalEvents(archive: ValidatedArchive): VitalEvent[] {
       date: formatIsoDate(date) ?? String(date.year),
       sortKey: date.sortKey,
       visibility: isPublicVital(person) ? "PUBLIC" : "FAMILY",
-      primaryPersonId: person.personId
+      primaryPersonId: person.personId,
+      ...(dayKey ? { dayKey } : {})
     });
   };
   archive.people.forEach((person) => {

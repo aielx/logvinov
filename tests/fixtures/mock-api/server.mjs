@@ -57,6 +57,32 @@ function mediaById(id) {
 // Автособытия рождений и смертей из листа «Люди» — зеркало логики Apps Script
 // (apps-script/src/AutoEvents.ts): видимость по правилу подробной карточки,
 // ручная строка про того же человека с тем же годом глушит автособытие.
+// Даты с точным днём получают dayKey «MM-DD» (блок «В этот день» на главной).
+function parseDateParts(value) {
+  const match = /^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/.exec(String(value ?? ""));
+  if (!match) return null;
+  return { year: Number(match[1]), month: match[2] ? Number(match[2]) : null, day: match[3] ? Number(match[3]) : null };
+}
+
+function pad2(value) {
+  return String(value).padStart(2, "0");
+}
+
+function dayKeyFromSortKey(sortKey) {
+  const month = Math.floor((sortKey % 10000) / 100);
+  const day = sortKey % 100;
+  if (month < 1 || day < 1) return null;
+  return `${pad2(month)}-${pad2(day)}`;
+}
+
+function precisionOf(value) {
+  const match = /^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/.exec(String(value ?? ""));
+  if (!match) return "YEAR";
+  if (match[3]) return "DAY";
+  if (match[2]) return "MONTH";
+  return "YEAR";
+}
+
 function deriveVitalEvents() {
   const manualYears = new Set();
   data.events.forEach((event) => {
@@ -66,19 +92,23 @@ function deriveVitalEvents() {
   data.people.forEach((person) => {
     const visibility = !person.isLiving && person.detailsVisibility !== "FAMILY" ? "PUBLIC" : "FAMILY";
     const dates = [
-      ["BIRTH", person.birthYear],
-      ["DEATH", person.isLiving ? null : person.deathYear]
+      ["BIRTH", parseDateParts(person.birthDate)],
+      ["DEATH", person.isLiving ? null : parseDateParts(person.deathDate)]
     ];
-    dates.forEach(([kind, year]) => {
-      if (!year || manualYears.has(`${person.personId}|${year}`)) return;
+    dates.forEach(([kind, date]) => {
+      if (!date || !date.year || manualYears.has(`${person.personId}|${date.year}`)) return;
+      const sortKey = date.year * 10000 + (date.month ?? 0) * 100 + (date.day ?? 0);
+      const iso = date.month ? (date.day ? `${date.year}-${pad2(date.month)}-${pad2(date.day)}` : `${date.year}-${pad2(date.month)}`) : String(date.year);
+      const dayKey = date.month && date.day ? `${pad2(date.month)}-${pad2(date.day)}` : null;
       result.push({
         eventId: `auto-${kind.toLowerCase()}-${person.personId}`,
         eventType: "FAMILY",
         kind,
         title: person.displayName,
-        date: String(year),
-        sortKey: year * 10000,
+        date: iso,
+        sortKey,
         description: "",
+        ...(dayKey ? { dayKey } : {}),
         visibility,
         primaryPersonId: person.personId
       });
@@ -116,8 +146,8 @@ function personCard(id) {
     branchLabel: data.branches.find((b) => b.branchId === person.branchId)?.label ?? null,
     bio: details.publicBio ?? "",
     birthPlace: details.publicBirthPlace ?? "",
-    birth: person.birthDate ? { date: person.birthDate, precision: "YEAR", year: Number(person.birthDate) } : null,
-    death: person.deathDate ? { date: person.deathDate, precision: "YEAR", year: Number(person.deathDate) } : null,
+    birth: person.birthDate ? { date: person.birthDate, precision: precisionOf(person.birthDate), year: Number(String(person.birthDate).slice(0, 4)) } : null,
+    death: person.deathDate ? { date: person.deathDate, precision: precisionOf(person.deathDate), year: Number(String(person.deathDate).slice(0, 4)) } : null,
     avatar: avatarOf(person),
     relatives: [
       ...relations(person.parentIds, "parent"),
@@ -188,7 +218,10 @@ function handleGet(action, params) {
             date: event.displayDate,
             sortKey: event.startSortKey,
             description: event.publicDescription,
-            primaryPersonId: event.primaryPersonId || null
+            primaryPersonId: event.primaryPersonId || null,
+            ...(event.precision === "DAY" && dayKeyFromSortKey(event.startSortKey)
+              ? { dayKey: dayKeyFromSortKey(event.startSortKey) }
+              : {})
           })),
         ...deriveVitalEvents()
           .filter((vital) => vital.visibility === "PUBLIC")
@@ -264,7 +297,7 @@ function handlePost(action, params) {
     return envelope({
       personId: params.id,
       bio: details.familyBio || details.publicBio || "",
-      birth: person.birthDate ? { date: person.birthDate, precision: "YEAR" } : null,
+      birth: person.birthDate ? { date: person.birthDate, precision: precisionOf(person.birthDate) } : null,
       birthPlace: details.familyBirthPlace || details.publicBirthPlace || "",
       contacts: details.familyContacts || "",
       notes: details.familyNotes || "",
@@ -298,7 +331,10 @@ function handlePost(action, params) {
           date: event.displayDate,
           sortKey: event.startSortKey,
           description: event.familyDescription || event.publicDescription,
-          primaryPersonId: event.primaryPersonId || null
+          primaryPersonId: event.primaryPersonId || null,
+          ...(event.precision === "DAY" && dayKeyFromSortKey(event.startSortKey)
+            ? { dayKey: dayKeyFromSortKey(event.startSortKey) }
+            : {})
         });
       } else if (event.familyDescription) {
         events.push({ eventId: event.eventId, familyDescription: event.familyDescription });

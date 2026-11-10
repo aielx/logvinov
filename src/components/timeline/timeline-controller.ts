@@ -3,9 +3,9 @@
  * Рождения и смерти (kind из API) выводятся компактными строками с группировкой
  * по году; обычные события — карточками. Рендер через createElement/textContent.
  */
-import { apiGet, apiPost } from "../../lib/api/client";
-import type { PrivateTimelineEvent, PublicTimelineEvent } from "../../lib/api/types";
-import { getToken } from "../../lib/auth/session";
+import { apiGet } from "../../lib/api/client";
+import type { PublicTimelineEvent } from "../../lib/api/types";
+import { loadFamilyTimeline } from "../../lib/api/family-timeline";
 import { store, STORE_EVENTS } from "../../lib/state/archive-store";
 import { pageUrl } from "../../lib/urls";
 import {
@@ -175,36 +175,6 @@ function renderTimeline(): void {
   }
 }
 
-async function loadFamilyEvents(): Promise<void> {
-  const token = getToken();
-  if (!token) return;
-  try {
-    const payload = await apiPost<{ events: PrivateTimelineEvent[] }>("private.timeline", { token });
-    const fullEvents: TimelineEvent[] = [];
-    payload.events.forEach((event) => {
-      if ("familyDescription" in event && event.familyDescription !== undefined) {
-        store.mergeFamilyDescription(event.eventId, event.familyDescription);
-      } else {
-        const full = event as PublicTimelineEvent;
-        fullEvents.push({
-          eventId: full.eventId,
-          eventType: full.eventType,
-          ...(isVitalKind(full.kind) ? { kind: full.kind } : {}),
-          title: full.title,
-          date: full.date,
-          sortKey: full.sortKey,
-          description: full.description,
-          primaryPersonId: full.primaryPersonId,
-          familyOnly: true
-        });
-      }
-    });
-    if (fullEvents.length) store.addFamilyEvents(fullEvents);
-  } catch {
-    // Семейные события недоступны — публичная хронология остаётся рабочей.
-  }
-}
-
 async function loadTimeline(root: HTMLElement): Promise<void> {
   setAsyncState(root, "loading");
   try {
@@ -215,7 +185,7 @@ async function loadTimeline(root: HTMLElement): Promise<void> {
       setAsyncState(root, "empty", { emptyTitle: "События пока не добавлены", emptyMessage: "Хронология появится по мере наполнения архива." });
     }
     renderTimeline();
-    await loadFamilyEvents();
+    await loadFamilyTimeline();
   } catch (error) {
     const message = isApiError(error) ? error.userMessage : "Архив временно недоступен.";
     setAsyncState(root, "error", { message });
@@ -231,7 +201,7 @@ export function initTimeline(): void {
   store.addEventListener(STORE_EVENTS.RESET_PRIVATE, renderTimeline);
   store.addEventListener(STORE_EVENTS.FAMILY_CHANGE, () => {
     if (store.familyMode) {
-      void loadFamilyEvents();
+      void loadFamilyTimeline();
     }
   });
   void loadTimeline(root);

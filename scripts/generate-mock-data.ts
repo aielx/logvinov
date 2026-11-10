@@ -11,6 +11,7 @@ import { DEMO } from "../apps-script/src/Seed";
 import { HEADERS, SHEETS } from "../apps-script/src/Config";
 import { recordsFromValues } from "../apps-script/src/SheetsRepository";
 import { validateArchive } from "../apps-script/src/Validation";
+import { formatIsoDate } from "../apps-script/src/Util";
 import type { RawRecords } from "../apps-script/src/Types";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -47,8 +48,8 @@ const payload = {
     spouseIds: person.spouseIds,
     childIds: person.childIds,
     detailsVisibility: person.detailsVisibility,
-    birthDate: person.birthDate?.year ? String(person.birthDate.year) : "",
-    deathDate: person.deathDate?.year ? String(person.deathDate.year) : "",
+    birthDate: person.birthDate?.year ? (formatIsoDate(person.birthDate) ?? String(person.birthDate.year)) : "",
+    deathDate: person.deathDate?.year ? (formatIsoDate(person.deathDate) ?? String(person.deathYear)) : "",
     avatar: person.publicAvatarUrl,
     // Поля для карточек mock-API:
     publicBio: person.publicBio,
@@ -64,6 +65,7 @@ const payload = {
     title: event.title,
     displayDate: event.displayDate,
     startSortKey: event.startSortKey,
+    precision: event.precision,
     publicDescription: event.publicDescription,
     familyDescription: event.familyDescription,
     visibility: event.visibility,

@@ -96,6 +96,17 @@ export function formatYears(birthYear: number | null, deathYear: number | null, 
   return deathYear === null ? String(birthYear) : `${birthYear}–${deathYear}`;
 }
 
+/**
+ * Ключ годовщины «MM-DD» из sortKey (YYYYMMDD) — для блока «В этот день».
+ * null, когда месяц или день не известны (точность «год»/«месяц»).
+ */
+export function dayKeyFromSortKey(sortKey: number): string | null {
+  const month = Math.floor((sortKey % 10000) / 100);
+  const day = sortKey % 100;
+  if (month < 1 || day < 1) return null;
+  return `${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
 /** ISO-представление разобранной даты: 1890 | 1890-05 | 1890-05-17. */
 export function formatIsoDate(date: { year: number | null; month: number | null; day: number | null }): string | null {
   if (date.year === null) return null;

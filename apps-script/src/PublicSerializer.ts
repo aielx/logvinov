@@ -11,7 +11,7 @@ import {
   ValidatedPerson
 } from "./Types";
 import { SHEETS } from "./Config";
-import { formatIsoDate, formatYears } from "./Util";
+import { dayKeyFromSortKey, formatIsoDate, formatYears } from "./Util";
 import { compareTimelineEntries, deriveVitalEvents, vitalTimelineEvent, SerializedTimelineEvent } from "./AutoEvents";
 
 export interface PublicAvatar {
@@ -155,15 +155,19 @@ export function serializeTimeline(archive: ValidatedArchive): object {
   const events: SerializedTimelineEvent[] = [
     ...archive.events
       .filter((event) => event.visibility === "PUBLIC")
-      .map((event: ValidatedEvent): SerializedTimelineEvent => ({
-        eventId: event.eventId,
-        eventType: event.eventType,
-        title: event.title,
-        date: event.displayDate,
-        sortKey: event.startSortKey,
-        description: event.publicDescription,
-        primaryPersonId: event.primaryPersonId
-      })),
+      .map((event: ValidatedEvent): SerializedTimelineEvent => {
+        const dayKey = event.precision === "DAY" ? dayKeyFromSortKey(event.startSortKey) : null;
+        return {
+          eventId: event.eventId,
+          eventType: event.eventType,
+          title: event.title,
+          date: event.displayDate,
+          sortKey: event.startSortKey,
+          description: event.publicDescription,
+          primaryPersonId: event.primaryPersonId,
+          ...(dayKey ? { dayKey } : {})
+        };
+      }),
     ...deriveVitalEvents(archive)
       .filter((vital) => vital.visibility === "PUBLIC")
       .map(vitalTimelineEvent)

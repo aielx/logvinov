@@ -166,3 +166,67 @@
   .preview-person { min-height: 76px; padding: 9px 6px; font-size: 0.77rem; }
   .timeline-preview article { grid-template-columns: 1fr; gap: 6px; }
 }
+
+/* «В этот день»: годовщины рода с точной датой (заполняется из архива). */
+.on-this-day-section { padding-block: 36px 0; }
+.on-this-day-card {
+  width: min(680px, 100%);
+  margin-inline: auto;
+  padding: 24px 30px 26px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: var(--paper-light);
+  box-shadow: var(--shadow-large);
+}
+.on-this-day-eyebrow {
+  margin-bottom: 14px;
+  color: var(--forest);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.on-this-day-list { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.on-this-day-item { display: flex; align-items: center; gap: 14px; }
+.on-this-day-avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--paper-deep);
+}
+.on-this-day-marker {
+  margin-right: 7px;
+  color: var(--forest-dark);
+  font-family: var(--serif);
+  font-size: 1.15em;
+  line-height: inherit;
+}
+.on-this-day-body { min-width: 0; }
+.on-this-day-name { margin: 0; font-family: var(--serif); font-size: 1.12rem; line-height: 1.35; }
+.on-this-day-name a { color: var(--forest-dark); font-weight: 600; text-decoration-color: rgba(53, 77, 48, 0.35); }
+.on-this-day-name a:hover { text-decoration-color: var(--forest-dark); }
+.on-this-day-detail { margin: 3px 0 0; color: #57524C; font-size: 0.92rem; }
+.on-this-day-badge {
+  display: inline-block;
+  margin-top: 7px;
+  padding: 2px 8px;
+  border: 1px dashed var(--forest);
+  border-radius: 999px;
+  color: var(--forest-dark);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+  .on-this-day-section { padding-top: 26px; }
+  .on-this-day-card { padding: 20px 20px 22px; }
+  .on-this-day-item { gap: 11px; }
+  .on-this-day-avatar { width: 42px; height: 42px; }
+  .on-this-day-name { font-size: 1.02rem; }
+}

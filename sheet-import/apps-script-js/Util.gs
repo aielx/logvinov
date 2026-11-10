@@ -77,6 +77,12 @@ function formatYears(birthYear, deathYear, isLiving) {
   if (isLiving) return `${birthYear}\u2013\u043D. \u0432.`;
   return deathYear === null ? String(birthYear) : `${birthYear}\u2013${deathYear}`;
 }
+function dayKeyFromSortKey(sortKey) {
+  const month = Math.floor(sortKey % 1e4 / 100);
+  const day = sortKey % 100;
+  if (month < 1 || day < 1) return null;
+  return `${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
 function formatIsoDate(date) {
   if (date.year === null) return null;
   const year = String(date.year);

@@ -1,0 +1,68 @@
+import { expect, test } from "@playwright/test";
+
+const FAMILY_PASSWORD = "семейный-тест";
+
+// Даты демо-набора с точным днём: рождение Анны 1921-06-12 (публичное),
+// день памяти Ивана Петровича 1955-02-24 (публичное), брак 1946-07-20
+// (публичное ручное), рождение Алексея 1975-09-05 (живой — семейное).
+// Часы страницы фиксируются page.clock, чтобы тесты не зависели от реальной даты.
+
+test.describe("Карточка «В этот день» на главной", () => {
+  test("сегодня — день рождения публичного человека: годы, ссылка в древо, без canary", async ({ page }) => {
+    await page.clock.setFixedTime(new Date(2026, 5, 12, 10, 0, 0));
+    await page.goto("");
+    const card = page.locator("#on-this-day");
+    await expect(card).toBeVisible({ timeout: 15_000 });
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ В этот день · 12 июня");
+    await expect(card.locator(".on-this-day-name")).toContainText("Анна Сергеевна Логвинова");
+    await expect(card.locator(".on-this-day-detail")).toContainText("105 лет со дня рождения");
+    await expect(card.locator(".on-this-day-avatar")).toBeVisible();
+    await expect(card.locator(".on-this-day-name a")).toHaveAttribute("href", /\/tree\/\?person=p_0004$/);
+    expect(await card.innerText()).not.toContain("CANARY");
+    expect(await card.innerText()).not.toContain("Алексей");
+  });
+
+  test("сегодня — день памяти умершего: пометка и годы", async ({ page }) => {
+    await page.clock.setFixedTime(new Date(2026, 1, 24, 10, 0, 0));
+    await page.goto("");
+    const card = page.locator("#on-this-day");
+    await expect(card).toBeVisible({ timeout: 15_000 });
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ В этот день · 24 февраля");
+    await expect(card.locator(".on-this-day-name")).toContainText("Иван Петрович Логвинов");
+    await expect(card.locator(".on-this-day-detail")).toHaveText("день памяти — 71 год");
+  });
+
+  test("сегодня пусто — ближайшая дата: «Скоро в роду» с событием и остатком дней", async ({ page }) => {
+    await page.clock.setFixedTime(new Date(2026, 6, 16, 10, 0, 0));
+    await page.goto("");
+    const card = page.locator("#on-this-day");
+    await expect(card).toBeVisible({ timeout: 15_000 });
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ Скоро в роду · 20 июля");
+    await expect(card.locator(".on-this-day-name")).toContainText("Брак Ивана и Анны");
+    await expect(card.locator(".on-this-day-detail")).toContainText("80 лет с события");
+    await expect(card.locator(".on-this-day-detail")).toContainText("через 4 дня");
+  });
+
+  test("день рождения живого — только после семейного входа", async ({ page }) => {
+    await page.clock.setFixedTime(new Date(2026, 8, 5, 10, 0, 0));
+    await page.goto("");
+    const card = page.locator("#on-this-day");
+    await expect(card).toBeVisible({ timeout: 15_000 });
+    // Публично Алексея нет: показывается ближайшая публичная дата
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ Скоро в роду · 24 февраля");
+    expect(await card.innerText()).not.toContain("Алексей");
+
+    await page.getByRole("button", { name: "Для семьи — открыть полное древо" }).click();
+    await page.locator("#family-password").fill(FAMILY_PASSWORD);
+    await page.getByRole("button", { name: "Войти в семейный режим" }).click();
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ В этот день · 5 сентября", { timeout: 10_000 });
+    await expect(card.locator(".on-this-day-name")).toContainText("Алексей Сергеевич Логвинов");
+    await expect(card.locator(".on-this-day-detail")).toContainText("исполняется 51 год");
+    await expect(card.locator(".on-this-day-badge")).toHaveText("Семейное");
+
+    // Выход возвращает публичную карточку
+    await page.getByRole("button", { name: "Выйти из семейного режима" }).click();
+    await expect(card.locator(".on-this-day-eyebrow")).toHaveText("✦ Скоро в роду · 24 февраля", { timeout: 10_000 });
+    expect(await card.innerText()).not.toContain("Алексей");
+  });
+});
