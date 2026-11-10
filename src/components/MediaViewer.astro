@@ -2,6 +2,12 @@
 <dialog class="media-viewer" id="media-viewer" aria-labelledby="media-viewer-caption">
   <div class="media-viewer-inner">
     <button class="icon-button media-viewer-close" type="button" data-close-dialog aria-label="Закрыть материал">×</button>
+    <div class="media-viewer-controls" id="media-viewer-controls" hidden>
+      <button class="icon-button" type="button" id="media-zoom-out" aria-label="Уменьшить изображение">−</button>
+      <span class="media-zoom-level" id="media-zoom-level">100%</span>
+      <button class="icon-button" type="button" id="media-zoom-in" aria-label="Увеличить изображение">+</button>
+      <button class="icon-button" type="button" id="media-zoom-reset" aria-label="Сбросить масштаб">1:1</button>
+    </div>
     <div class="media-loading" id="media-viewer-loading" hidden>Загрузка семейного материала…</div>
     <div class="media-error" id="media-viewer-error" hidden></div>
     <img id="media-viewer-image" alt="" hidden>

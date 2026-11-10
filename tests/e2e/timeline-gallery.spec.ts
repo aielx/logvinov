@@ -62,6 +62,56 @@ test.describe("Галерея", () => {
     await expect(trigger).toBeFocused();
   });
 
+  test("лайтбокс: зум кнопками, колесом, двойным кликом и клавиатурой", async ({ page }) => {
+    test.skip(test.info().project.name === "mobile-touch", "двойной клик мышью проверяем в десктоп-проектах");
+    await page.goto("gallery/");
+    await expect(page.locator(".archive-card").first()).toBeVisible({ timeout: 15_000 });
+    await page.locator(".archive-card-button").first().click();
+    const image = page.locator("#media-viewer-image");
+    await expect(image).toBeVisible();
+    const level = page.locator("#media-zoom-level");
+
+    // Кнопки: 100% → 125% → 100%, курсор меняется на «grab»
+    await expect(level).toHaveText("100%");
+    await page.getByRole("button", { name: "Увеличить изображение" }).click();
+    await expect(level).toHaveText("125%");
+    await expect(image).toHaveCSS("cursor", "grab");
+    await page.getByRole("button", { name: "Уменьшить изображение" }).click();
+    await expect(level).toHaveText("100%");
+    await expect(image).toHaveCSS("cursor", "zoom-in");
+
+    // Колесо мыши: прокрутка вверх увеличивает, вниз возвращает
+    const box = await image.boundingBox();
+    if (box) {
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.wheel(0, -200);
+      await expect(level).toHaveText("135%");
+      await page.mouse.wheel(0, 200);
+      await expect(level).toHaveText("100%");
+    }
+
+    // Двойной клик: 100% → 250%, повторный — сброс
+    await image.dblclick();
+    await expect(level).toHaveText("250%");
+    await image.dblclick();
+    await expect(level).toHaveText("100%");
+
+    // Клавиатура: «+» увеличивает, «0» сбрасывает
+    await page.keyboard.press("+");
+    await expect(level).toHaveText("125%");
+    await page.keyboard.press("0");
+    await expect(level).toHaveText("100%");
+
+    // Сброс после закрытия/переоткрытия
+    await page.keyboard.press("+");
+    await expect(level).toHaveText("125%");
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#media-viewer")).toBeHidden();
+    await page.locator(".archive-card-button").first().click();
+    await expect(image).toBeVisible();
+    await expect(level).toHaveText("100%");
+  });
+
   test("семейные материалы после входа: метаданные и закрытый DRIVE-файл", async ({ page }) => {
     await page.goto("gallery/");
     await expect(page.locator(".archive-card").first()).toBeVisible({ timeout: 15_000 });
