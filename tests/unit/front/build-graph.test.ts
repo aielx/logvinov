@@ -83,6 +83,38 @@ describe("buildGraph", () => {
     expect(graph.nodes.length).toBe(1);
     expect(graph.familyLinks.length).toBe(0);
   });
+
+  it("повторный брак: все супруги рядом с якорем, пунктир короткий", () => {
+    const people = [
+      person({ personId: "p_1", generation: 1, childIds: ["g", "bro"] }),
+      person({ personId: "bro", generation: 2, parentIds: ["p_1"], birthYear: 1918 }),
+      person({ personId: "g", generation: 2, parentIds: ["p_1"], birthYear: 1920, spouseIds: ["w1", "w2"], childIds: ["kid"] }),
+      person({ personId: "w1", generation: 2, birthYear: 1922, spouseIds: ["g"], childIds: ["kid"] }),
+      person({ personId: "w2", generation: 2, birthYear: 1935, spouseIds: ["g"] }),
+      person({ personId: "kid", generation: 3, parentIds: ["g", "w1"] })
+    ];
+    const graph = buildGraph(people);
+    const node = (id: string) => graph.nodes.find((entry) => entry.person.personId === id)!;
+    // Все члены кластера в одном ряду, якорь между супругами.
+    expect(node("g").y).toBe(node("w1").y);
+    expect(node("g").y).toBe(node("w2").y);
+    expect(Math.abs(node("w1").x - node("g").x)).toBe(LAYOUT.spouseGap);
+    expect(Math.abs(node("w2").x - node("g").x)).toBe(LAYOUT.spouseGap);
+    expect((node("w1").x - node("g").x) * (node("w2").x - node("g").x)).toBeLessThan(0);
+    // Брат не попадает между супругами: внутри кластера только сам якорь.
+    const inside = graph.nodes
+      .filter((entry) => entry.person.generation === 2)
+      .filter((entry) => entry.x > Math.min(node("w1").x, node("w2").x) && entry.x < Math.max(node("w1").x, node("w2").x))
+      .map((entry) => entry.person.personId);
+    expect(inside).toEqual(["g"]);
+    // Пунктир каждого брака — между соседними узлами кластера.
+    graph.marriageLinks.forEach((link) => {
+      expect(Math.abs(link.source.x - link.target.x)).toBe(LAYOUT.spouseGap);
+    });
+    // Ребёнок первого брака висит между своими родителями.
+    const kidLink = graph.familyLinks.find((link) => link.key.endsWith("kid"))!;
+    expect(kidLink.source.x).toBe((node("g").x + node("w1").x) / 2);
+  });
 });
 
 describe("filterByBranch", () => {

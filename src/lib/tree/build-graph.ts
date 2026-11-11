@@ -16,7 +16,7 @@ export interface GraphNode {
   person: PublicTreePerson;
   x: number;
   y: number;
-  /** Позиция не назначена (изолированный конфликт раскладки) — не бывает при текущем алгоритме. */
+  /** Якорь кластера браков, рядом с которым размещён человек (null — сам якорь или без брака). */
   spouseOf: string | null;
 }
 
@@ -65,7 +65,7 @@ export function buildGraph(people: PublicTreePerson[]): TreeGraph {
   const byId = new Map(people.map((person) => [person.personId, person]));
   const spouseOf = new Map<string, string>();
 
-  // Канонизация браков: пара (a,b), a < b; каждый человек — не более чем в одном браке на графе.
+  // Канонизация браков: пара (a,b), a < b; каждая пара — один раз.
   const spousePairs: Array<[string, string]> = [];
   const pairSeen = new Set<string>();
   people.forEach((person) => {
@@ -77,18 +77,46 @@ export function buildGraph(people: PublicTreePerson[]): TreeGraph {
       spousePairs.push([person.personId, spouseId].sort() as [string, string]);
     });
   });
-  // Схема раскладки: супруг рисуется рядом с первым партнёром.
+  // Кластеры браков: компонента связности браков — звезда вокруг якоря.
+  // Якорь — кровный член древа (есть родители на графе), при равенстве — тот,
+  // у кого больше браков (повторный брак не разрывает кластер), затем меньший id.
+  // Все остальные супруги сопровождают якорь и встают рядом с ним.
+  const partnersOf = new Map<string, string[]>();
   spousePairs.forEach(([a, b]) => {
-    if (!spouseOf.has(a) && !spouseOf.has(b)) {
-      spouseOf.set(b, a);
-    } else if (!spouseOf.has(a)) {
-      spouseOf.set(a, b);
-    } else if (!spouseOf.has(b)) {
-      spouseOf.set(b, a);
+    const listA = partnersOf.get(a) ?? [];
+    listA.push(b);
+    partnersOf.set(a, listA);
+    const listB = partnersOf.get(b) ?? [];
+    listB.push(a);
+    partnersOf.set(b, listB);
+  });
+  const hasTreeParents = new Set<string>();
+  people.forEach((person) => {
+    if (person.parentIds.some((parentId) => byId.has(parentId))) hasTreeParents.add(person.personId);
+  });
+  const anchorFirst = (a: string, b: string): number =>
+    Number(hasTreeParents.has(b)) - Number(hasTreeParents.has(a)) ||
+    (partnersOf.get(a)?.length ?? 0) - (partnersOf.get(b)?.length ?? 0) ||
+    a.localeCompare(b);
+  const clustered = new Set<string>();
+  people.forEach((person) => {
+    if (clustered.has(person.personId) || !partnersOf.has(person.personId)) return;
+    const component: string[] = [];
+    const queue = [person.personId];
+    while (queue.length > 0) {
+      const current = queue.pop() as string;
+      if (clustered.has(current)) continue;
+      clustered.add(current);
+      component.push(current);
+      (partnersOf.get(current) ?? []).forEach((partnerId) => {
+        if (!clustered.has(partnerId)) queue.push(partnerId);
+      });
     }
+    const [anchor, ...spouses] = component.sort(anchorFirst);
+    spouses.forEach((spouseId) => spouseOf.set(spouseId, anchor));
   });
 
-  const layout = computeLayout(people, byId, spousePairs, spouseOf);
+  const layout = computeLayout(people, byId, spouseOf);
 
   const nodes: GraphNode[] = people.map((person) => {
     const position = layout.positions.get(person.personId) ?? { x: 0, y: 0 };

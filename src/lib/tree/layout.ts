@@ -1,5 +1,7 @@
 /**
- * Раскладка древа: слои по поколениям, пары супругов рядом, DFS-порядок ветвей.
+ * Раскладка древа: слои по поколениям, кластеры браков рядом с якорем, DFS-порядок ветвей.
+ * При повторных браках якорь размещается между супругами — пунктир каждого брака
+ * остаётся коротким и не тянется через других людей поколения.
  * Детерминированная, без перекрытий: каждому поколению — свой курсор по X.
  */
 import type { PublicTreePerson } from "../api/types";
@@ -21,7 +23,6 @@ export interface LayoutResult {
 export function computeLayout(
   people: PublicTreePerson[],
   byId: Map<string, PublicTreePerson>,
-  spousePairs: Array<[string, string]>,
   spouseOf: Map<string, string>
 ): LayoutResult {
   const childrenOf = new Map<string, string[]>();
@@ -54,53 +55,47 @@ export function computeLayout(
   const nextX = new Map<number, number>();
   const placed = new Set<string>();
   const visiting = new Set<string>();
-  // Сопровождающий → якорь и якорь → сопровождающий для симметричного поиска пары.
-  const accompaniedOf = new Map<string, string>();
-  spousePairs.forEach(([a, b]) => {
-    if (spouseOf.get(b) === a) accompaniedOf.set(a, b);
+  // Якорь кластера → супруги (по рождению: старшие левее) — из карты сопровождений.
+  const accompaniersOf = new Map<string, string[]>();
+  spouseOf.forEach((anchor, member) => {
+    const list = accompaniersOf.get(anchor) ?? [];
+    list.push(member);
+    accompaniersOf.set(anchor, list);
   });
+  accompaniersOf.forEach((list) => list.sort(byBirth));
 
   const generationOf = (personId: string): number => byId.get(personId)?.generation ?? 1;
 
-  const placePair = (personId: string, spouseId: string | null): void => {
-    const generation = generationOf(personId);
+  const placeCluster = (anchorId: string): void => {
+    const generation = generationOf(anchorId);
+    const y = (generation - 1) * LAYOUT.levelHeight;
     const cursor = nextX.get(generation) ?? 0;
-    positions.set(personId, { x: cursor, y: (generation - 1) * LAYOUT.levelHeight });
-    placed.add(personId);
-    let advance = LAYOUT.nodeGap;
-    if (spouseId && !placed.has(spouseId) && byId.has(spouseId)) {
-      positions.set(spouseId, { x: cursor + LAYOUT.spouseGap, y: positions.get(personId)!.y });
-      placed.add(spouseId);
-      advance = LAYOUT.spouseGap + LAYOUT.nodeGap;
-    }
-    nextX.set(generation, cursor + advance);
+    const accompaniers = (accompaniersOf.get(anchorId) ?? []).filter(
+      (memberId) => !placed.has(memberId) && !visiting.has(memberId) && byId.has(memberId)
+    );
+    // Один супруг — справа от якоря (как раньше); несколько — якорь между ними,
+    // чтобы пунктир каждого брака шёл только между соседними узлами.
+    const leftCount = accompaniers.length >= 2 ? Math.floor(accompaniers.length / 2) : 0;
+    const members = [...accompaniers.slice(0, leftCount), anchorId, ...accompaniers.slice(leftCount)];
+    members.forEach((memberId, index) => {
+      positions.set(memberId, { x: cursor + index * LAYOUT.spouseGap, y });
+      placed.add(memberId);
+    });
+    nextX.set(generation, cursor + (members.length - 1) * LAYOUT.spouseGap + LAYOUT.nodeGap);
   };
 
   const visit = (personId: string): void => {
     if (placed.has(personId) || visiting.has(personId) || !byId.has(personId)) return;
     visiting.add(personId);
-    // Определяем пару: я сопровождаю партнёра (spouseOf) или партнёр сопровождает меня.
+    // Кластер брака: если сопровождаю якорь — размещаемся от него (якорь мог ещё не размещён).
     let anchor = personId;
-    let partner: string | null = accompaniedOf.get(personId) ?? null;
-    if (!partner && spouseOf.has(personId)) {
-      anchor = spouseOf.get(personId) as string;
-      partner = personId;
-      if (placed.has(anchor) || visiting.has(anchor)) {
-        // Якорь уже размещён отдельно: сопровождающий встаёт одиночным узлом.
-        anchor = personId;
-        partner = null;
-      }
-    }
-    placePair(anchor, partner);
-    const children = (childrenOf.get(anchor) ?? []).slice().sort(byBirth);
-    children.forEach((childId) => visit(childId));
-    // Дети партнёра, если партнёр не посещён как родитель.
-    if (partner) {
-      const partnerChildren = (childrenOf.get(partner) ?? []).slice().sort(byBirth);
-      partnerChildren.forEach((childId) => {
-        if (!placed.has(childId)) visit(childId);
-      });
-    }
+    const myAnchor = spouseOf.get(personId);
+    if (myAnchor && !placed.has(myAnchor) && !visiting.has(myAnchor)) anchor = myAnchor;
+    placeCluster(anchor);
+    // Дети всех членов кластера: сначала якоря, затем супругов (в порядке рождения).
+    [anchor, ...(accompaniersOf.get(anchor) ?? [])].forEach((memberId) => {
+      (childrenOf.get(memberId) ?? []).slice().sort(byBirth).forEach((childId) => visit(childId));
+    });
     visiting.delete(personId);
   };
 
