@@ -28,6 +28,7 @@ plans/               план миграции (не публикуется)
 
 - `docs/deployment.md` — полное развёртывание (Google Sheet → Apps Script → GitHub Pages), включая ручные шаги владельца.
 - `docs/data-policy.md` — что публично, что после входа, что никогда не покидает сервер.
+- `docs/seo.md` — поисковая оптимизация и оптимизация для ИИ-агентов (sitemap, OG, JSON-LD, llms.txt) + ручные шаги в панелях вебмастеров.
 - `docs/threat-model.md` — угрозы, принятые риски, ограничения платформы.
 - `docs/sheets-guide.md`, `docs/drive-guide.md` — инструкции редакторов архива.
 - `sheet-import/` — готовые CSV демо-данных (3 листа) для импорта в Google Sheet: `npm run gen:csv`.

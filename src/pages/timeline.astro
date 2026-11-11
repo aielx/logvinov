@@ -3,12 +3,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import AsyncState from "../components/AsyncState.astro";
 import Timeline from "../components/timeline/Timeline.astro";
 import "../styles/features/timeline.css";
+import { canonicalUrlOf, webPageNode } from "../lib/seo";
+
+const pageTitle = "Хронология рода Логвиновых — Род Логвиновых";
+const pageDescription =
+  "Хронология семьи Логвиновых: рождения, браки и переезды поколений рода — в контексте исторических событий, которые меняли жизнь страны.";
+const canonical = canonicalUrlOf(Astro.url.pathname, Astro.site ?? new URL("https://logvinov-tree.ru"));
 ---
 
 <BaseLayout
-  title="Хронология — Род Логвиновых"
-  description="Хронология семьи Логвиновых и исторический контекст."
+  title={pageTitle}
+  description={pageDescription}
   current="timeline"
+  jsonLdNodes={[webPageNode("WebPage", canonical.href, pageTitle, pageDescription)]}
 >
   <section class="page-intro section-shell">
     <p class="eyebrow">Семья и время</p>

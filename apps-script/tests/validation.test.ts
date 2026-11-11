@@ -208,6 +208,44 @@ describe("Поколения супругов (вошедшие в род по �
     expect(gen("p_0084")).toBe(4);
     expect(archive.issues.filter((i) => i.code === "PERSON_GENERATION_CONFLICT")).toEqual([]);
   });
+
+  it("случайная связь «Супруг(а)» уводит сестру на ряд ниже — предупреждение о сиблингах", () => {
+    // Сценарий из реальных данных: у Трунцева Петра «Супруг(а)» ошибочно указывает
+    // на племянника жены, и пара через максимум поколений уезжает на ряд ниже.
+    const family = (petrSpouse: string) => {
+      const raw = demoRecords();
+      (raw.people as never[]).push(
+        personRow(90, "70", "Николай Петрович", "", "", ""),
+        personRow(91, "71", "Виктор Николаевич", "70 · Николай Петрович", "", ""),
+        personRow(92, "72", "Лариса Николаевна", "70 · Николай Петрович", "", ""),
+        personRow(93, "73", "Александр Серафимович", "", "72 · Лариса Николаевна", ""),
+        personRow(94, "74", "Валентина Николаевна", "70 · Николай Петрович", "", "75 · Пётр"),
+        personRow(95, "75", "Пётр Трунцев", "", "", petrSpouse),
+        personRow(96, "76", "Сын Валентины", "75 · Пётр", "74 · Валентина Николаевна", "")
+      );
+      return raw;
+    };
+
+    const broken = validateArchive(family("73 · Александр Серафимович"));
+    const brokenGen = (id: string) => (broken.people.get(id) as { generation: number }).generation;
+    expect(brokenGen("p_0071")).toBe(2);
+    expect(brokenGen("p_0072")).toBe(2);
+    expect(brokenGen("p_0074")).toBe(3); // Валентина уехала на ряд ниже родных
+    expect(brokenGen("p_0075")).toBe(3);
+    expect(brokenGen("p_0076")).toBe(4);
+    expect(
+      broken.issues.filter((i) => i.code === "PERSON_SIBLING_GENERATION_MISMATCH").map((i) => i.recordId)
+    ).toEqual(["p_0074"]);
+
+    const fixed = validateArchive(family("74 · Валентина Николаевна"));
+    const fixedGen = (id: string) => (fixed.people.get(id) as { generation: number }).generation;
+    expect(fixedGen("p_0071")).toBe(2);
+    expect(fixedGen("p_0072")).toBe(2);
+    expect(fixedGen("p_0074")).toBe(2); // Валентина вернулась в ряд братьев и сестёр
+    expect(fixedGen("p_0075")).toBe(2);
+    expect(fixedGen("p_0076")).toBe(3);
+    expect(fixed.issues.filter((i) => i.code === "PERSON_SIBLING_GENERATION_MISMATCH")).toEqual([]);
+  });
 });
 
 describe("Ошибочные записи исключаются", () => {

@@ -8,6 +8,7 @@
   "include": [
     "src/**/*",
     "scripts/check-dist-privacy.ts",
+    "scripts/check-dist-seo.ts",
     "tests/unit/front/**/*",
     "tests/e2e/**/*.ts",
     "playwright.config.ts",

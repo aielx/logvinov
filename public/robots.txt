@@ -1,0 +1,7 @@
+# Род Логвиновых — семейный генеалогический архив (https://logvinov-tree.ru)
+# Все страницы публичны для индексации, включая краулеров ИИ-ассистентов.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://logvinov-tree.ru/sitemap-index.xml

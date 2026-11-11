@@ -413,6 +413,35 @@ function computeGenerations(archive: ValidatedArchive): void {
       }
     });
   });
+
+  // Дети одного родителя должны попадать в одно поколение. Расхождение почти
+  // всегда означает случайную связь «Супруг(а)»: супруг со своим рядом
+  // (пары выравниваются по максимуму) уводит человека на ряд ниже родных.
+  const reported = new Set<string>();
+  const childrenByParent = new Map<string, ValidatedPerson[]>();
+  archive.people.forEach((person) => {
+    person.parentIds.forEach((parentId) => {
+      const bucket = childrenByParent.get(parentId) ?? [];
+      bucket.push(person);
+      childrenByParent.set(parentId, bucket);
+    });
+  });
+  childrenByParent.forEach((children, parentId) => {
+    const siblingGeneration = Math.min(...children.map((child) => child.generation));
+    children.forEach((child) => {
+      if (child.generation > siblingGeneration && !reported.has(child.personId)) {
+        reported.add(child.personId);
+        issue(
+          archive,
+          "Люди",
+          0,
+          child.personId,
+          "PERSON_SIBLING_GENERATION_MISMATCH",
+          `Человек № ${child.personId.slice(2)} попал в поколение ${child.generation}, а родные братья и сёстры — в ${siblingGeneration}. Обычно причина — случайная связь «Супруг(а)» у него или у партнёра (родитель № ${parentId.slice(2)}).`
+        );
+      }
+    });
+  });
 }
 
 /**

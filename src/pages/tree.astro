@@ -4,14 +4,21 @@ import TreeToolbar from "../components/tree/TreeToolbar.astro";
 import FamilyTree from "../components/tree/FamilyTree.astro";
 import PersonPanel from "../components/tree/PersonPanel.astro";
 import "../styles/features/tree.css";
+import { canonicalUrlOf, webPageNode } from "../lib/seo";
+
+const pageTitle = "Семейное древо Логвиновых — Род Логвиновых";
+const pageDescription =
+  "Интерактивное генеалогическое древо рода Логвиновых: поколения семьи, родственные связи и карточки людей. Имена и годы — в публичном доступе, подробности о живых — в семейном режиме.";
+const canonical = canonicalUrlOf(Astro.url.pathname, Astro.site ?? new URL("https://logvinov-tree.ru"));
 ---
 
 <BaseLayout
-  title="Семейное древо — Род Логвиновых"
-  description="Интерактивное семейное древо рода Логвиновых."
+  title={pageTitle}
+  description={pageDescription}
   current="tree"
   bodyClass="tree-page"
   compactFooter={true}
+  jsonLdNodes={[webPageNode("WebPage", canonical.href, pageTitle, pageDescription)]}
 >
   <section class="tree-workspace" id="tree-root" aria-labelledby="tree-title">
     <div class="tree-heading">

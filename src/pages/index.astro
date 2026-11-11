@@ -2,14 +2,51 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import "../styles/features/landing.css";
 import { pageUrl } from "../lib/urls";
+import { canonicalUrlOf, webPageNode, sectionsItemListNode, faqNode, type FaqEntry } from "../lib/seo";
+
+const site = Astro.site ?? new URL("https://logvinov-tree.ru");
+const canonical = canonicalUrlOf(Astro.url.pathname, site);
+
+const pageTitle = "Род Логвиновых — семейный архив и генеалогическое древо";
+const pageDescription =
+  "Семейный генеалогический архив рода Логвиновых: интерактивное древо семьи, хронология поколений и галерея фотографий. Родословная Логвиновых — для родственников и всех, кто ищет свою ветвь рода.";
+
+// FAQ: один источник текста для видимого блока на странице и для FAQPage (JSON-LD).
+const faqEntries: FaqEntry[] = [
+  {
+    question: "Что такое семейный архив рода Логвиновых?",
+    answer:
+      "Это частный генеалогический проект: древо, хронология и галерея одной ветви рода Логвиновых. Архив создают родственники для родственников — он объединяет имена, даты, фотографии и семейные истории в одном месте."
+  },
+  {
+    question: "Откуда произошла фамилия Логвинов?",
+    answer:
+      "Фамилия Логвинов образована от личного имени Логвин (церковная форма — Логгин). Такое происхождение приводят словари русских фамилий. Фамилия встречается у разных семей, которые чаще всего не состоят в родстве между собой, — поэтому совпадение фамилии само по себе о родстве не говорит."
+  },
+  {
+    question: "Какие сведения в архиве открыты, а какие — только для семьи?",
+    answer:
+      "В публичной версии видны имена, годы жизни и общие материалы архива. Подробные карточки живых родственников открываются только после ввода семейного пароля."
+  },
+  {
+    question: "Моя фамилия Логвинов или Логвинова — как узнать, наши это ветви?",
+    answer:
+      "Напишите хранителю архива на logvinovaleksander@gmail.com: расскажите об известных вам старших поколениях семьи, и мы сверим их с данными древа."
+  }
+];
 ---
 
 <BaseLayout
-  title="Род Логвиновых — семейный архив"
-  description="Семейный генеалогический архив рода Логвиновых: древо, хронология и галерея."
+  title={pageTitle}
+  description={pageDescription}
   themeColor="#182b3a"
   current=""
   bodyClass="landing-page"
+  jsonLdNodes={[
+    webPageNode("AboutPage", canonical.href, pageTitle, pageDescription),
+    sectionsItemListNode(site),
+    faqNode(canonical.href, faqEntries)
+  ]}
 >
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-map" aria-hidden="true"></div>
@@ -92,6 +129,30 @@ import { pageUrl } from "../lib/urls";
       </div>
       <div class="section-action">
         <a class="button button-primary" href={pageUrl("gallery")}>Перейти в галерею <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section section-tinted" id="surname" aria-labelledby="surname-title">
+    <div class="section-shell surname-grid">
+      <div>
+        <p class="eyebrow">Фамилия и род</p>
+        <h2 id="surname-title">О фамилии Логвинов и об этом архиве</h2>
+      </div>
+      <div class="surname-copy">
+        <p>Фамилия Логвинов образована от личного имени Логвин (церковная форма — Логгин). Такую родословную фамилию носят разные, не связанные между собой семьи — поэтому совпадение фамилии само по себе о родстве не говорит.</p>
+        <p>Этот сайт — частная родословная одной конкретной ветви Логвиновых. Здесь собраны поколения семьи: имена и даты в генеалогическом древе, события в хронологии, фотографии и документы в галерее. Архив пополняется по мере того, как родственники разбирают семейные материалы.</p>
+        <p>Если вас зовут Логвинов или Логвинова и вы ищете свои корни, — возможно, мы родственники. Напишите хранителю архива: вместе восстанавливать общую родословную проще.</p>
+      </div>
+    </div>
+    <div class="section-shell">
+      <div class="faq-list" id="faq">
+        {faqEntries.map(({ question, answer }) => (
+          <details class="faq-item">
+            <summary>{question}</summary>
+            <p>{answer}</p>
+          </details>
+        ))}
       </div>
     </div>
   </section>

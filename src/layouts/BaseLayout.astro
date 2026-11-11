@@ -6,6 +6,7 @@ import LoginDialog from "../components/LoginDialog.astro";
 import ToastRegion from "../components/ToastRegion.astro";
 import MediaViewer from "../components/MediaViewer.astro";
 import { pageUrl, assetUrl } from "../lib/urls";
+import { jsonLdGraph, canonicalUrlOf, SITE_NAME } from "../lib/seo";
 
 interface Props {
   title: string;
@@ -15,9 +16,19 @@ interface Props {
   bodyClass?: string;
   compactFooter?: boolean;
   footerNote?: string;
+  /** Дополнительные узлы JSON-LD для страницы (WebPage, FAQPage и т.п.). */
+  jsonLdNodes?: Record<string, unknown>[];
+  /** Служебные страницы (404) не индексируются. */
+  noindex?: boolean;
 }
 
-const { title, description, themeColor = "#F5F1EB", current, bodyClass = "", compactFooter = false, footerNote } = Astro.props;
+const { title, description, themeColor = "#F5F1EB", current, bodyClass = "", compactFooter = false, footerNote, jsonLdNodes = [], noindex = false } = Astro.props;
+
+const site = Astro.site ?? new URL("https://logvinov-tree.ru");
+// Канонический URL со слэшем на конце: GitHub Pages отдаёт /tree/ (301 с /tree).
+const canonicalUrl = canonicalUrlOf(Astro.url.pathname, site);
+const ogImageUrl = new URL(assetUrl("assets/og-image.png"), site);
+const structuredData = jsonLdGraph(site, description, jsonLdNodes);
 ---
 
 <!DOCTYPE html>
@@ -27,11 +38,35 @@ const { title, description, themeColor = "#F5F1EB", current, bodyClass = "", com
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content={description}>
     <meta name="theme-color" content={themeColor}>
+    {noindex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
     <title>{title}</title>
+    <link rel="canonical" href={canonicalUrl.href}>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href={assetUrl("assets/favicon.svg")} type="image/svg+xml">
+    <link rel="apple-touch-icon" href={assetUrl("assets/apple-touch-icon.png")}>
+
+    <!-- Open Graph: превью ссылки в мессенджерах и соцсетях -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content={SITE_NAME}>
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:title" content={title}>
+    <meta property="og:description" content={description}>
+    <meta property="og:url" content={canonicalUrl.href}>
+    <meta property="og:image" content={ogImageUrl.href}>
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Род Логвиновых — семейный генеалогический архив: древо, хронология, галерея">
+
+    <!-- Twitter/X card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content={title}>
+    <meta name="twitter:description" content={description}>
+    <meta name="twitter:image" content={ogImageUrl.href}>
+
+    <!-- Structured data для поисковиков и ИИ-агентов -->
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
   <body class={bodyClass}>
     <a class="skip-link" href="#main-content">Перейти к содержанию</a>

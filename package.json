@@ -17,6 +17,8 @@
     "test:e2e:staging": "playwright test --config=tests/e2e/staging.playwright.config.ts",
     "test:a11y": "playwright test --grep @a11y",
     "test:dist-privacy": "tsx scripts/check-dist-privacy.ts",
+    "test:dist-seo": "tsx scripts/check-dist-seo.ts",
+    "gen:og": "bash scripts/generate-og-image.sh",
     "gen:mock": "tsx scripts/generate-mock-data.ts",
     "gen:csv": "tsx scripts/generate-csv.ts",
     "gen:gs": "tsx scripts/generate-gs.ts",
@@ -27,6 +29,7 @@
     "d3": "^7.9.0"
   },
   "devDependencies": {
+    "@astrojs/sitemap": "^3.7.4",
     "@axe-core/playwright": "^4.10.1",
     "@playwright/test": "^1.52.0",
     "@types/d3": "^7.4.3",

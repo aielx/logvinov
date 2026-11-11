@@ -3,12 +3,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import AsyncState from "../components/AsyncState.astro";
 import ArchiveGallery from "../components/gallery/ArchiveGallery.astro";
 import "../styles/features/gallery.css";
+import { canonicalUrlOf, webPageNode } from "../lib/seo";
+
+const pageTitle = "Семейная галерея Логвиновых — Род Логвиновых";
+const pageDescription =
+  "Галерея семейного архива Логвиновых: фотографии, документы и письма, охватывающие несколько поколений рода.";
+const canonical = canonicalUrlOf(Astro.url.pathname, Astro.site ?? new URL("https://logvinov-tree.ru"));
 ---
 
 <BaseLayout
-  title="Галерея — Род Логвиновых"
-  description="Галерея фотографий и документов семейного архива Логвиновых."
+  title={pageTitle}
+  description={pageDescription}
   current="gallery"
+  jsonLdNodes={[webPageNode("CollectionPage", canonical.href, pageTitle, pageDescription)]}
 >
   <section class="page-intro section-shell">
     <p class="eyebrow">Фотографии и документы</p>

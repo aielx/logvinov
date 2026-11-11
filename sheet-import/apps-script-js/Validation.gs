@@ -318,6 +318,31 @@ function computeGenerations(archive) {
       }
     });
   });
+  const reported = /* @__PURE__ */ new Set();
+  const childrenByParent = /* @__PURE__ */ new Map();
+  archive.people.forEach((person) => {
+    person.parentIds.forEach((parentId) => {
+      const bucket = childrenByParent.get(parentId) ?? [];
+      bucket.push(person);
+      childrenByParent.set(parentId, bucket);
+    });
+  });
+  childrenByParent.forEach((children, parentId) => {
+    const siblingGeneration = Math.min(...children.map((child) => child.generation));
+    children.forEach((child) => {
+      if (child.generation > siblingGeneration && !reported.has(child.personId)) {
+        reported.add(child.personId);
+        issue(
+          archive,
+          "\u041B\u044E\u0434\u0438",
+          0,
+          child.personId,
+          "PERSON_SIBLING_GENERATION_MISMATCH",
+          `\u0427\u0435\u043B\u043E\u0432\u0435\u043A \u2116 ${child.personId.slice(2)} \u043F\u043E\u043F\u0430\u043B \u0432 \u043F\u043E\u043A\u043E\u043B\u0435\u043D\u0438\u0435 ${child.generation}, \u0430 \u0440\u043E\u0434\u043D\u044B\u0435 \u0431\u0440\u0430\u0442\u044C\u044F \u0438 \u0441\u0451\u0441\u0442\u0440\u044B \u2014 \u0432 ${siblingGeneration}. \u041E\u0431\u044B\u0447\u043D\u043E \u043F\u0440\u0438\u0447\u0438\u043D\u0430 \u2014 \u0441\u043B\u0443\u0447\u0430\u0439\u043D\u0430\u044F \u0441\u0432\u044F\u0437\u044C \xAB\u0421\u0443\u043F\u0440\u0443\u0433(\u0430)\xBB \u0443 \u043D\u0435\u0433\u043E \u0438\u043B\u0438 \u0443 \u043F\u0430\u0440\u0442\u043D\u0451\u0440\u0430 (\u0440\u043E\u0434\u0438\u0442\u0435\u043B\u044C \u2116 ${parentId.slice(2)}).`
+        );
+      }
+    });
+  });
 }
 function buildBranches(archive) {
   const order = [];
