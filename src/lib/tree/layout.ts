@@ -2,6 +2,8 @@
  * Раскладка древа: слои по поколениям, кластеры браков рядом с якорем, DFS-порядок ветвей.
  * При повторных браках якорь размещается между супругами — пунктир каждого брака
  * остаётся коротким и не тянется через других людей поколения.
+ * После размещения — проход центровки снизу вверх: каждый кластер встаёт по центру
+ * своих детей, чтобы древо расходилось веером от корня, а не лесенкой от левого края.
  * Детерминированная, без перекрытий: каждому поколению — свой курсор по X.
  */
 import type { PublicTreePerson } from "../api/types";
@@ -102,6 +104,58 @@ export function computeLayout(
   roots.forEach(visit);
   // Изолированные узлы (циклические остатки): размещаются последними.
   people.forEach((person) => visit(person.personId));
+
+  centerOverChildren();
+
+  /**
+   * Центровка снизу вверх: юнит (кластер брака или одиночка) ставится центром
+   * над размахом своих детей. Нижний ряд задаёт опору, родитель подтягивается
+   * к потомкам — у корня получается веер вместо лесенки у левого края.
+   * Порядок юнитов в ряду сохраняется; столкновения разводятся зазором nodeGap,
+   * как и при первичном размещении. Юнит без детей остаётся на месте.
+   */
+  function centerOverChildren(): void {
+    const unitMembers = new Map<string, string[]>();
+    people.forEach((person) => {
+      const representative = spouseOf.get(person.personId) ?? person.personId;
+      const members = unitMembers.get(representative) ?? [];
+      members.push(person.personId);
+      unitMembers.set(representative, members);
+    });
+
+    const rows = new Set<number>();
+    unitMembers.forEach((_members, representative) => rows.add(generationOf(representative)));
+    [...rows]
+      .sort((a, b) => b - a)
+      .forEach((generation) => {
+        const units = [...unitMembers.entries()]
+          .filter(([representative]) => generationOf(representative) === generation)
+          .map(([, members]) => members.filter((memberId) => positions.has(memberId)))
+          .filter((members) => members.length > 0)
+          .sort((a, b) => (positions.get(a[0])?.x ?? 0) - (positions.get(b[0])?.x ?? 0));
+        let rightEdge = Number.NEGATIVE_INFINITY;
+        units.forEach((members) => {
+          const left = Math.min(...members.map((memberId) => positions.get(memberId)!.x));
+          const right = Math.max(...members.map((memberId) => positions.get(memberId)!.x));
+          const ownY = positions.get(members[0])!.y;
+          const childXs = members.flatMap((memberId) =>
+            (childrenOf.get(memberId) ?? []).flatMap((childId) => {
+              const child = positions.get(childId);
+              return child && child.y > ownY ? [child.x] : [];
+            })
+          );
+          const desiredLeft =
+            childXs.length > 0
+              ? (Math.min(...childXs) + Math.max(...childXs)) / 2 - (right - left) / 2
+              : left;
+          const shiftedLeft = Math.max(desiredLeft, rightEdge);
+          members.forEach((memberId) => {
+            positions.get(memberId)!.x += shiftedLeft - left;
+          });
+          rightEdge = shiftedLeft + (right - left) + LAYOUT.nodeGap;
+        });
+      });
+  }
 
   let generationCount = 1;
   positions.forEach((position) => {

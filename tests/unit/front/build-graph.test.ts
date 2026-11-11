@@ -84,6 +84,42 @@ describe("buildGraph", () => {
     expect(graph.familyLinks.length).toBe(0);
   });
 
+  it("центровка: родители стоят по центру своих детей", () => {
+    // Веер: корень → двое детей → у каждого по двое внуков.
+    const people = [
+      person({ personId: "root", generation: 1, childIds: ["a", "b"] }),
+      person({ personId: "a", generation: 2, parentIds: ["root"], childIds: ["a1", "a2"] }),
+      person({ personId: "b", generation: 2, parentIds: ["root"], childIds: ["b1", "b2"] }),
+      person({ personId: "a1", generation: 3, parentIds: ["a"] }),
+      person({ personId: "a2", generation: 3, parentIds: ["a"] }),
+      person({ personId: "b1", generation: 3, parentIds: ["b"] }),
+      person({ personId: "b2", generation: 3, parentIds: ["b"] })
+    ];
+    const graph = buildGraph(people);
+    const x = (id: string) => graph.nodes.find((node) => node.person.personId === id)!.x;
+    // Каждый родитель — по центру размаха своих детей, корень — над всей кроной.
+    expect(x("a")).toBeCloseTo((x("a1") + x("a2")) / 2);
+    expect(x("b")).toBeCloseTo((x("b1") + x("b2")) / 2);
+    expect(x("root")).toBeCloseTo((x("a") + x("b")) / 2);
+    const gen3 = [x("a1"), x("a2"), x("b1"), x("b2")];
+    expect(x("root")).toBeCloseTo((Math.min(...gen3) + Math.max(...gen3)) / 2);
+    // Порядок и зазоры в ряду сохраняются.
+    expect(x("b") - x("a")).toBeGreaterThanOrEqual(LAYOUT.nodeGap);
+  });
+
+  it("центровка: пара центром кластера над детьми, супруги рядом", () => {
+    const people = [
+      person({ personId: "h", generation: 1, spouseIds: ["w"], childIds: ["k1", "k2"] }),
+      person({ personId: "w", generation: 1, spouseIds: ["h"], childIds: ["k1", "k2"] }),
+      person({ personId: "k1", generation: 2, parentIds: ["h", "w"] }),
+      person({ personId: "k2", generation: 2, parentIds: ["h", "w"] })
+    ];
+    const graph = buildGraph(people);
+    const x = (id: string) => graph.nodes.find((node) => node.person.personId === id)!.x;
+    expect((x("h") + x("w")) / 2).toBeCloseTo((x("k1") + x("k2")) / 2);
+    expect(Math.abs(x("w") - x("h"))).toBe(LAYOUT.spouseGap);
+  });
+
   it("повторный брак: все супруги рядом с якорем, пунктир короткий", () => {
     const people = [
       person({ personId: "p_1", generation: 1, childIds: ["g", "bro"] }),
