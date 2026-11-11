@@ -50,6 +50,8 @@ let checked = 0;
 for (const file of walk(DIST)) {
   if (!file.endsWith(".html")) continue;
   const rel = relative(process.cwd(), file);
+  // Служебные файлы верификации поисковиков (yandex_<hash>.html) — без canonical и OG-тегов.
+  if (/^yandex_[0-9a-f]+\.html$/.test(file.split("/").pop() ?? "")) continue;
   const html = readFileSync(file, "utf8");
   checked += 1;
 
