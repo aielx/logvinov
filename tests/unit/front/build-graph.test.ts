@@ -120,6 +120,40 @@ describe("buildGraph", () => {
     expect(Math.abs(x("w") - x("h"))).toBe(LAYOUT.spouseGap);
   });
 
+  it("вершина ветки в центре своей ветки: пары над единственными детьми", () => {
+    // Раньше узкие детские блоки сталкивались в ряду и вторая пара уезжала
+    // вправо от своего ребёнка; теперь каждая пара — ровно над ним.
+    const people = [
+      person({ personId: "h1", generation: 1, spouseIds: ["w1"], childIds: ["k1"] }),
+      person({ personId: "w1", generation: 1, spouseIds: ["h1"], childIds: ["k1"] }),
+      person({ personId: "h2", generation: 1, spouseIds: ["w2"], childIds: ["k2"] }),
+      person({ personId: "w2", generation: 1, spouseIds: ["h2"], childIds: ["k2"] }),
+      person({ personId: "k1", generation: 2, parentIds: ["h1", "w1"] }),
+      person({ personId: "k2", generation: 2, parentIds: ["h2", "w2"] })
+    ];
+    const graph = buildGraph(people);
+    const x = (id: string) => graph.nodes.find((node) => node.person.personId === id)!.x;
+    expect((x("h1") + x("w1")) / 2).toBeCloseTo(x("k1"));
+    expect((x("h2") + x("w2")) / 2).toBeCloseTo(x("k2"));
+  });
+
+  it("асимметричные ветви: каждая вершина в центре своей ветки", () => {
+    // Одна ветвь широкая, другая — одиночка: родители всё равно между своими детьми.
+    const people = [
+      person({ personId: "root", generation: 1, childIds: ["wide", "narrow"] }),
+      person({ personId: "wide", generation: 2, parentIds: ["root"], childIds: ["w1", "w2", "w3"] }),
+      person({ personId: "narrow", generation: 2, parentIds: ["root"] }),
+      person({ personId: "w1", generation: 3, parentIds: ["wide"] }),
+      person({ personId: "w2", generation: 3, parentIds: ["wide"] }),
+      person({ personId: "w3", generation: 3, parentIds: ["wide"] })
+    ];
+    const graph = buildGraph(people);
+    const x = (id: string) => graph.nodes.find((node) => node.person.personId === id)!.x;
+    expect(x("root")).toBeCloseTo((x("wide") + x("narrow")) / 2);
+    const wideSpan = [x("w1"), x("w2"), x("w3")];
+    expect(x("wide")).toBeCloseTo((Math.min(...wideSpan) + Math.max(...wideSpan)) / 2);
+  });
+
   it("повторный брак: все супруги рядом с якорем, пунктир короткий", () => {
     const people = [
       person({ personId: "p_1", generation: 1, childIds: ["g", "bro"] }),
